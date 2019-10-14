@@ -12,16 +12,50 @@
 	],
 	"icon": "images/icon.png",
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onCommand:extension.helloWorld",
+		"onLanguage:C++"
 	],
 	"main": "./extension.js",
 	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "懒键",
+			"properties": {
+				"LazyKey.enable": {
+					"type": "boolean",
+					"default": true,
+					"description": "启用懒懒按键"
+				},
+				"LazyKey.showTip": {
+					"type": "boolean",
+					"default": true,
+					"description": "是否在每次启动时显示已开启懒键"
+				}
+			}
+		},
 		"commands": [
 			{
 				"command": "extension.helloWorld",
 				"title": "Hello World"
 			}
-		]
+		],
+		"keybindings": [
+			{
+				"command": "extension.helloWorld",
+				"key": "ctrl+f12",
+				"mac": "cmd+f12",
+				"when": "editorTextFocus"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "editorFocus",
+					"command": "extension.helloWorld",
+					"group": "navigation@6"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"test": "node ./test/runTest.js"
