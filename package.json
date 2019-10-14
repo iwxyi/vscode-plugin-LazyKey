@@ -13,6 +13,7 @@
 	"icon": "images/icon.png",
 	"activationEvents": [
 		"onCommand:extension.helloWorld",
+		"onCommand:extension.ImLazy",
 		"onLanguage:C++"
 	],
 	"main": "./extension.js",
@@ -21,7 +22,7 @@
 			"type": "object",
 			"title": "懒键",
 			"properties": {
-				"LazyKey.enable": {
+				"LazyKey.enabled": {
 					"type": "boolean",
 					"default": true,
 					"description": "启用懒懒按键"
@@ -37,6 +38,10 @@
 			{
 				"command": "extension.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "extension.switchLazyKey",
+				"title": "ImLazy"
 			}
 		],
 		"keybindings": [
@@ -45,6 +50,12 @@
 				"key": "ctrl+f12",
 				"mac": "cmd+f12",
 				"when": "editorTextFocus"
+			},
+			{
+				"command": "extension.switchLazyKey",
+				"key": "ctrl+f11",
+				"mac": "cmd+f11",
+				"when": "editorTextFocus"
 			}
 		],
 		"menus": {
@@ -52,6 +63,11 @@
 				{
 					"when": "editorFocus",
 					"command": "extension.helloWorld",
+					"group": "navigation@6"
+				},
+				{
+					"when": "editorFocus",
+					"command": "extension.switchLazyKey",
 					"group": "navigation@6"
 				}
 			]
