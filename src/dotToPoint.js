@@ -35,7 +35,7 @@ function provideCompletionItems(document, position, token, context) {
             return ;
         if (left.slice(-2) == " .") // 针对可变参数数组的情况 ...
             return ;
-        leftPosition = new vscode.Position(position.line, position.character - 2);
+        leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
         word = document.getText(document.getWordRangeAtPosition(leftPosition));
         left = line.substring(0, leftPosition.character - 1);
         doublePoint = true;0
@@ -73,4 +73,7 @@ module.exports = function (context) {
         provideCompletionItems,
         resolveCompletionItem
     }, '.'));
+    /*context.subscriptions.push(vscode.commands.registerCommand('extension.dotToPoint', function () {
+        console('dotdotdot');
+    }));*/
 };

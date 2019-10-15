@@ -44,6 +44,10 @@
 		},
 		"commands": [
 			{
+				"command": "extension.dotToPoint",
+				"title": "点号转指针"
+			},
+			{
 				"command": "extension.helloWorld",
 				"title": "Hello World"
 			},
