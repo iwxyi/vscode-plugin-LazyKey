@@ -1,11 +1,5 @@
 /**
- * 各种按键快捷方式
- * 包括：
- * - C++点号转指针
- * - 数字 9、0 映射
- * - 下划线 - _ 映射
- * - 分号自动到末尾
- * VSCode API 文档：https://code.visualstudio.com/api/references/vscode-api
+ * C++ 点号转指针
  */
 const vscode = require('vscode');
 
@@ -79,7 +73,8 @@ function resolveCompletionItem(item, token) {
 
 module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider('cpp', {
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
+        { scheme: 'file', languages:['c', 'cpp', 'php'] }, {
         provideCompletionItems,
         resolveCompletionItem
     }, '.'));
