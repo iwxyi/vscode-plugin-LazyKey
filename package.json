@@ -14,9 +14,13 @@
 	"activationEvents": [
 		"onCommand:extension.ImLazy",
 		"onCommand:extension.dotToPoint",
+		"onLanguage:c",
 		"onLanguage:cpp",
 		"onLanguage:java",
-		"onLanguage:php"
+		"onLanguage:php",
+		"onLanguage:js",
+		"onLanguage:jsp",
+		"onLanguage:python"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -32,12 +36,22 @@
 				"LazyKey.DotToPoint": {
 					"type": "boolean",
 					"default": true,
-					"description": "C++类后点号转指针"
+					"description": "C指针、C++类、PHP类 点号转指针(新变量首次启用需两个点)"
+				},
+				"LazyKey.NumberToParentheses": {
+					"type": "boolean",
+					"default": true,
+					"description": "数字【9/0】转【(/)】"
+				},
+				"LazyKey.TabSkipRightParenthese": {
+					"type": "boolean",
+					"default": true,
+					"description": "允许 tab 键跳出数字【9】插入的成对括号"
 				},
 				"LazyKey.ShowTip": {
 					"type": "boolean",
 					"default": true,
-					"description": "是否在每次启动时显示已开启懒键"
+					"description": "启动时提示已开启懒键"
 				}
 			}
 		},

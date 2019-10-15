@@ -27,8 +27,8 @@ function provideCompletionItems(document, position, token, context) {
         var left = line.substring(0, leftPosition.character);
         var right = line.substring(position.character);
 
-        // 判断左1是不是点号
-        if (line.slice(-1) != ".")
+        // 判断左1是不是输入的符号
+        if (left.slice(-1) != ".")
             return;
 
         // 两个点号变成指针
