@@ -4,9 +4,10 @@
 const vscode = require('vscode');
 
 function provideCompletionItems(document, position, token, context) {
-    // 读取设置是否进行更改
-    const conf = vscode.workspace.getConfiguration().get('LazyKey.dotToPoint');
-    if (conf != true) return;
+    // 读取设置是否进行开启
+    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
+        || !(vscode.workspace.getConfiguration().get('LazyKey.DotToPoint')))
+        return;
 
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;

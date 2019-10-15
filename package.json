@@ -12,7 +12,6 @@
 	],
 	"icon": "images/icon.png",
 	"activationEvents": [
-		"onCommand:extension.helloWorld",
 		"onCommand:extension.ImLazy",
 		"onCommand:extension.dotToPoint",
 		"onLanguage:cpp",
@@ -25,17 +24,17 @@
 			"type": "object",
 			"title": "懒键",
 			"properties": {
-				"LazyKey.enabled": {
+				"LazyKey.AllEnabled": {
 					"type": "boolean",
 					"default": true,
 					"description": "启用懒键"
 				},
-				"LazyKey.dotToPoint": {
+				"LazyKey.DotToPoint": {
 					"type": "boolean",
 					"default": true,
 					"description": "C++类后点号转指针"
 				},
-				"LazyKey.showTip": {
+				"LazyKey.ShowTip": {
 					"type": "boolean",
 					"default": true,
 					"description": "是否在每次启动时显示已开启懒键"
@@ -46,10 +45,6 @@
 			{
 				"command": "extension.dotToPoint",
 				"title": "点号转指针"
-			},
-			{
-				"command": "extension.helloWorld",
-				"title": "Hello World"
 			},
 			{
 				"command": "extension.switchLazyKey",
@@ -72,11 +67,6 @@
 		],
 		"menus": {
 			"editor/context": [
-				{
-					"when": "editorFocus",
-					"command": "extension.helloWorld",
-					"group": "w_lazykey@1"
-				},
 				{
 					"when": "editorFocus",
 					"command": "extension.switchLazyKey",
