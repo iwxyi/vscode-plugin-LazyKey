@@ -33,15 +33,15 @@ function provideCompletionItems(document, position, token, context) {
 
         // 判断左1是不是输入的符号
         if (inpt != ".")
-            return;
+            return ;
 
         // 两个点号变成指针
         var doublePoint = false;
         if (left.length >= 2 && left.slice(-1) == ".") {
             if (left.slice(-2) == ".." || left.slice(-2) == "\t.") // 三个点或开头两点，不知道什么情况，退出
-                return;
+                return ;
             if (left.slice(-2) == " .") // 针对可变参数数组的情况 ...
-                return;
+                return ;
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             word = document.getText(document.getWordRangeAtPosition(leftPosition));
             left = line.substring(0, leftPosition.character - 1);
@@ -52,7 +52,7 @@ function provideCompletionItems(document, position, token, context) {
         var re1 = new RegExp("\\*\\s*" + word + "\\b");
         var re2 = new RegExp("\\b" + word + "\\s*->");
         if (!doublePoint && !re1.test(full) && !re2.test(full))
-            return;
+            return ;
 
         // 点号的位置替换为指针
         var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), "->");

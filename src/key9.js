@@ -1,5 +1,5 @@
 /**
- * C++ 点号转指针
+ * 9 转 ()
  */
 const vscode = require('vscode');
 
@@ -24,7 +24,7 @@ function provideCompletionItems(document, position, token, context) {
         return;
 
     // 不处理连续数字
-    if (/\\d+9$/.test(left) || /^\\d+/.test(right))
+    if (/\d+9$/.test(left) || /^\d+/.test(right))
         return ;
 
     // 光标左右的左右括号的数量
