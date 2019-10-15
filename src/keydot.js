@@ -1,5 +1,8 @@
 /**
  * C++ 点号转指针
+ *
+ * 使用 WorkspaceEdit 而不是用 snippet 的原因是：
+ * 转换后，不需要撤销两次还原
  */
 const vscode = require('vscode');
 
@@ -24,11 +27,12 @@ function provideCompletionItems(document, position, token, context) {
         var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
         var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
         var line = document.lineAt(position).text;
+        var inpt = line.substring(position.character-1, position.character);
         var left = line.substring(0, leftPosition.character);
         var right = line.substring(position.character);
 
         // 判断左1是不是输入的符号
-        if (left.slice(-1) != ".")
+        if (inpt != ".")
             return;
 
         // 两个点号变成指针

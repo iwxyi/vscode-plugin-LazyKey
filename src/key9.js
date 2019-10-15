@@ -15,11 +15,12 @@ function provideCompletionItems(document, position, token, context) {
 
     // 获取全文和当前行内容
     var line = document.lineAt(position).text;
+    var inpt = line.substring(position.character-1, position.character);
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
 
     // 判断左1是不是输入的符号
-    if (left.slice(-1) != "9")
+    if (inpt != "9")
         return;
 
     // 不处理连续数字
