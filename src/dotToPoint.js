@@ -20,42 +20,32 @@ function provideCompletionItems(document, position, token, context) {
 
     // 获取当前行内容
     var line = document.lineAt(position).text;
-    var left = line.substring(0, position.character-1);
+    var left = line.slice(position.character-1);
     var right = line.substring(position.character);
 
     // 判断左1是不是点号
-    if (line.substring(position.character - 1, position.character) != ".")
+    if (line.slice(-1) != ".")
         return ;
 
     // 两个点号变成指针
-    /*if (left.substring(-1) == ".")
+    console.log(left.slice(-1));
+    if (left.slice(-1) == ".")
     {
-        if (left.substring(-2) == "..") // 三个点，不知道什么情况，取消
+        if (left.slice(-2) == "..") // 三个点，不知道什么情况，退出
             return ;
-        vscode.commands.executeCommand('deleteLeft'); // 先删除一个
-        position = new vscode.Position(position.line, position.character-1);
-        leftPosition = new vscode.Position(position.line, position.character - 1);
+        leftPosition = new vscode.Position(position.line, position.character - 2);
         word = document.getText(document.getWordRangeAtPosition(leftPosition));
         left = line.substring(0, leftPosition.character - 1);
-    }*/
+    }
 
     // 判断上文是否有声明为 *var 或者 var-> 的字符
     var re1 = new RegExp("\\*\\s*" + word + "\\b");
     var re2 = new RegExp("\\b"+word+"\\s*->");
-    console.log(re1.test(full) + ", " + re2.test(full));
     if (!re1.test(full) && !re2.test(full))
         return ;
 
-    // 点号转指针
-    // console.log('开始点号转指针');
-    // vscode.commands.executeCommand('deleteLeft');
-    // vscode.commands.executeCommand('insertSnippet', ['->']); // 不知道参数2怎么写，留着
-
     // 点号的位置替换为指针
-    var edit = new vscode.TextEdit(new vscode.Range(leftPosition, position), full);
-    console.log(edit);
     var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), "->");
-    console.log(newEdit);
 
     // 应该本次的修改
     let textEdits = [];
