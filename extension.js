@@ -13,7 +13,7 @@ function activate(context) {
 		vscode.window.showInformationMessage('Lazy life starts!');
 	}));
 
-	require('./src/completions.js')(context);
+	require('./src/keydot.js')(context);
 }
 exports.activate = activate;
 
