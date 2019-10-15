@@ -14,7 +14,10 @@
 	"activationEvents": [
 		"onCommand:extension.helloWorld",
 		"onCommand:extension.ImLazy",
-		"onLanguage:C++"
+		"onCommand:extension.dotToPoint",
+		"onLanguage:cpp",
+		"onLanguage:java",
+		"onLanguage:php"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -25,7 +28,12 @@
 				"LazyKey.enabled": {
 					"type": "boolean",
 					"default": true,
-					"description": "启用懒懒按键"
+					"description": "启用懒键"
+				},
+				"LazyKey.dotToPoint": {
+					"type": "boolean",
+					"default": true,
+					"description": "C++类后点号转指针"
 				},
 				"LazyKey.showTip": {
 					"type": "boolean",
@@ -63,12 +71,12 @@
 				{
 					"when": "editorFocus",
 					"command": "extension.helloWorld",
-					"group": "navigation@6"
+					"group": "w_lazykey@1"
 				},
 				{
 					"when": "editorFocus",
 					"command": "extension.switchLazyKey",
-					"group": "navigation@6"
+					"group": "w_lazykey@2"
 				}
 			]
 		}
