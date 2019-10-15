@@ -20,7 +20,7 @@ function provideCompletionItems(document, position, token, context) {
 
     // 获取当前行内容
     var line = document.lineAt(position).text;
-    var left = line.slice(position.character-1);
+    var left = line.substring(0, leftPosition.character);
     var right = line.substring(position.character);
 
     // 判断左1是不是点号
@@ -28,20 +28,23 @@ function provideCompletionItems(document, position, token, context) {
         return ;
 
     // 两个点号变成指针
-    console.log(left.slice(-1));
-    if (left.slice(-1) == ".")
+    var doublePoint = false;
+    if (left.length >= 2 && left.slice(-1) == ".")
     {
-        if (left.slice(-2) == "..") // 三个点，不知道什么情况，退出
+        if (left.slice(-2) == ".." || left.slice(-2) == "\t.") // 三个点或开头两点，不知道什么情况，退出
+            return ;
+        if (left.slice(-2) == " .") // 针对可变参数数组的情况 ...
             return ;
         leftPosition = new vscode.Position(position.line, position.character - 2);
         word = document.getText(document.getWordRangeAtPosition(leftPosition));
         left = line.substring(0, leftPosition.character - 1);
+        doublePoint = true;0
     }
 
     // 判断上文是否有声明为 *var 或者 var-> 的字符
     var re1 = new RegExp("\\*\\s*" + word + "\\b");
     var re2 = new RegExp("\\b"+word+"\\s*->");
-    if (!re1.test(full) && !re2.test(full))
+    if (!doublePoint && !re1.test(full) && !re2.test(full))
         return ;
 
     // 点号的位置替换为指针
