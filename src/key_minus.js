@@ -41,15 +41,15 @@ function provideCompletionItems(document, position, token, context) {
             return ;
 
         var newText = "";
-        // 变量表示：\b([\w_][\w\d_]*|\)|\
+        // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
         // const static int var_
         // private static String str_
         // std::string s_
-        if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*[\w_\d:]+ \s*\b([\w_][\w\d_]*|\)|\])\b$/.test(left)) {
+        if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*[\w_\d:]+ \s*(\b[\w_][\w\d_]*\b|\)|\])$/.test(left)) {
             newText = "_";
         }
         // 单词_xxx 这样的变量上下文存在 var_
-        else if (/\b\b([\w_][\w\d_]*|\)|\])\b$/.test(left) && (new RegExp("\\b"+word+"_")).test(full)){
+        else if (/\b(\b[\w_][\w\d_]*\b|\)|\])$/.test(left) && (new RegExp("\\b"+word+"_")).test(full)){
             newText = "_";
         }
         // _ 或 _var 或 _a_b_0_1 这样的变量存在
@@ -57,21 +57,21 @@ function provideCompletionItems(document, position, token, context) {
             newText = "_";
         }
         // 自减
-        else if (/\b\b([\w_][\w\d_]*|\)|\])\b-$/.test(left)) {
+        else if (/\b(\b[\w_][\w\d_]*\b|\)|\])-$/.test(left)) {
             return ;
         }
         // 前一个误判情况 准备自减的 var- 被当作了下划线 var_
-        else if (/\b\b([\w_][\w\d_]*|\)|\])\b_$/.test(left)) {
+        else if (/\b(\b[\w_][\w\d_]*\b|\)|\])_$/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character-1);
             newText = "--";
         }
         // 前一个误判情况，准备自减的 var- 被当做减法 var -
-        else if (/\b\b([\w_][\w\d_]*|\)|\])\b - $/.test(left)) {
+        else if (/\b(\b[\w_][\w\d_]*\b|\)|\]) - $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 3);
             newText = "--";
         }
         // 变量减法(不支持下划线结尾的变量)
-        else if (/\b([\w_]([\w\d_]*[\w\d])?|\)|\])\b$/.test(left)) {
+        else if (/(\b[\w_]([\w\d_]*[\w\d])?\b|\)|\])$/.test(left)) {
             newText = " - ";
         }
         else {    // 不知道怎么处理

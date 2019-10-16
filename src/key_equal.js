@@ -42,22 +42,22 @@ function provideCompletionItems(document, position, token, context) {
             return;
 
         var newText = "";
-        // 变量表示：\b([\w_][\w\d_]*|\)|\])\b
+        // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
         // var =
-        if (/\b([\w_][\w\d_]*|\)|\])\b$/.test(left)) {
+        if (/(\b[\w_][\w\d_]*\b|\)|\])$/.test(left)) {
             newText = " = ";
         }
         // var = =    var == =
-        else if (/\b([\w_][\w\d_]*|\)|\])\b\s+=+ $/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+=+ $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = '= ';
         }
         // var ==    var ===    var +=    var /=
-        else if (/\b([\w_][\w\d_]*|\)|\])\b\s+[+\-\*\/%=]=*$/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+[+\-\*\/%=]=*$/.test(left)) {
             newText = '= ';
         }
         // var+=|    ==>    var += |
-        else if (/\b([\w_][\w\d_]*|\)|\])\b[\-\+\*\/%=]$/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])[\-\+\*\/%=]$/.test(left)) {
             var insertEdit = vscode.TextEdit.insert(new vscode.Position(leftPosition.line, leftPosition.character - 1), ' ');
             textEdits.push(insertEdit);
 
@@ -66,12 +66,12 @@ function provideCompletionItems(document, position, token, context) {
             newText = "= ";
         }
         // var + =|    ==>    var += |
-        else if (/\b([\w_][\w\d_]*|\)|\])\b [\-\+\*\/%=] $/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\]) [\-\+\*\/%=] $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = "= ";
         }
         // var===
-        else if (/\b([\w_][\w\d_]*|\)|\])\b==$/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])==$/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 2);
             position = new vscode.Position(leftPosition.line, leftPosition.character + 1);
             newText = " === ";
