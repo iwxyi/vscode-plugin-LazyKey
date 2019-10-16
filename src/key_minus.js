@@ -43,7 +43,8 @@ function provideCompletionItems(document, position, token, context) {
         var newText = "";
         // const static int var_
         // private static String str_
-        if (/^\s*((const|static|public|private|protected|)\s*)*\w+ \s*[\w_][\w_\d]*$/.test(left))
+        // std::string s_
+        if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*[\w_\d:]+ \s*[\w_][\w_\d]*$/.test(left))
             newText = "_";
         // 单词_xxx 这样的变量上下文存在 var_
         else if (/\b[\w_][\w_\d]*$/.test(left) && (new RegExp("\\b"+word+"_")).test(full))
