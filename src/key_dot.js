@@ -48,11 +48,11 @@ function provideCompletionItems(document, position, token, context) {
             doublePoint = true; 0
         }
 
-        // 判断上文是否有声明为 *var 或者 var-> 的字符
+        // 判断是否是 this, 或上文是否有声明为 *var 或者 var-> 的字符
         var re1 = new RegExp("\\*\\s*" + word + "\\b");
         var re2 = new RegExp("\\b" + word + "\\s*->");
         var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
-        if (!doublePoint && !re1.test(full) && !re2.test(full) && !re3.test(full))
+        if (word!="this" && !doublePoint && !re1.test(full) && !re2.test(full) && !re3.test(full))
             return ;
 
         // 点号的位置替换为指针
