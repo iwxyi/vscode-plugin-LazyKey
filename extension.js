@@ -17,6 +17,7 @@ function activate(context) {
 	require('./src/keydot.js')(context);
 	require('./src/key9.js')(context);
 	require('./src/key0.js')(context);
+	require('./src/keyblank.js')(context);
 }
 exports.activate = activate;
 

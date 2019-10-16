@@ -12,6 +12,7 @@ function provideCompletionItems(document, position, token, context) {
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.text != undefined) return;
+    
     // 倒序遍历每一个光标
     // 多个，有一个需要添加则进行添加
     var selections = editor.selections;
@@ -55,7 +56,7 @@ function provideCompletionItems(document, position, token, context) {
         }
 
         // 如果左右括号已经匹配了，则跳过
-        var isSkip = (ll+rl == lr+rr);
+        var isSkip = (ll+rl <= lr+rr);
         if (!isSkip) { // 有添加的部分，则执行添加
             isAllSkip = false;
         } else if (right.length==0 || right.substring(0, 1) != ")") {
