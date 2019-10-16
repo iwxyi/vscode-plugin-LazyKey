@@ -49,9 +49,10 @@ function provideCompletionItems(document, position, token, context) {
             return ;
         else if (/[\w_]+$/.test(left))   // 判断 单词0 是否存在
         {
-            var re = new RegExp("\\b" + word); // 注意：word末尾带0
-            if (re.test(full))  // 这么一个变量确实存在
-                return ;
+            var re = new RegExp("\\b" + word, 'g'); // 注意：word末尾带0
+            // 有一次会匹配到自身，所以至少需要匹配两次
+            if (full.match(re).length > 1)  // 这么一个变量确实存在
+                return;
         }
 
         // 光标左右的左右括号的数量

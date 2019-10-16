@@ -53,6 +53,11 @@
 					"default": true,
 					"description": "if/else/for/while/switch 空格键自动补全括号"
 				},
+				"LazyKey.AutoSuggestion": {
+					"type": "boolean",
+					"default": false,
+					"description": "填充括号后，显示补全提示"
+				},
 				"LazyKey.ShowTip": {
 					"type": "boolean",
 					"default": true,

@@ -47,7 +47,14 @@ function provideCompletionItems(document, position, token, context) {
         return ;
 
     // 包括成对括号的，需要撤销两次
-    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet':  newText});
+    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': newText });
+
+    // 延时出现提示（必须延时才会出现）
+    if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
+        setTimeout(function () {
+            vscode.commands.executeCommand('editor.action.triggerSuggest');
+        }, 100);
+    }
 }
 
 /**

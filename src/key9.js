@@ -31,10 +31,11 @@ function provideCompletionItems(document, position, token, context) {
         return ;
 
     // 判断各种情况是 9 还是 (
-    if (/[\w_]+$/.test(left))   // 判断 单词9 是否存在
+    if (/[\w_]+$/.test(left))   // 判断 单词9 的情况
     {
-        var re = new RegExp("\\b" + word); // 注意：word末尾带9
-        if (re.test(full))  // 这么一个变量确实存在
+        var re = new RegExp("\\b" + word, 'g'); // 注意：word末尾带9
+        // 有一次会匹配到自身，所以至少需要匹配两次
+        if (full.match(re).length > 1)  // 这么一个变量确实存在
             return;
     }
 
@@ -75,6 +76,14 @@ function provideCompletionItems(document, position, token, context) {
     // 删除左边，输入新字符
     vscode.commands.executeCommand('deleteLeft');
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': newText });
+
+    // 延时出现提示（必须延时才会出现）
+    if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion'))
+    {
+        setTimeout(function () {
+            vscode.commands.executeCommand('editor.action.triggerSuggest');
+        }, 100);
+    }
 }
 
 /**

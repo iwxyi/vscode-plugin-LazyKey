@@ -51,7 +51,8 @@ function provideCompletionItems(document, position, token, context) {
         // 判断上文是否有声明为 *var 或者 var-> 的字符
         var re1 = new RegExp("\\*\\s*" + word + "\\b");
         var re2 = new RegExp("\\b" + word + "\\s*->");
-        if (!doublePoint && !re1.test(full) && !re2.test(full))
+        var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
+        if (!doublePoint && !re1.test(full) && !re2.test(full) && !re3.test(full))
             return ;
 
         // 点号的位置替换为指针
@@ -65,6 +66,11 @@ function provideCompletionItems(document, position, token, context) {
     let wordspaceEdit = new vscode.WorkspaceEdit();
     wordspaceEdit.set(document.uri, textEdits);
     vscode.workspace.applyEdit(wordspaceEdit);
+
+    // 延时出现提示（必须延时才会出现）
+    setTimeout(function(){
+        vscode.commands.executeCommand('editor.action.triggerSuggest');
+    }, 100);
 }
 
 /**
