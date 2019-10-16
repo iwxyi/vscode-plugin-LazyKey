@@ -1,5 +1,7 @@
 /**
  * 0 转 )
+ * 注意一个bug：按键慢时，会类似输入两次 0，进行两次操作（因为commands的延时，检测到的内容不变）
+ *      单光标已经进行了特判，但是多光标没法解决
  */
 const vscode = require('vscode');
 
@@ -77,8 +79,10 @@ function provideCompletionItems(document, position, token, context) {
             canSkipIfAllSkip = false;
         }
 
+        var newText = isSkip ? "" : ")";
+
         // 点号的位置替换为指针
-        var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), ")");
+        var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), newText);
 
         // 添加本次的修改
         textEdits.push(newEdit);
@@ -90,8 +94,17 @@ function provideCompletionItems(document, position, token, context) {
         wordspaceEdit.set(document.uri, textEdits);
         vscode.workspace.applyEdit(wordspaceEdit);
     } else if (canSkipIfAllSkip) { // 全部跳过，并且是全能跳过的，光标右移1
-        vscode.commands.executeCommand('deleteLeft');
-        vscode.commands.executeCommand('cursorRight');
+        setTimeout(function () {
+            // 重新读取文档内容，避免操作两次的情况（真的是莫名其妙啊，幸亏机智的我曲线救国）
+            const document = vscode.window.activeTextEditor.document;
+            var word = document.getText(document.getWordRangeAtPosition(leftPosition));
+            if (!word.endsWith('0')) return ; // 已经删除，抵消一次~
+            if (document.getText().match(new RegExp("\\b" + word, 'g')).length > 1) return ; // 如果上面有这个0结尾的变量
+
+            // 删除 0，光标右移 1
+            vscode.commands.executeCommand('deleteLeft');
+            vscode.commands.executeCommand('cursorRight');
+        }, 50)
     }
 }
 
