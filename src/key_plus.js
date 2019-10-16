@@ -1,11 +1,7 @@
 /**
- * 等号
- * - var = |
- * - var == |
- * - var==
- * - var+=
- * - var 1=
- * - var1=
+ * 加号
+ * - var+|    ==>    var + |
+ * - var + +|    ==>    var++
  */
 const vscode = require('vscode');
 
@@ -35,7 +31,7 @@ function provideCompletionItems(document, position, token, context) {
         var right = line.substring(position.character);
 
         // 判断左1是不是输入的符号
-        if (inpt != "=")
+        if (inpt != "+")
             return;
         // 必须要右边全部空的
         if (right != "")
@@ -43,40 +39,16 @@ function provideCompletionItems(document, position, token, context) {
 
         var newText = "";
         // 变量表示：\b([\w_][\w\d_]*|\)|\])\b
-        // var =
+        // var +
         if (/\b([\w_][\w\d_]*|\)|\])\b$/.test(left)) {
-            newText = " = ";
+            newText = " + ";
         }
-        // var = =    var == =
-        else if (/\b([\w_][\w\d_]*|\)|\])\b\s+=+ $/.test(left)) {
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            newText = '= ';
+        // var + +|
+        else if (/\b([\w_][\w\d_]*|\)|\])\b \+ $/.test(left)) {
+            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 3);
+            newText = "++";
         }
-        // var ==    var ===    var +=    var /=
-        else if (/\b([\w_][\w\d_]*|\)|\])\b\s+[+\-\*\/%=]=*$/.test(left)) {
-            newText = '= ';
-        }
-        // var+=|    ==>    var += |
-        else if (/\b([\w_][\w\d_]*|\)|\])\b[\-\+\*\/%=]$/.test(left)) {
-            var insertEdit = vscode.TextEdit.insert(new vscode.Position(leftPosition.line, leftPosition.character - 1), ' ');
-            textEdits.push(insertEdit);
-
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character); // 不知道为什么不改变位置
-            position = new vscode.Position(position.line, position.character + 1);
-            newText = "= ";
-        }
-        // var + =|    ==>    var += |
-        else if (/\b([\w_][\w\d_]*|\)|\])\b [\-\+\*\/%=] $/.test(left)) {
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            newText = "= ";
-        }
-        // var===
-        else if (/\b([\w_][\w\d_]*|\)|\])\b==$/.test(left)) {
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 2);
-            position = new vscode.Position(leftPosition.line, leftPosition.character + 1);
-            newText = " === ";
-        }
-        else { // 不知道什么情况
+        else {
             return ;
         }
 
@@ -114,5 +86,5 @@ module.exports = function (context) {
         { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'python', 'jsp'] }, {
             provideCompletionItems,
             resolveCompletionItem
-        }, '='));
+        }, '+'));
 };

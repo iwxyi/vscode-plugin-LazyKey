@@ -55,12 +55,12 @@
 				},
 				"LazyKey.AutoOperators": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "自适应运算符：-、=、+、<、>、,"
 				},
 				"LazyKey.AutoSemicolon": {
 					"type": "boolean",
-					"default": false,
+					"default": true,
 					"description": "分号强制到末尾，并且换行"
 				},
 				"LazyKey.AutoSuggestion": {
