@@ -45,12 +45,20 @@ function provideCompletionItems(document, position, token, context) {
         // const static int var_
         // private static String str_
         // std::string s_
-        if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*[\w_\d:]+ \s*(\b[\w_][\w\d_]*\b|\)|\])$/.test(left)) {
+        if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*[\w_\d:]+ \s*(\b[\w_][\w\d_]*)$/.test(left)) {
             newText = "_";
         }
         // 单词_xxx 这样的变量上下文存在 var_
-        else if (/\b(\b[\w_][\w\d_]*\b|\)|\])$/.test(left) && (new RegExp("\\b"+word+"_")).test(full)){
+        else if (/\b[\w_][\w\d_]*$/.test(left) && (new RegExp("\\b"+word+"_")).test(full)){
             newText = "_";
+        }
+        // 排除情况：) |
+        else if (/\)\s+$/.test(left)) {
+            return ;
+        }
+        // 排除情况：)|
+        else if (/\)$/.test(left)) {
+            newText = " - ";
         }
         // _ 或 _var 或 _a_b_0_1 这样的变量存在
         else if (/(^|\s+)_[\w\d_]*\b$/.test(full)) {
