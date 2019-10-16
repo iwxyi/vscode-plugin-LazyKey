@@ -12,7 +12,7 @@ function provideCompletionItems(document, position, token, context) {
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.text != undefined) return;
-    
+
     // 倒序遍历每一个光标
     // 多个，有一个需要添加则进行添加
     var selections = editor.selections;
@@ -35,20 +35,27 @@ function provideCompletionItems(document, position, token, context) {
             return;
 
         // 不处理连续数字
-        if (/\d+$/.test(left) || /^\d+/.test(right))
+        if (/\D0$/.test(left) && right.startsWith(')'))     // 排除单纯一个0并右括号结束，例如：at(0|)、at(a, 0|)
+            ;
+        else if (/\d+$/.test(left) || /^\d+/.test(right))
             return;
+
+        if (/(\+\+|\-\-)$/.test(left))          // 左边是自增/自减，很可能是右括号
+            ;
+        else if (/[ =\+\-*\/%\.<>]$/.test(left))  // 左边是空白或者运算符，很可能是 0
+            return ;
+        else if (/(at|insert|of|remove|add|set\w+)\($/.test(left) && right.startsWith(')'))// 一些函数后面必定有参数的，也是 0
+            return ;
 
         // 光标左右的左右括号的数量
         var ll = 0, lr = 0, rl = 0, rr = 0;
-        for (var j = 0; j < left.length; j++) {
-            var c = left.charAt(j);
+        for (let c of left) {
             if (c == '(')
                 ll++;
             else if (c == ')')
                 lr++;
         }
-        for (var j = 0; j < right.length; j++) {
-            var c = right.charAt(j);
+        for (let c of right) {
             if (c == '(')
                 rl++;
             else if (c == ')')

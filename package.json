@@ -45,8 +45,13 @@
 				},
 				"LazyKey.TabSkipRightParenthese": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "允许 tab 键跳出数字【9】插入的成对括号"
+				},
+				"LazyKey.SpaceFill": {
+					"type": "boolean",
+					"default": true,
+					"description": "if/else/for/while/switch 空格键自动补全括号"
 				},
 				"LazyKey.ShowTip": {
 					"type": "boolean",
