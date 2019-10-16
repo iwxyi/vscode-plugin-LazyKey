@@ -21,6 +21,7 @@ function activate(context) {
 	require('./src/key_minus.js')(context);
 	require('./src/key_equal.js')(context);
 	require('./src/key_plus.js')(context);
+	require('./src/key_semi.js')(context);
 }
 exports.activate = activate;
 
