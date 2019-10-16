@@ -31,7 +31,6 @@ function provideCompletionItems(document, position, token, context) {
     // 判断左1是不是输入的符号
     if (inpt != ";")
         return;
-
     // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
 
     // for ( ; ; )
@@ -45,13 +44,36 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 末尾已有分号，换行
     // 两个连续分号，换行
-    // 单行变量声明，换行
-    else if (/;\s*\/[\/\*]/.test(right)
-        || /;\s*$/.test(left)
-        || /^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*[\w_\d:]+ \s*(\b[\w_][\w\d_]*\b|\)|\])/.test(left)) {
+    else if (/;\s*(\/[\/\*].*)?/.test(right)
+        || /;\s*$/.test(left)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertLineAfter');
         return ;
+    }
+    // 单行变量声明，末尾添加分号，换行
+    // Type var;    Type var = xxx;    Type var(xxx);
+    else if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+(<.+?>)?)&? \s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)) {
+        var delay = false;
+        // 如果不是在行尾，则将分号移动到末尾
+        if (right != "") {
+            vscode.commands.executeCommand('deleteLeft');
+            vscode.commands.executeCommand('cursorLineEnd');
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ';'});
+            // 延迟换行，不然插入的 snippet 会带入到下一行
+            delay = true;
+        }
+        // 如果下一行就是右大括号了，那么直接添加下一行
+        var nextLinePosition = new vscode.Position(position.line+1, 0);
+        var nextLine = document.lineAt(nextLinePosition).text;
+        if (/^\s*\}\s*$/.test(nextLine)) { // 下一行只有右括号
+            if (delay) {
+                setTimeout(function () {
+                    vscode.commands.executeCommand('editor.action.insertLineAfter');
+                }, 10);
+            } else {
+                vscode.commands.executeCommand('editor.action.insertLineAfter');
+            }
+        }
     }
     // 普通操作：到末尾添加分号
     else {
