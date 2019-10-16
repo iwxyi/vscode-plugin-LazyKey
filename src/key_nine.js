@@ -31,13 +31,9 @@ function provideCompletionItems(document, position, token, context) {
         return ;
 
     // 判断各种情况是 9 还是 (
-    if (/[\w_]+$/.test(left))   // 判断 单词9 的情况
-    {
-        var re = new RegExp("\\b" + word, 'g'); // 注意：word末尾带9
-        // 有一次会匹配到自身，所以至少需要匹配两次
-        if (full.match(re).length > 1)  // 这么一个变量确实存在
-            return;
-    }
+    // 判断 单词9 的情况。有一次会匹配到自身，所以至少需要匹配两次
+    if (/[\w_]+$/.test(left) && full.match(new RegExp("\\b" + word, 'g')).length > 1)
+        return;
 
     // 光标左右的左右括号的数量
     var ll = 0, lr = 0, rl = 0, rr = 0;

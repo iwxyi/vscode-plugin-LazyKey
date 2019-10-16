@@ -41,19 +41,18 @@ function provideCompletionItems(document, position, token, context) {
             return;
 
         // 判断是插入 0 还是插入 )
-        if (/(\+\+|\-\-)$/.test(left))          // 左边是自增/自减，很可能是右括号
+        // 左边是自增/自减，很可能是右括号
+        if (/(\+\+|\-\-)$/.test(left))
             ;
-        else if (/[ =\+\-*\/%\.<>]$/.test(left))  // 左边是空白或者运算符，很可能是 0
+        // 左边是空白或者运算符，很可能是 0
+        else if (/[ =\+\-*\/%\.<>]$/.test(left))
             return ;
-        else if (/(at|insert|of|remove|add|set\w+)\($/.test(left) && right.startsWith(')'))// 一些函数后面必定有参数的，也是 0
+        // 一些函数后面必定有参数的，也是 0
+        else if (/(at|insert|of|remove|add|set\w+)\($/.test(left) && right.startsWith(')'))
             return ;
-        else if (/[\w_]+$/.test(left))   // 判断 单词0 是否存在
-        {
-            var re = new RegExp("\\b" + word, 'g'); // 注意：word末尾带0
-            // 有一次会匹配到自身，所以至少需要匹配两次
-            if (full.match(re).length > 1)  // 这么一个变量确实存在
-                return;
-        }
+        // 判断 单词0 是否存在。有一次会匹配到自身，所以至少需要匹配两次
+        else if (/[\w_]+$/.test(left) && full.match(new RegExp("\\b" + word, 'g')).length > 1)
+            return;
 
         // 光标左右的左右括号的数量
         var ll = 0, lr = 0, rl = 0, rr = 0;

@@ -1,5 +1,6 @@
 /**
  * 智能空格
+ * 填充右边的 (|)
  */
 const vscode = require('vscode');
 
