@@ -19,7 +19,7 @@ function activate(context) {
 	require('./src/key_zero.js')(context);
 	require('./src/key_blank.js')(context);
 	require('./src/key_minus.js')(context);
-	// require('./src/key_equal.js')(context);
+	require('./src/key_equal.js')(context);
 }
 exports.activate = activate;
 
