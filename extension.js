@@ -1,7 +1,7 @@
 const vscode = require('vscode');
 
 function activate(context) {
-	if (vscode.workspace.getConfiguration().get('LazyKey.ShowTip'))
+	if (vscode.workspace.getConfiguration().get('LazyKey.ShowTipOnStart'))
 		vscode.window.showInformationMessage('懒键 已开启，享受酣畅淋漓的码字快感吧！');
 	console.log('懒键开启！');
 
@@ -14,10 +14,10 @@ function activate(context) {
 		}
 	}));
 
-	require('./src/keydot.js')(context);
-	require('./src/key9.js')(context);
-	require('./src/key0.js')(context);
-	require('./src/keyblank.js')(context);
+	require('./src/key_dot.js')(context);
+	require('./src/key_nine.js')(context);
+	require('./src/key_zero.js')(context);
+	require('./src/key_blank.js')(context);
 }
 exports.activate = activate;
 

@@ -56,9 +56,9 @@
 				"LazyKey.AutoSuggestion": {
 					"type": "boolean",
 					"default": false,
-					"description": "填充括号后，显示补全提示"
+					"description": "填充符号后，显示补全提示"
 				},
-				"LazyKey.ShowTip": {
+				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",
 					"default": true,
 					"description": "启动时提示已开启懒键"
