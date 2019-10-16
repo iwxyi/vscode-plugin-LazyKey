@@ -35,38 +35,19 @@ function provideCompletionItems(document, position, token, context) {
         return ;
 
     var newText = "";
-    var hasPair = false;
 
     // if    else if    for    while   switch    ==>    if (|)
     if (/^\s*(if|else\s+if|for|while|switch)\s*$/.test(left))
-    {
         newText = "($0)";
-        hasPair = true;
-    }
-    // else   ==>    else if (|)
-    else if (/^\s*else$/.test(left))
-    {
+    else if (/^\s*else$/.test(left))        // else   ==>    else if (|)
         newText = "if ($0)";
-        hasPair = true;
-    }
-    // #include    ==>    #include <|>
-    else if (/^#include\s*$/.test(left))
-    {
+    else if (/^#include\s*$/.test(left))    // #include    ==>    #include <|>
         newText = "<$0>";
-        hasPair = true;
-    }
-    
+    else                                    // 什么都不需要做
+        return ;
 
-    if (!hasPair) {
-        // 应用到编辑器，有点是只需要撤销一次
-        let textEdits = [];
-        var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), " ");
-        textEdits.push(newEdit);
-        wordspaceEdit.set(document.uri, textEdits);
-        vscode.workspace.applyEdit(wordspaceEdit);
-    } else if (true) { // 包括成对括号的，需要撤销两次
-        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet':  newText});
-    }
+    // 包括成对括号的，需要撤销两次
+    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet':  newText});
 }
 
 /**
