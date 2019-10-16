@@ -24,7 +24,7 @@ function provideCompletionItems(document, position, token, context) {
         position = selections[i].end;
         var full = document.getText();
         var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
-        var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
+        var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词(注意：末尾带0)
         var line = document.lineAt(position).text;
         var inpt = line.substring(position.character - 1, position.character);
         var left = line.substring(0, leftPosition.character);
@@ -40,12 +40,19 @@ function provideCompletionItems(document, position, token, context) {
         else if (/\d+$/.test(left) || /^\d+/.test(right))
             return;
 
+        // 判断是插入 0 还是插入 )
         if (/(\+\+|\-\-)$/.test(left))          // 左边是自增/自减，很可能是右括号
             ;
         else if (/[ =\+\-*\/%\.<>]$/.test(left))  // 左边是空白或者运算符，很可能是 0
             return ;
         else if (/(at|insert|of|remove|add|set\w+)\($/.test(left) && right.startsWith(')'))// 一些函数后面必定有参数的，也是 0
             return ;
+        else if (/[\w_]+$/.test(left))   // 判断 单词0 是否存在
+        {
+            var re = new RegExp("\\b" + word); // 注意：word末尾带0
+            if (re.test(full))  // 这么一个变量确实存在
+                return ;
+        }
 
         // 光标左右的左右括号的数量
         var ll = 0, lr = 0, rl = 0, rr = 0;

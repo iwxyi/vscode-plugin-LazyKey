@@ -14,9 +14,12 @@ function provideCompletionItems(document, position, token, context) {
     if (editor.selection.text != undefined) return;
 
     // 获取全文和当前行内容
+    var full = document.getText();
+    var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
+    var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词(注意：末尾带9)
     var line = document.lineAt(position).text;
-    var inpt = line.substring(position.character-1, position.character);
-    var left = line.substring(0, position.character);
+    var inpt = line.substring(position.character - 1, position.character);
+    var left = line.substring(0, leftPosition.character);
     var right = line.substring(position.character);
 
     // 判断左1是不是输入的符号
@@ -24,8 +27,16 @@ function provideCompletionItems(document, position, token, context) {
         return;
 
     // 不处理连续数字
-    if (/\d+9$/.test(left) || /^\d+/.test(right))
+    if (/\d+$/.test(left) || /^\d+/.test(right))
         return ;
+
+    // 判断各种情况是 9 还是 (
+    if (/[\w_]+$/.test(left))   // 判断 单词9 是否存在
+    {
+        var re = new RegExp("\\b" + word); // 注意：word末尾带9
+        if (re.test(full))  // 这么一个变量确实存在
+            return;
+    }
 
     // 光标左右的左右括号的数量
     var ll = 0, lr = 0, rl = 0, rr = 0;
