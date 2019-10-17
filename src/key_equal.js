@@ -38,17 +38,27 @@ function provideCompletionItems(document, position, token, context) {
         if (inpt != "=")
             return;
         // 必须要右边全部空的
-        if (right != "")
+        if (right != "" && !right.startsWith(')'))
             return;
 
         var newText = "";
         // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
+        // var 1=
+        if (/ 1$/.test(left)) {
+            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
+            newText = "!= ";
+        }
+        // var1=
+        else if (/\S1$/.test(left)) {
+            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
+            newText = " != ";
+        }
         // var =
-        if (/(\b[\w_][\w\d_]*\b|\)|\])$/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])$/.test(left)) {
             newText = " = ";
         }
-        // var = =    var == =
-        else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+=+ $/.test(left)) {
+        // var = =    var == =    var !==
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+!?=+ $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = '= ';
         }
@@ -61,8 +71,8 @@ function provideCompletionItems(document, position, token, context) {
             var insertEdit = vscode.TextEdit.insert(new vscode.Position(leftPosition.line, leftPosition.character - 1), ' ');
             textEdits.push(insertEdit);
 
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character); // 不知道为什么不改变位置
-            position = new vscode.Position(position.line, position.character + 1);
+            // leftPosition = new vscode.Position(leftPosition.line, leftPosition.character); // 不知道为什么不改变位置
+            // position = new vscode.Position(position.line, position.character); // 这个也不要改变位置
             newText = "= ";
         }
         // var + =|    ==>    var += |
