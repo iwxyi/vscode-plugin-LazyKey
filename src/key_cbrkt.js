@@ -47,9 +47,26 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('cursorDown');
         vscode.commands.executeCommand('cursorLineEnd');
 
-        // 如果 } 的下一行是空的，则继续移动到下下行
-        if (/^\s*$/.test(document.lineAt(new vscode.Position(position.line + 2, 0)).text)) {
+        var nextNextLine = document.lineAt(new vscode.Position(position.line + 2, 0)).text;
+
+        // 计算缩进……
+        var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text; // 此处固定为 }，带缩进
+        var indent = /^(\s*)\}/.exec(nextLine)[1];
+
+        // 判断是否继续移动到 } 的下一行
+        // 下下行是空的
+        if (/^\s*$/.test(nextNextLine)) {
             vscode.commands.executeCommand('cursorDown');
+            vscode.commands.executeCommand('cursorLineEnd');
+            if (/^$/.test(nextNextLine)) { // 是完全空的一行，没有缩进，需要计算添加
+                if (indent == '') // 这一块的总体缩进就是空的，不需要缩进
+                    return ;
+                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': indent});
+            }
+        }
+        // 下一行还是结束的 } ，按现在这个操作，应该是要继续写代码吧
+        else if (/^\s*\}/.test(nextNextLine)) {
+            vscode.commands.executeCommand('editor.action.insertLineAfter');
         }
     }
 }
