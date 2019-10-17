@@ -20,7 +20,7 @@
 		"onLanguage:php",
 		"onLanguage:js",
 		"onLanguage:jsp",
-		"onLanguage:python"
+		"onLanguage:cs"
 	],
 	"main": "./extension.js",
 	"contributes": {

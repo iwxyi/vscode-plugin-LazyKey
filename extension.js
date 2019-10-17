@@ -23,6 +23,7 @@ function activate(context) {
 	require('./src/key_plus.js')(context);
 	require('./src/key_semi.js')(context);
 	require('./src/key_less.js')(context);
+	require('./src/key_comma.js')(context);
 }
 exports.activate = activate;
 
