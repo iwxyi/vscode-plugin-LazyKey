@@ -81,7 +81,7 @@
 				"LazyKey.AutoCurlyBraceInLine": {
 					"type": "boolean",
 					"default": true,
-					"description": "大括号跟随上方"
+					"description": "分支：大括号跟随上方\n函数：单独一行"
 				},
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",

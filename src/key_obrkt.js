@@ -27,15 +27,63 @@ function provideCompletionItems(document, position, token, context) {
     // 判断左1是不是输入的符号
     if (inpt != "[")
         return;
-
-    // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
+    if (right == "" && !/\)\s*/.test(left)) // 右边必须有闭合符号，或者就是在闭合符号后面
+        return ;
 
     // 右边全是关闭符号
     if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
+        // 如果是变量下标，则取消
+        if (/^[\w_][\w\d_]*$/.test(word)) { // word 是一个完整的变量
+            if (full.match(new RegExp("\\b" + word + "\\s*\\[", 'g')).length > 1) // 这个变量有下标
+                return ;
+        }
+
+        // 如果是为了补充后面的
+        var count = right.startsWith(']') ? 1 : 0;
+        for (var s of right) {
+            if (s == '[')
+                count++;
+            else if (s == "]")
+                count--;
+        }
+        if (count < 0)
+            return ;
+
+        // 开始插入花括号
         vscode.commands.executeCommand('deleteLeft');
-        vscode.commands.executeCommand('editor.action.insertLineAfter');
-        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}'});
-        // vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n\t\n'});
+
+        var inLine = true;
+        if (/^\s*(if|for|foreach|while|switch|do|else)\b/.test(left)) { // 是分支呀 if (|)
+            if (vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInLine')) { // 跟随上方
+                // 获取分支的关键词
+
+
+                // 搜索上面距离最近的那个
+
+
+                // 如果没有搜到，则默认
+
+            } else {
+                inLine = vscode.workspace.getConfiguration().get('LazyKey.BranchCurlyBraceInLine')
+            }
+        } else { // 函数
+            inLine = vscode.workspace.getConfiguration().get('LazyKey.FunctionCurlyBraceInLine')
+                || vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInLine');
+        }
+
+        if (inLine) { // 左括号单独一行
+            vscode.commands.executeCommand('editor.action.insertLineAfter');
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+        } else { // 左括号从右边开始
+            // 此处没有判断注释的情况
+            vscode.commands.executeCommand('cursorLineEnd');
+            if (right.endsWith(' ')) { // 末尾已经有空格了（虽然不应该）
+                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+            } else { // 末尾手动添加一个空格
+                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {\n\t$0\n}' });
+            }
+        }
+
     }
     else {
         return ;
