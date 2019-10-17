@@ -3,8 +3,10 @@
  * - 左括号变花括号
  *   - if (|)
  *   - if ()|
- *   - ^{  }
+ *   - ^{|}
  * - 左括号变花括号 Lambda
+ *   - , [|])
+ *   - []{|})
  */
 const vscode = require('vscode');
 
@@ -30,12 +32,22 @@ function provideCompletionItems(document, position, token, context) {
     // 判断左1是不是输入的符号
     if (inpt != "[")
         return;
-
+    // 去掉自动添加的右括号（但是如果不是自动添加的话，也没有办法判断）
     if (right.startsWith(']'))
         right = right.substring(1, right.length);
 
+    // lambda中括号    , [|]
+    if (/,\s*$/.test(left)) {
+        return ;
+    }
+    // lambda花括号    , [=]{|}    ,[i,j,l...](a,b,c){|}
+    else if (/\[[\w\d_,\s&=\*]*\]\s*(\([\w\d_,\s&=\*]*\))?/.test(left)) {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{$0}' });
+        return ;
+    }
     // 右边全是关闭符号
-    if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
+    else if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
         // 如果是变量下标，则取消
         if (/^[\w_][\w\d_]*$/.test(word)) { // word 是一个完整的变量
             if (full.match(new RegExp("\\b" + word + "\\s*\\[", 'g')).length > 1) // 这个变量有下标
