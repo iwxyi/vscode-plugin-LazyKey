@@ -5,6 +5,21 @@
  */
 const vscode = require('vscode');
 
+/**
+ * 左括号-右括号的数量
+ * @param {string} str
+ */
+function getLeftBracketCompare(str) {
+    var count = 0;
+    for (var c of str) {
+        if (c == '[')
+            count++;
+        else if (c == ']')
+            count--;
+    }
+    return count;
+}
+
 function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
@@ -29,8 +44,13 @@ function provideCompletionItems(document, position, token, context) {
         return;
 
     // 右边是 ] ，不进行处理
-    if (right.startsWith(']'))
+    if (right.startsWith(']')) {
         return ;
+    }
+    // if (a[100]|)  跳过的情况，没有什么好的判断情况
+    else if (/\[.*$/.test(left) && getLeftBracketCompare(left) > 0) {
+        return ;
+    }
     // 右边有可跳出的 }
     else if (/^\s*\}/.test(right)) {
         var text = /^(\s*\})/.exec(right)[1];
