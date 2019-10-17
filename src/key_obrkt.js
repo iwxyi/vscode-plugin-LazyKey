@@ -52,26 +52,70 @@ function provideCompletionItems(document, position, token, context) {
         // 开始插入花括号
         vscode.commands.executeCommand('deleteLeft');
 
-        var inLine = true;
+        var singleLine = true;
         if (/^\s*(if|for|foreach|while|switch|do|else)\b/.test(left)) { // 是分支呀 if (|)
-            if (vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInLine')) { // 跟随上方
+            if (vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInSingleLine')) { // 跟随上方
                 // 获取分支的关键词
-
+                var re = /^\s*(\w+)\b.+/;
+                var branch = re.exec(line)[1].trim();
 
                 // 搜索上面距离最近的那个
-
+                var lineIndex = position.line;
+                var reAll = new RegExp("^\\s*" + branch + "\\b");
+                var reSingle = new RegExp("^\\s*" + branch + "\\b[^\{]+\\s*(/[/\\*].*)?$");
+                var reMerga = new RegExp("^\\s*"+ branch + "\\b.+\{.*$");
+                var reTotal = new RegExp("^\\s*" + branch + "\\b.+\{.*\}\\s*(/[/\\*].*)?$");
+                var reAlone = new RegExp("^\\s*{\\s*$");
+                var nextLineAlone = false; // 当前监测的下一行是否是一个花括号。初始是编辑行，false
+                while (--lineIndex >= 0) {
+                    var lineContent = document.lineAt(new vscode.Position(lineIndex, 0)).text;
+                    /*console.log(
+                        lineIndex,
+                        lineContent,
+                        "all:" + reAll.test(lineContent),
+                        "single:" + reSingle.test(lineContent),
+                        "merga:" + reMerga.test(lineContent),
+                        "total:" + reTotal.test(lineContent),
+                        "alone:" + reAlone.test(lineContent)
+                    );*/
+                    if (reAll.test(lineContent)) { // 是同样的分支语句
+                        if (reSingle.test(lineContent)) { // 单独一行的
+                            if (nextLineAlone) // 这个 if/for/while 没有花括号，单独一行，忽略
+                                singleLine = true;
+                            else
+                                continue;
+                        }
+                        else if (reTotal.test(lineContent)) { // 左右括号单独连在一行的，跳过
+                            continue;
+                        }
+                        else if (reMerga.test(lineContent)) { // 合在一行的
+                            singleLine = false;
+                        }
+                        else { // 其他的情况？
+                            continue;
+                        }
+                        break;
+                    }
+                    else if (reAlone.test(lineContent)) {
+                        nextLineAlone = true;
+                    }
+                    else {
+                        nextLineAlone = false;
+                    }
+                }
 
                 // 如果没有搜到，则默认
-
+                if (lineIndex < 0)
+                    singleLine = vscode.workspace.getConfiguration().get('LazyKey.BranchCurlyBraceInSingleLine');
             } else {
-                inLine = vscode.workspace.getConfiguration().get('LazyKey.BranchCurlyBraceInLine')
+                singleLine = vscode.workspace.getConfiguration().get('LazyKey.BranchCurlyBraceInSingleLine');
             }
         } else { // 函数
-            inLine = vscode.workspace.getConfiguration().get('LazyKey.FunctionCurlyBraceInLine')
-                || vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInLine');
+            singleLine = vscode.workspace.getConfiguration().get('LazyKey.FunctionCurlyBraceInSingleLine')
+                || vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInSingleLine');
         }
 
-        if (inLine) { // 左括号单独一行
+        if (singleLine) { // 左括号单独一行
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
         } else { // 左括号从右边开始

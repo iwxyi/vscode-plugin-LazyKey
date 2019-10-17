@@ -68,17 +68,17 @@
 					"default": false,
 					"description": "填充符号后，显示补全提示"
 				},
-				"LazyKey.BranchCurlyBraceInLine": {
+				"LazyKey.BranchCurlyBraceInSingleLine": {
 					"type": "boolean",
 					"default": true,
 					"description": "if/for/...大括号是否单独一行"
 				},
-				"LazyKey.FunctionCurlyBraceInLine": {
+				"LazyKey.FunctionCurlyBraceInSingleLine": {
 					"type": "boolean",
 					"default": true,
 					"description": "函数大括号是否单独一行"
 				},
-				"LazyKey.AutoCurlyBraceInLine": {
+				"LazyKey.AutoCurlyBraceInSingleLine": {
 					"type": "boolean",
 					"default": true,
 					"description": "分支：大括号跟随上方\n函数：单独一行"
