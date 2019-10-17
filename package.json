@@ -56,7 +56,7 @@
 				"LazyKey.AutoOperators": {
 					"type": "boolean",
 					"default": true,
-					"description": "自适应运算符：-、=、+、<、>、,"
+					"description": "自适应运算符：-、=、+、<、>、,、[、]"
 				},
 				"LazyKey.AutoSemicolon": {
 					"type": "boolean",
@@ -67,6 +67,21 @@
 					"type": "boolean",
 					"default": false,
 					"description": "填充符号后，显示补全提示"
+				},
+				"LazyKey.BranchCurlyBraceInLine": {
+					"type": "boolean",
+					"default": true,
+					"description": "if/for/...大括号是否单独一行"
+				},
+				"LazyKey.FunctionCurlyBraceInLine": {
+					"type": "boolean",
+					"default": true,
+					"description": "函数大括号是否单独一行"
+				},
+				"LazyKey.AutoCurlyBraceInLine": {
+					"type": "boolean",
+					"default": true,
+					"description": "大括号跟随上方"
 				},
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",
