@@ -1,6 +1,9 @@
 /**
  * 左方括号
  * - 左括号变花括号
+ *   - if (|)
+ *   - if ()|
+ *   - ^{  }
  * - 左括号变花括号 Lambda
  */
 const vscode = require('vscode');
@@ -27,9 +30,10 @@ function provideCompletionItems(document, position, token, context) {
     // 判断左1是不是输入的符号
     if (inpt != "[")
         return;
-    if ((right.length=="" || right=="]") && !/\)\s*$/.test(left)) // 右边必须有闭合符号，或者就是在闭合符号后面
-        return ;
-        
+
+    if (right.startsWith(']'))
+        right = right.substring(1, right.length);
+
     // 右边全是关闭符号
     if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
         // 如果是变量下标，则取消
@@ -39,7 +43,7 @@ function provideCompletionItems(document, position, token, context) {
         }
 
         // 如果是为了补充后面的
-        var count = right.startsWith(']') ? 1 : 0;
+        var count = 0;
         for (var s of right) {
             if (s == '[')
                 count++;
@@ -133,7 +137,12 @@ function provideCompletionItems(document, position, token, context) {
                 vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {\n\t$0\n}' });
             }
         }
-
+    }
+    // 空白处，单独一个大括号
+    else if (/^\s*$/.test(left) && /^\]?\s*$/.test(right)) {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorLineEnd');
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
     }
     else {
         return ;
