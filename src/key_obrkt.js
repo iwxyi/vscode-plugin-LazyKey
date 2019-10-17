@@ -27,9 +27,9 @@ function provideCompletionItems(document, position, token, context) {
     // 判断左1是不是输入的符号
     if (inpt != "[")
         return;
-    if (right == "" && !/\)\s*/.test(left)) // 右边必须有闭合符号，或者就是在闭合符号后面
+    if ((right.length=="" || right=="]") && !/\)\s*$/.test(left)) // 右边必须有闭合符号，或者就是在闭合符号后面
         return ;
-
+        
     // 右边全是关闭符号
     if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
         // 如果是变量下标，则取消
@@ -58,6 +58,12 @@ function provideCompletionItems(document, position, token, context) {
                 // 获取分支的关键词
                 var re = /^\s*(\w+)\b.+/;
                 var branch = re.exec(line)[1].trim();
+
+                // 合并同类内容
+                if (branch == 'if' || branch == 'else')
+                    branch = '(if|else)';
+                else if (branch == 'for' || branch == 'while' || branch == 'foreach')
+                    branch = '(for|while|foreach)';
 
                 // 搜索上面距离最近的那个
                 var lineIndex = position.line;
