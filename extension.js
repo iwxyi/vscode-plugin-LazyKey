@@ -25,6 +25,7 @@ function activate(context) {
 	require('./src/key_less.js')(context);
 	require('./src/key_comma.js')(context);
 	require('./src/key_obrkt.js')(context);
+	require('./src/key_cbrkt.js')(context);
 }
 exports.activate = activate;
 

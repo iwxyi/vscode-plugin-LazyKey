@@ -72,8 +72,7 @@ function provideCompletionItems(document, position, token, context) {
         if (/^\s*(if|for|foreach|while|switch|do|else)\b/.test(left)) { // 是分支呀 if (|)
             if (vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInSingleLine')) { // 跟随上方
                 // 获取分支的关键词
-                var re = /^\s*(\w+)\b.+/;
-                var branch = re.exec(line)[1].trim();
+                var branch = /^\s*(\w+)\b.+/.exec(line)[1].trim();
 
                 // 合并同类内容
                 if (branch == 'if' || branch == 'else')
