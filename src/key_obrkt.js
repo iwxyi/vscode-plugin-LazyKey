@@ -84,10 +84,21 @@ function provideCompletionItems(document, position, token, context) {
             var nextNextLine = document.lineAt(new vscode.Position(position.line + 2, 0)).text;
             if (/^\s*\}\s*$/.test(nextNextLine)) { // 这是一个空大括号
                 vscode.commands.executeCommand('editor.action.insertLineAfter');
+
+                // 延迟，如果缩进一个，则进行一个缩进
+                setTimeout(function () {
+                    var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text;
+                    var nextNextLine = document.lineAt(new vscode.Position(position.line + 2, 0)).text;
+                    var indentNextLine = /^(\s*)/.exec(nextLine)[1];
+                    var indentNextNextLine = /^(\s*)/.exec(nextNextLine)[1];
+                    if (indentNextLine == indentNextNextLine) {
+                        vscode.commands.executeCommand('tab');
+                    }
+                });
             }
             else if (/^\s*$/.test(nextNextLine)) { // 里面有个空行，继续下移
                 vscode.commands.executeCommand('cursorDown');
-                // vscode.commands.executeCommand('editor.action.reindentlines');
+                // vscode.commands.executeCommand('editor.action.indentLines');
 
                 // 计算缩进差
                 var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text;
@@ -123,6 +134,55 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{$0}' });
         return ;
+    }
+    // 末尾，需要将下一行包含到代码块中
+    else if (/^\s*(if|else|for|foreach|while|switch)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right) && position.line < document.lineCount - 1
+        && /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
+        vscode.commands.executeCommand('deleteLeft');
+        if (left.endsWith(' '))
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{' });
+        else
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {' });
+        // insert 会有延迟，所以延迟后继续
+        setTimeout(function () {
+            vscode.commands.executeCommand('cursorDown');
+            vscode.commands.executeCommand('cursorLineEnd');
+            vscode.commands.executeCommand('editor.action.insertLineAfter');
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
+            vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
+        }, 100);
+    }
+    // 开头，需要将当前行包含到代码块中
+    else if (position.line > 0 && /^\s*(if|else|for|foreach|while|switch)\s*\(.+\)[^;]*/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
+        && (/^(\s*)/.exec(left)[1].length /*+ /^\]?(\s*)/.exec(right)[1].length*/) >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
+        // 获取当前行左边缩进的值
+        var indentSelectStart = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length;
+        var indentSelectEnd = /^(\s*)/.exec(line)[1].length + 1;
+        if (line.charAt(indentSelectEnd) == ']')
+            indentSelectEnd++;
+        while (indentSelectEnd < line.length && (line.charAt(indentSelectEnd) == ' ' || line.charAt(indentSelectEnd) == '\t'))
+            indentSelectEnd++;
+        var positionStart = new vscode.Position(position.line, indentSelectStart),
+            positionEnd = new vscode.Position(position.line, indentSelectEnd);
+        var indentSnippet = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1];
+        if (indentSnippet.indexOf('\t') != -1)
+            indentSnippet += '\t';
+        else
+            indentSnippet += '    ';
+        // 第一步：插入左括号并换行
+        var textEdit1 = vscode.TextEdit.replace(new vscode.Range(positionStart, positionEnd), '{\n'+indentSnippet);
+        let textEdits = [];
+        textEdits.push(textEdit1);
+        let wordspaceEdit = new vscode.WorkspaceEdit();
+        wordspaceEdit.set(document.uri, textEdits);
+        vscode.workspace.applyEdit(wordspaceEdit);
+
+        // 第二步：在下一行插入右括号，并且 outdent
+        setTimeout(function () {
+            vscode.commands.executeCommand('editor.action.insertLineAfter');
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}'});
+            vscode.commands.executeCommand('outdent');
+        }, 100);
     }
     // 右边全是关闭符号
     else if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
