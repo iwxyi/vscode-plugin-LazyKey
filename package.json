@@ -1,6 +1,7 @@
 {
 	"name": "lazykey",
-	"displayName": "LazyKey",
+    "displayName": "LazyKey",
+    "publisher": "mrxy001",
 	"description": "press the key least by automated macros",
 	"version": "0.0.1",
 	"keywords": ["lazy", "key", "auto", "macros"],
@@ -38,6 +39,11 @@
 					"default": true,
 					"description": "C指针、C++类、PHP类 点号转指针(新变量首次启用需两个点)"
 				},
+                "LazyKey.DotToPointDisabledOnce": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "点号转指针禁用一次（请勿修改）"
+                },
 				"LazyKey.NumberToParentheses": {
 					"type": "boolean",
 					"default": true,

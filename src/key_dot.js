@@ -12,6 +12,11 @@ function provideCompletionItems(document, position, token, context) {
         || !(vscode.workspace.getConfiguration().get('LazyKey.DotToPoint')))
         return;
 
+    if (vscode.workspace.getConfiguration().get('LazyKey.DotToPointDisabledOnce')) {
+        vscode.workspace.getConfiguration().update('LazyKey.DotToPointDisabledOnce', false, true);
+        return;
+    }
+
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.text != undefined) return;
@@ -35,28 +40,38 @@ function provideCompletionItems(document, position, token, context) {
         if (inpt != ".")
             return ;
 
-        // 两个点号变成指针
-        var doublePoint = false;
-        if (left.length >= 2 && left.slice(-1) == ".") {
-            if (left.slice(-2) == ".." || left.slice(-2) == "\t.") // 三个点或开头两点，不知道什么情况，退出
-                return ;
-            if (left.slice(-2) == " .") // 针对可变参数数组的情况 ...
-                return ;
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            word = document.getText(document.getWordRangeAtPosition(leftPosition));
-            left = line.substring(0, leftPosition.character - 1);
-            doublePoint = true; 0
+        var newText = "";
+        // 指针变回点号
+        if (left.endsWith('->')) {
+            newText = ".";
+            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 2);
+            vscode.workspace.getConfiguration().update('LazyKey.DotToPointDisabledOnce', true, true);
+        }
+        else {
+            newText = "->";
+            // 两个点号变成指针
+            var doublePoint = false;
+            if (left.length >= 2 && left.slice(-1) == ".") {
+                if (left.slice(-2) == ".." || left.slice(-2) == "\t.") // 三个点或开头两点，不知道什么情况，退出
+                    return;
+                if (left.slice(-2) == " .") // 针对可变参数数组的情况 ...
+                    return;
+                leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
+                word = document.getText(document.getWordRangeAtPosition(leftPosition));
+                left = line.substring(0, leftPosition.character - 1);
+                doublePoint = true;
+            }
+
+            // 判断是否是 this, 或上文是否有声明为 *var 或者 var-> 的字符
+            var re1 = new RegExp("\\*\\s*" + word + "\\b");
+            var re2 = new RegExp("\\b" + word + "\\s*->");
+            var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
+            if (word != "this" && !doublePoint && !re1.test(full) && !re2.test(full) && !re3.test(full))
+                return;
         }
 
-        // 判断是否是 this, 或上文是否有声明为 *var 或者 var-> 的字符
-        var re1 = new RegExp("\\*\\s*" + word + "\\b");
-        var re2 = new RegExp("\\b" + word + "\\s*->");
-        var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
-        if (word!="this" && !doublePoint && !re1.test(full) && !re2.test(full) && !re3.test(full))
-            return ;
-
         // 点号的位置替换为指针
-        var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), "->");
+        var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), newText);
 
         // 添加本次的修改
         textEdits.push(newEdit);
