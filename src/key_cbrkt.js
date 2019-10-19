@@ -2,6 +2,7 @@
  * 右方括号
  * - 跳出同一行的 }
  * - 跳出到下一行 } 的下一行
+ * - }] 这种情况，添加下一行
  */
 const vscode = require('vscode');
 
@@ -62,12 +63,13 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 下一行是单独的 }，则跳到下行
     // 如果下下行还是空的，则继续跳到下一行
-    else if (/^\s*\}\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
+    else if (position.line < document.lineCount - 1 && /^\s*\}\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorDown');
         vscode.commands.executeCommand('cursorLineEnd');
 
-        var nextNextLine = document.lineAt(new vscode.Position(position.line + 2, 0)).text;
+        var nextNextLine = position.line < document.lineCount - 2 ?
+        document.lineAt(new vscode.Position(position.line + 2, 0)).text : "";
 
         // 计算缩进……
         var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text; // 此处固定为 }，带缩进
@@ -88,6 +90,11 @@ function provideCompletionItems(document, position, token, context) {
         else if (/^\s*\}/.test(nextNextLine)) {
             vscode.commands.executeCommand('editor.action.insertLineAfter');
         }
+    }
+    // ^ }] 这种情况，一般是双击 ]]，添加下一行
+    else if (/^\s*\}\s*$/.test(left) && right=="") {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('editor.action.insertLineAfter');
     }
 }
 
