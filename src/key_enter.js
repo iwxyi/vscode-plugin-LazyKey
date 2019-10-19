@@ -7,7 +7,7 @@ const vscode = require('vscode');
 function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
-        || !(vscode.workspace.getConfiguration().get('LazyKey.TabSkip')))
+        || !(vscode.workspace.getConfiguration().get('LazyKey.EnterSkip')))
         return;
 
     // 获取编辑器，判断选中文本
@@ -15,7 +15,7 @@ function provideCompletionItems(document, position, token, context) {
     if (editor.selection.text != undefined) return;
 
     var selections = editor.selections;
-    if (selections.length > 1) return ;
+    if (selections.length > 1) return;
 
     // 获取全文和当前行内容
     var full = document.getText();
@@ -29,15 +29,17 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('undo');
         vscode.commands.executeCommand('editor.action.insertLineAfter');
 
-        // 判断缩进
-        setTimeout(function () {
-            var prevLine = document.lineAt(new vscode.Position(position.line - 1, 0)).text; // 原本上一行的内容
+        // 自动判断缩进
+        if (vscode.workspace.getConfiguration().get('editor.formatOnType') != true) {
+            setTimeout(function () {
+                var prevLine = document.lineAt(new vscode.Position(position.line - 1, 0)).text; // 原本上一行的内容
 
-            // 如果需要添加一个缩进
-            if (/^\s*\w+\s*\(.+\)\s*(\/[\/\*].*)?/.test(prevLine)) {
-                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\t'});
-            }
+                // 如果需要添加一个缩进
+                if (/^\s*\w+\s*\(.+\)\s*(\/[\/\*].*)?/.test(prevLine)) {
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\t' });
+                }
             }, 10);
+        }
     }
     else {
 

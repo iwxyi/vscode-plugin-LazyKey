@@ -36,8 +36,86 @@ function provideCompletionItems(document, position, token, context) {
     if (right.startsWith(']'))
         right = right.substring(1, right.length);
 
+    // 如果右边已经有左花括号了，那么就直接：下一行为空则下移，否则插入
+    if (/\{\s*(\/[\/\*].*$)?/.test(right)) {
+        var isNextLineBlank = false;
+        var needSpace = 0, needTab = 0;
+        if (position.line < document.lineCount - 1) {
+            var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text;
+            isNextLineBlank = /^\s*$/.test(nextLine);
+
+            // 计算缩进差
+            var indentLine = /^(\s*)/.exec(line)[1];
+            var indentNextLine = /^(\s*)/.exec(nextLine)[1];
+            if (/^ +$/.test(indentLine)) { // 空格的情况
+                needSpace = indentLine.length + 4 - indentNextLine.length;
+            } else if (/^\t*$/.test(indentLine)) { // tab的情况
+                needTab = indentLine.length + 1 - indentNextLine.length;
+            }
+        }
+        vscode.commands.executeCommand('deleteLeft');
+        if (isNextLineBlank) {
+            vscode.commands.executeCommand('cursorDown');
+            // vscode.commands.executeCommand('editor.action.reindentlines'); // 这句命令无效……
+            // 判断需不需要进行缩进
+            if (needTab > 0) {
+                var insert = "";
+                while (needTab--)
+                    insert += "\t";
+                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
+            } else if (needSpace > 0) {
+                var insert = "";
+                while (needSpace--)
+                    insert += " ";
+                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
+            }
+        } else {
+            vscode.commands.executeCommand('editor.action.insertLineAfter');
+        }
+    }
+    // 如果下一行已经有花括号，那么直接跳到下一行的花括号右边
+    else if (position.line < document.lineCount - 1 && /^\s*\{\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorDown');
+        vscode.commands.executeCommand('cursorLineEnd');
+
+        // 判断下下行是不是 } ，即这是一套空的花括号，判断要不要插入一个新行
+        if (position.line < document.lineCount - 2) {
+            var nextNextLine = document.lineAt(new vscode.Position(position.line + 2, 0)).text;
+            if (/^\s*\}\s*$/.test(nextNextLine)) { // 这是一个空大括号
+                vscode.commands.executeCommand('editor.action.insertLineAfter');
+            }
+            else if (/^\s*$/.test(nextNextLine)) { // 里面有个空行，继续下移
+                vscode.commands.executeCommand('cursorDown');
+                // vscode.commands.executeCommand('editor.action.reindentlines');
+
+                // 计算缩进差
+                var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text;
+                var indentNextLine = /^(\s*)/.exec(nextLine)[1];
+                var indentNextNextLine = /^(\s*)/.exec(nextNextLine)[1];
+                var needSpace = 0, needTab = 0;
+                if (/^ +$/.test(indentNextLine)) { // 空格的情况
+                    needSpace = indentNextLine.length + 4 - indentNextNextLine.length;
+                } else if (/^\t*$/.test(indentNextLine)) { // tab的情况
+                    needTab = indentNextLine.length + 1 - indentNextNextLine.length;
+                }
+                // 插入缩进
+                if (needTab > 0) {
+                    var insert = "";
+                    while (needTab--)
+                        insert += "\t";
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
+                } else if (needSpace > 0) {
+                    var insert = "";
+                    while (needSpace--)
+                        insert += " ";
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
+                }
+            }
+        }
+    }
     // lambda中括号    , [|]
-    if (/,\s*$/.test(left)) {
+    else if (/,\s*$/.test(left)) {
         return ;
     }
     // lambda花括号    , [=]{|}    ,[i,j,l...](a,b,c){|}
@@ -69,6 +147,7 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('deleteLeft');
 
         var singleLine = true;
+        var containNextLine = false;
         if (/^\s*(if|for|foreach|while|switch|do|else)\b/.test(left)) { // 是分支呀 if (|)
             if (vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInSingleLine')) { // 跟随上方
                 // 获取分支的关键词
@@ -131,6 +210,8 @@ function provideCompletionItems(document, position, token, context) {
             } else {
                 singleLine = vscode.workspace.getConfiguration().get('LazyKey.BranchCurlyBraceInSingleLine');
             }
+
+            // 分支，判断是否包含下一行，如果有缩进的话
         } else { // 函数
             singleLine = vscode.workspace.getConfiguration().get('LazyKey.FunctionCurlyBraceInSingleLine')
                 || vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInSingleLine');
