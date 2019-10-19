@@ -1,65 +1,108 @@
 # lazykey README
 
-This is the README for your extension "lazykey". After writing up a brief description, we recommend including the following sections.
+A special plugin for lazy people by using the fewest keystrokes in the normal syntax of C/C++/Java/JS.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+LazyKey redefines the following keys:
 
-For example if there is an image subfolder under your extension project workspace:
+- `space`
+- `comma`
+- `simicolon`
+- `dot`
+- `left square bracket`
+- `right square bracket`
+- `minus`
+- `equal`
+- `zero`
+- `nine`
+- `less`
 
-\!\[feature X\]\(images/feature-x.png\)
+### space key
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- Add ` ()` after `if` / `for` / `while` / `foreach` / `switch` by pressing space key
+  for example, convert `if|` to `if (|)`. (`|` is the current cursor)
 
-## Requirements
+### comma key
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- Add space character if this comma is inside the parentheses
+- Convert `,,` to `<<` with appropriate spaces
+
+### semicolon key
+
+- Automatically add `;` to the line end, unless the line ends with a comment
+- Insert next line after an exists `;`
+- Insert next line if the current line already contains a `;`
+- Ignore `for ( ; ; )`
+
+### dot key
+
+- Convert `.` to `->` of C++ `class` and `point` objects
+- Convert between `.` and `->` in any case
+
+### left square bracket
+
+- Convert `[` to `{ }` and automatically jump to the next line if the current line is missing a code block
+- Jump into the code block after `if` / `for` / `while` / `foreach` / `switch` if already exists `{ }`
+- Add next line into a code block according to the above two behaviors if posible
+- Convert `[]` to `{ }` and automatically break lines in a blank line
+- Jump out of `]` or `}`
+- Support both Lambda brackets, `[]` and `{}`
+
+### right square bracket
+
+- Jump out of `]` or `}` after the cursor
+- Jump out of `}` in following line, and add one line if necessary
+- Add another one line after `}`
+
+### minus key
+
+- Convert `-` to `_` where the variable is declared
+- Convert `-` to `_` if exists such variable
+- Automatically add spaces, such as `a-` to `a - `
+- It doesn't affect variable decrement, like `a--`
+
+### equal key
+
+- Automatically add spaces, such as `a=` to `a = `, `a+=` to `a += `
+- It doesn't affect multiple equal
+- Convert `1=` to `!=` with appropriate spaces
+
+### number nine key
+
+- Convert `9` to `(` in the appropriate place
+
+### number zero key
+
+- Convert `0` to `)` in the appropriate place
+
+### less key
+
+- Automatically add spaces at left and right
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
-
-For example:
+You can decide the switch for each function.
 
 This extension contributes the following settings:
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+- `myExtension.enable`: enable/disable this extension
+- `myExtension.thing`: set to `blah` to do something
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+It may change your button habits and make you lazy.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Add some key mapping.
 
 -----------------------------------------------------------------------------------------------------------
 
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
 ### For more information
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+* [GitHub](https://github.com/MRXY001/vscode-plugin-LazyKey/)
 
 **Enjoy!**
