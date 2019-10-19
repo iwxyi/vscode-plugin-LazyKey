@@ -98,13 +98,13 @@ function provideCompletionItems(document, position, token, context) {
             // 重新读取文档内容，避免操作两次的情况（真的是莫名其妙啊，幸亏机智的我曲线救国）
             const document = vscode.window.activeTextEditor.document;
             var word = document.getText(document.getWordRangeAtPosition(leftPosition));
-            if (!word.endsWith('0')) return ; // 已经删除，抵消一次~
-            if (document.getText().match(new RegExp("\\b" + word, 'g')).length > 1) return ; // 如果上面有这个0结尾的变量
+            if (!word.endsWith('0')) return; // 已经删除，抵消一次~
+            if (document.getText().match(new RegExp("\\b" + word, 'g')).length > 1) return; // 如果上面有这个0结尾的变量
 
             // 删除 0，光标右移 1
             vscode.commands.executeCommand('deleteLeft');
             vscode.commands.executeCommand('cursorRight');
-        }, 50)
+        }, 50);
     }
 }
 
