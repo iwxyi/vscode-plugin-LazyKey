@@ -83,6 +83,16 @@
 					"default": true,
 					"description": "分支：大括号跟随上方\n函数：单独一行"
 				},
+				"LazyKey.TabSkip": {
+					"type": "boolean",
+					"default": true,
+					"description": "Tab键跳出函数括号、补全多个参数逗号、跳到花括号末尾"
+				},
+				"LazyKey.EnterSkip": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enter键无视右括号强行换行"
+				},
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",
 					"default": true,
