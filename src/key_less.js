@@ -48,11 +48,15 @@ function provideCompletionItems(document, position, token, context) {
         else if (/^\s*[\w:_]+\s*$/.test(left)) {
             return ;
         }
+        // cout <<
+        else if (/ <$/.test(left)) {
+            newText = "< ";
+        }
         // a < b
         else if (/\S$/.test(left)) {
             newText = " < ";
         }
-        // count < <
+        // cout < <
         else if (/ < $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = "< ";

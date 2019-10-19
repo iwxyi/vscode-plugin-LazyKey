@@ -83,9 +83,11 @@ function provideCompletionItems(document, position, token, context) {
     vscode.workspace.applyEdit(wordspaceEdit);
 
     // 延时出现提示（必须延时才会出现）
-    setTimeout(function(){
-        vscode.commands.executeCommand('editor.action.triggerSuggest');
-    }, 100);
+    if (/^\W/.test(right)) { // 如果右边不是字母（即已经有变量了）
+        setTimeout(function () {
+            vscode.commands.executeCommand('editor.action.triggerSuggest');
+        }, 100);
+    }
 }
 
 /**

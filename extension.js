@@ -2,7 +2,8 @@ const vscode = require('vscode');
 
 function activate(context) {
 	if (vscode.workspace.getConfiguration().get('LazyKey.ShowTipOnStart'))
-		vscode.window.showInformationMessage('懒键 已开启，享受酣畅淋漓的码字快感吧！');
+		// vscode.window.showInformationMessage('懒键 已开启，享受酣畅淋漓的码字快感吧！');
+		vscode.window.showInformationMessage('LazyKey opened, please enjoy!');
 	console.log('懒键开启！');
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.switchLazyKey', function () {

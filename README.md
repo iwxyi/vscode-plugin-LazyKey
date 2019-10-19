@@ -1,6 +1,6 @@
-# lazykey README
+# LazyKey README
 
-A special plugin for lazy people by using the fewest keystrokes in the normal syntax of C/C++/Java/JS.
+A special plugin for lazy people by using the fewest keystrokes in the normal syntax of C/C++/Java/JS/PHP.
 
 ## Features
 
@@ -18,9 +18,9 @@ LazyKey redefines the following keys:
 - `nine`
 - `less`
 
-![pic1](./images/LazyKey_Picture1.gif)
+![pic1](https://github.com/MRXY001/vscode-plugin-LazyKey/blob/master/images/LazyKey_Picture1.gif?raw=true)
 
-![pic2](./images/LazyKey_Picture2.gif)
+![pic2](https://github.com/MRXY001/vscode-plugin-LazyKey/blob/master/images/LazyKey_Picture2.gif?raw=true)
 
 ### space key
 
@@ -41,7 +41,7 @@ LazyKey redefines the following keys:
 
 ### dot key
 
-- Convert `.` to `->` of C++ `class` and `point` objects
+- Convert `.` to `->` of C++/PHP `class` and `point` objects
 - Convert between `.` and `->` in any case
 
 ### left square bracket
@@ -107,5 +107,7 @@ Add some key mapping.
 ### For more information
 
 * [GitHub](https://github.com/MRXY001/vscode-plugin-LazyKey/)
+
+* [Market](https://marketplace.visualstudio.com/items?itemName=mrxy001.lazykey)
 
 **Enjoy!**
