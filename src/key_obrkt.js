@@ -2,8 +2,9 @@
  * 左方括号
  * - 左括号变花括号
  *   - if (|)
- *   - if ()|
+ *   - if ()|    包括下一行可能需要包括进去（不支持连续多行缩进）
  *   - ^{|}
+ *   - {\ncode}    当前行包括进代码块（不支持连续多行缩进）
  * - 左括号变花括号 Lambda
  *   - , [|])
  *   - []{|})
@@ -135,14 +136,15 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{$0}' });
         return ;
     }
-    // 末尾，需要将下一行包含到代码块中
+    // 末尾，需要将下一行包含到代码块中（未考虑连续多行缩进）
     else if (/^\s*(if|else|for|foreach|while|switch)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right) && position.line < document.lineCount - 1
         && /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
         vscode.commands.executeCommand('deleteLeft');
-        if (left.endsWith(' '))
-            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{' });
-        else
-            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {' });
+        var ins = "{";
+        if (!left.endsWith(' ')) ins = " " + ins;
+        if (!right.startsWith(' ') && !right.startsWith('\t')) ins += " ";
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins });
+
         // insert 会有延迟，所以延迟后继续
         setTimeout(function () {
             vscode.commands.executeCommand('cursorDown');
@@ -152,7 +154,7 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
         }, 100);
     }
-    // 开头，需要将当前行包含到代码块中
+    // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
     else if (position.line > 0 && /^\s*(if|else|for|foreach|while|switch)\s*\(.+\)[^;]*/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
         && (/^(\s*)/.exec(left)[1].length /*+ /^\]?(\s*)/.exec(right)[1].length*/) >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
         // 获取当前行左边缩进的值
@@ -192,7 +194,7 @@ function provideCompletionItems(document, position, token, context) {
                 return ;
         }
 
-        // 如果是为了补充后面的
+        // 如果是为了补充后面的，也取消
         var count = 0;
         for (var s of right) {
             if (s == '[')
@@ -202,6 +204,15 @@ function provideCompletionItems(document, position, token, context) {
         }
         if (count < 0)
             return ;
+
+        // 如果后面有注释，则当前行添加的花括号移动到注释前面
+        var commentLength = 0;
+        var commentContent = "";
+        if (/\s*\/[\/\*].*$/.test(right)) {
+            // 获取注释的长度
+            commentContent = /(\s*\/[\/\*].*)/.exec(right)[1];
+            commentLength = commentContent.length;
+        }
 
         // 开始插入花括号
         vscode.commands.executeCommand('deleteLeft');
@@ -281,12 +292,28 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
         } else { // 左括号从右边开始
-            // 此处没有判断注释的情况
-            vscode.commands.executeCommand('cursorLineEnd');
-            if (right.endsWith(' ')) { // 末尾已经有空格了（虽然不应该）
-                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
-            } else { // 末尾手动添加一个空格
-                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {\n\t$0\n}' });
+            if (commentLength == 0) {
+                vscode.commands.executeCommand('cursorLineEnd');
+                if (right.endsWith(' ')) { // 末尾已经有空格了（虽然不应该）
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+                } else { // 末尾手动添加一个空格
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {\n\t$0\n}' });
+                }
+            } else { // 有注释
+                var endPosition = line.length - commentLength;
+                var deltaPosition = endPosition - position.character-1/*因为多删了一个]*/;
+                while (deltaPosition-- > 0) {
+                    vscode.commands.executeCommand('cursorRight');
+                }
+                if (commentContent.startsWith(' ') || commentContent.startsWith('\t')) {
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {' });
+                } else {
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' { ' });
+                }
+                setTimeout(function () {
+                    vscode.commands.executeCommand('cursorLineEnd');
+                    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n\t$0\n}' });
+                });
             }
         }
     }
