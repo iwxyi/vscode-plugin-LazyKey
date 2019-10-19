@@ -18,6 +18,10 @@ LazyKey redefines the following keys:
 - `nine`
 - `less`
 
+![pic1](./pictures/LazyKey_Picture1.gif)
+
+![pic2](./pictures/LazyKey_Picture2.gif)
+
 ### space key
 
 - Add ` ()` after `if` / `for` / `while` / `foreach` / `switch` by pressing space key
@@ -86,8 +90,7 @@ You can decide the switch for each function.
 
 This extension contributes the following settings:
 
-- `myExtension.enable`: enable/disable this extension
-- `myExtension.thing`: set to `blah` to do something
+
 
 ## Known Issues
 

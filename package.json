@@ -27,118 +27,89 @@
 	"contributes": {
 		"configuration": {
 			"type": "object",
-			"title": "懒键",
+			"title": "LazyKey",
 			"properties": {
 				"LazyKey.AllEnabled": {
 					"type": "boolean",
 					"default": true,
-					"description": "启用懒键"
+					"description": "enable LazyKey"
 				},
 				"LazyKey.DotToPoint": {
 					"type": "boolean",
 					"default": true,
-					"description": "C指针、C++类、PHP类 点号转指针(新变量首次启用需两个点)"
+					"description": "Convert dot to point of C/C++/PHP class and point.\nIt needs double dot if one variable first uses in file."
 				},
                 "LazyKey.DotToPointDisabledOnce": {
                     "type": "boolean",
                     "default": false,
-                    "description": "点号转指针禁用一次（请勿修改）"
+                    "description": "Disable converting dot to point once. (Don't modify)"
                 },
 				"LazyKey.NumberToParentheses": {
 					"type": "boolean",
 					"default": true,
-					"description": "数字【9/0】转【(/)】"
+					"description": "Convert number 9 and 0 to ( and )."
 				},
 				"LazyKey.TabSkipRightParenthese": {
 					"type": "boolean",
 					"default": false,
-					"description": "允许 tab 键跳出数字【9】插入的成对括号"
+					"description": "Allow using Tab key to skip ) added by 9."
 				},
 				"LazyKey.SpaceFill": {
 					"type": "boolean",
 					"default": true,
-					"description": "if/else/for/while/switch 空格键自动补全括号"
+					"description": "Press space key to add parentheses of if/else/for/while/switch"
 				},
 				"LazyKey.AutoOperators": {
 					"type": "boolean",
 					"default": true,
-					"description": "自适应运算符：-、=、+、<、>、,、[、]"
+					"description": "Redefine operators：- / = / + / < / > / , / [ / ]"
 				},
 				"LazyKey.AutoSemicolon": {
 					"type": "boolean",
 					"default": true,
-					"description": "分号强制到末尾，并且换行"
+					"description": "Put the semicolon at the end forcibly."
 				},
 				"LazyKey.AutoSuggestion": {
 					"type": "boolean",
 					"default": false,
-					"description": "填充符号后，显示补全提示"
+					"description": "Show suggestions when filling operators."
 				},
 				"LazyKey.BranchCurlyBraceInSingleLine": {
 					"type": "boolean",
 					"default": true,
-					"description": "if/for/...大括号是否单独一行"
+					"description": "Whether the left curly braces { take a single line of if/for/while/foreach/switch."
 				},
 				"LazyKey.FunctionCurlyBraceInSingleLine": {
 					"type": "boolean",
 					"default": true,
-					"description": "函数大括号是否单独一行"
+					"description": "Whether the left curly braces { take a single line of function."
 				},
 				"LazyKey.AutoCurlyBraceInSingleLine": {
 					"type": "boolean",
 					"default": true,
-					"description": "分支：大括号跟随上方\n函数：单独一行"
-				},
-				"LazyKey.TabSkip": {
-					"type": "boolean",
-					"default": true,
-					"description": "Tab键跳出函数括号、补全多个参数逗号、跳到花括号末尾"
-				},
-				"LazyKey.EnterSkip": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enter键无视右括号强行换行"
+					"description": "Auto detect whether the left curly braces { take a single line according above codes."
 				},
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",
 					"default": true,
-					"description": "启动时提示已开启懒键"
+					"description": "Enable opening toast at startip."
 				}
 			}
 		},
 		"commands": [
 			{
-				"command": "extension.dotToPoint",
-				"title": "点号转指针"
-			},
-			{
 				"command": "extension.switchLazyKey",
-				"title": "ImLazy"
+				"title": "Im Lazy"
 			}
 		],
 		"keybindings": [
-			{
-				"command": "extension.helloWorld",
-				"key": "ctrl+f12",
-				"mac": "cmd+f12",
-				"when": "editorTextFocus"
-			},
 			{
 				"command": "extension.switchLazyKey",
 				"key": "ctrl+f11",
 				"mac": "cmd+f11",
 				"when": "editorTextFocus"
 			}
-		],
-		"menus": {
-			"editor/context": [
-				{
-					"when": "editorFocus",
-					"command": "extension.switchLazyKey",
-					"group": "w_lazykey@2"
-				}
-			]
-		}
+		]
 	},
 	"scripts": {
 		"test": "node ./test/runTest.js"

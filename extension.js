@@ -7,10 +7,10 @@ function activate(context) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.switchLazyKey', function () {
 		if (vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) { // 关闭
-			vscode.workspace.getConfiguration().update('LazyKey.AllEnabled', '懒键开关', false);
+			vscode.workspace.getConfiguration().update('LazyKey.AllEnabled', false, true);
 		} else { // 开启
 			vscode.window.showInformationMessage('Lazy life starts!');
-			vscode.workspace.getConfiguration().update('LazyKey.AllEnabled', '懒键开关', true);
+			vscode.workspace.getConfiguration().update('LazyKey.AllEnabled', true, true);
 		}
 	}));
 
