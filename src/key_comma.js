@@ -53,7 +53,7 @@ function provideCompletionItems(document, position, token, context) {
             newText = "<< ";
         }
         // cout,,    前面加空格
-        else if (/\w,$/.test(left)) {
+        else if (/\S,$/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = " << ";
         }

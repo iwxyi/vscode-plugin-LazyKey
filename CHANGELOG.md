@@ -4,9 +4,9 @@ All notable changes to the "lazykey" extension will be documented in this file.
 
 ## [v0.0.2]
 
-- hide suggest after point `->` if exists variable on the right
-- repair the case of `cout < <`
-
+- Hide suggest after point `->` if exists variable on the right
+- Repair the case of `cout < <`
+- Support more case like converting `qDebug(),,` to `qDebug() << `
 
 
 ## [v0.0.1]
