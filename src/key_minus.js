@@ -45,7 +45,7 @@ function provideCompletionItems(document, position, token, context) {
         // const static int var_
         // private static String str_
         // std::string s_
-        if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)(<.+?>|&? )\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)) {
+        if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.+?>|&?|\*?)\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)) {
             newText = "_";
         }
         // 单词_xxx 这样的变量上下文存在 var_

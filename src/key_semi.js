@@ -52,7 +52,7 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 单行变量声明，末尾添加分号，换行
     // Type var;    Type var = xxx;    Type var(xxx);
-    else if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)(<.+?>|&? )\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)) {
+    else if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.+?>|&?|\*?)\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)) {
         var delay = false;
         // 如果不是在行尾，则将分号移动到末尾
         if (right != "") {
