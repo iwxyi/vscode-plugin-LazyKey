@@ -42,8 +42,25 @@ function provideCompletionItems(document, position, token, context) {
         newText = "($0)";
     else if (/^\s*else$/.test(left))        // else   ==>    else if (|)
         newText = "if ($0)";
-    else if (/^#include\s*$/.test(left))    // #include    ==>    #include <|>
-        newText = "<$0>";
+    else if (/^#include\s*$/.test(left)) {   // #include    ==>    #include <|>
+        // 判断上一个是 < > 还是 " "
+        var useQuote = false;
+        var lineIndex = position.line;
+        while (--lineIndex >= 0) {
+            var prevLine = document.lineAt(new vscode.Position(lineIndex, 0)).text;
+            if (/#include\s*<\S+>/.test(prevLine)) {
+                useQuote = false;
+                break;
+            } else if (/#include\s*\"\S+\"/.test(prevLine)) {
+                useQuote = true;
+                break;
+            }
+        }
+        if (!useQuote)
+            newText = "<$0>";
+        else
+            newText = "\"$0\"";
+    }
     else                                    // 什么都不需要做
         return ;
 
