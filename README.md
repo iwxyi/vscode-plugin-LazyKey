@@ -18,9 +18,9 @@ LazyKey redefines the following keys:
 - `nine`
 - `less`
 
-![pic1](./pictures/LazyKey_Picture1.gif)
+![pic1](./images/LazyKey_Picture1.gif)
 
-![pic2](./pictures/LazyKey_Picture2.gif)
+![pic2](./images/LazyKey_Picture2.gif)
 
 ### space key
 
