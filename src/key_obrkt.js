@@ -128,13 +128,13 @@ function provideCompletionItems(document, position, token, context) {
     }
     // lambda中括号    , [|]
     else if (/,\s*$/.test(left)) {
-        return ;
+        return;
     }
     // lambda花括号    , [=]{|}    ,[i,j,l...](a,b,c){|}
     else if (/\[[\w\d_,\s&=\*]*\]\s*(\([\w\d_,\s&=\*]*\))?/.test(left)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{$0}' });
-        return ;
+        return;
     }
     // 末尾，需要将下一行包含到代码块中（未考虑连续多行缩进）
     else if (/^\s*(if|else|for|foreach|while|switch)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right) && position.line < document.lineCount - 1
@@ -156,7 +156,8 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
     else if (position.line > 0 && /^\s*(if|else|for|foreach|while|switch)\s*\(.+\)[^;]*/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
-        && (/^(\s*)/.exec(left)[1].length /*+ /^\]?(\s*)/.exec(right)[1].length*/) >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
+        && /^\s+$/.test(left) && /\S/.test(right)
+        && /^(\s*)/.exec(left)[1].length >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
         // 获取当前行左边缩进的值
         var indentSelectStart = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length;
         var indentSelectEnd = /^(\s*)/.exec(line)[1].length + 1;
@@ -172,7 +173,7 @@ function provideCompletionItems(document, position, token, context) {
         else
             indentSnippet += '    ';
         // 第一步：插入左括号并换行
-        var textEdit1 = vscode.TextEdit.replace(new vscode.Range(positionStart, positionEnd), '{\n'+indentSnippet);
+        var textEdit1 = vscode.TextEdit.replace(new vscode.Range(positionStart, positionEnd), '{\n' + indentSnippet);
         let textEdits = [];
         textEdits.push(textEdit1);
         let wordspaceEdit = new vscode.WorkspaceEdit();
@@ -182,7 +183,7 @@ function provideCompletionItems(document, position, token, context) {
         // 第二步：在下一行插入右括号，并且 outdent
         setTimeout(function () {
             vscode.commands.executeCommand('editor.action.insertLineAfter');
-            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}'});
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
             vscode.commands.executeCommand('outdent');
         }, 100);
     }
@@ -191,7 +192,7 @@ function provideCompletionItems(document, position, token, context) {
         // 如果是变量下标，则取消
         if (/^[\w_][\w\d_]*$/.test(word)) { // word 是一个完整的变量
             if (full.match(new RegExp("\\b" + word + "\\s*\\[", 'g')).length > 1) // 这个变量有下标
-                return ;
+                return;
         }
 
         // 如果是为了补充后面的，也取消
@@ -203,7 +204,7 @@ function provideCompletionItems(document, position, token, context) {
                 count--;
         }
         if (count < 0)
-            return ;
+            return;
 
         // 如果后面有注释，则当前行添加的花括号移动到注释前面
         var commentLength = 0;
@@ -234,7 +235,7 @@ function provideCompletionItems(document, position, token, context) {
                 var lineIndex = position.line;
                 var reAll = new RegExp("^\\s*" + branch + "\\b");
                 var reSingle = new RegExp("^\\s*" + branch + "\\b[^\{]+\\s*(/[/\\*].*)?$");
-                var reMerga = new RegExp("^\\s*"+ branch + "\\b.+\{.*$");
+                var reMerga = new RegExp("^\\s*" + branch + "\\b.+\{.*$");
                 var reTotal = new RegExp("^\\s*" + branch + "\\b.+\{.*\}\\s*(/[/\\*].*)?$");
                 var reAlone = new RegExp("^\\s*{\\s*$");
                 var nextLineAlone = false; // 当前监测的下一行是否是一个花括号。初始是编辑行，false
@@ -301,7 +302,7 @@ function provideCompletionItems(document, position, token, context) {
                 }
             } else { // 有注释
                 var endPosition = line.length - commentLength;
-                var deltaPosition = endPosition - position.character-1/*因为多删了一个]*/;
+                var deltaPosition = endPosition - position.character - 1/*因为多删了一个]*/;
                 while (deltaPosition-- > 0) {
                     vscode.commands.executeCommand('cursorRight');
                 }
@@ -322,6 +323,15 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+    }
+    // 一行的最右边添加大括号（不包括下一行）。和上一项的区别是判断添不添加空格
+    else if (/^[^\{]+$/.test(left) && /^\s*$/.test(right)) {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorLineEnd');
+        if (left.endsWith(' '))
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+        else
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {\n\t$0\n}' });
     }
     else {
         return ;
