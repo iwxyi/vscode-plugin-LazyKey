@@ -1,10 +1,15 @@
 const vscode = require('vscode');
 
+var global_position;
+
 function processEnter()
 {
     // 读取设置是否开启
-    if (!vscode.workspace.getConfiguration().get('LazyKey.SkipEnter'))
-        return normalEnter();
+    if (!vscode.workspace.getConfiguration().get('LazyKey.SkipEnter')) {
+        normalEnter();
+        toIndent2();
+        return;
+    }
 
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.text != undefined) return; // 有选中文本了
@@ -12,20 +17,18 @@ function processEnter()
     const document = editor.document;
     const selection = editor.selection;
     if (selection.start.line != selection.end.line || selection.start.character != selection.end.character) {
-        console.log('有选中');
         return normalEnter();
     }
     var position = selection.active;
 
-    if (analyzeSkip(editor, document, position)) {
-        console.log('analyzeSkip', true);
-    }
-    else {
-        console.log('analyzeSkip', false);
+    if (!analyzeSkip(editor, document, position))
         normalEnter();
-    }
+    toIndent(editor, document, position);
 }
 
+/**
+ * 判断需不需要跳过右边的内容
+ */
 function analyzeSkip(editor, document, position)
 {
     const left_parentheses = ['\'', '"', '(', '[', '{', '<'];
@@ -54,28 +57,118 @@ function analyzeSkip(editor, document, position)
     }
     // fun{|} 这种连续的情况
     else if (leftChar == "{" && rightChar == "}") {
-        largeEnter(editor, document, position);
+        largeEnter();
         return true;
     }
     // 还有 if ( | )
     else if (/^\s*(if|for|while|foreach|switch)\s\(\s$/.test(left) && /^\s\)/.test(right)) {
-        largeEnter(editor, document, position);
+        largeEnter();
         return true;
     }
 
+    // 添加下一行，理论上缩进和当前行是一样的
     vscode.commands.executeCommand('editor.action.insertLineAfter');
+
     return true;
 }
 
+/**
+ * 仅仅添加一行
+ */
 function normalEnter()
 {
     // vscode.commands.executeCommand('lineBreakInsert'); // 这个是在后面插入一行
-    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n'});
+    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n' });
 }
 
-function largeEnter(editor, document, position)
+/**
+ * 添加两行，扩展括号
+ */
+function largeEnter()
 {
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n\t$0\n' });
+}
+
+function toIndent(editor, document, position)
+{
+    var line = document.lineAt(position).text;
+    var prevLine = position.line <= 0 ? ';' : document.lineAt(new vscode.Position(position.line - 1, 0)).text;
+
+    // 计算缩进量
+    var indent = false;
+    if (/^\s*(if|for|while|foreach|switch)\s\(\s$/.test(line))
+        indent = true;
+    // 空白行，不管
+    else if (/^\s+$/.test(line))
+        return true;
+    // 这一行没有分号结尾？
+    else if (/^[^;]+$/.test(line)) {
+        // 判断上一行是不是已经缩进了
+        if (!/^\s*$/.test(prevLine) && /^[^;]+$/.test(prevLine))
+            return true;
+        else
+            indent = true;
+    }
+
+    if (indent) {
+        var insert = "";
+        var indentPrevLine = /^(\s*)/.exec(line)[1];
+        if (/^ +$/.test(indentPrevLine)) { // 空格的情况
+            insert = "    ";
+        } else if (/^\t*$/.test(indentPrevLine)) { // tab的情况
+            insert = "\t";
+        }
+        if (insert != "") {
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
+        }
+        return true;
+    }
+
+    // 单个 if 后面的句子，是否需要 outindent
+    var outdent = false;
+    if (line.indexOf(';') > -1
+        && (/^[^;]+$/.test(prevLine) || /^[^;]+(\(.+\))?[^;]*$/.test(prevLine))
+    ) {
+        outdent = true;
+    }
+    else {
+        outdent = false;
+    }
+
+    if (outdent) {
+        setTimeout(function () {
+            vscode.commands.executeCommand('outdent');
+        }, 50);
+    }
+}
+
+function toIndent2() {
+    const editor = vscode.window.activeTextEditor;
+    var document = editor.document;
+    var position = editor.selection.active;
+    if (position.line == 0) return true;
+    var line = document.lineAt(position).text;
+
+    // 计算缩进量
+    var indent = false;
+    if (/^\s*(if|for|while|foreach|switch)\s\(\s$/.test(line))
+        indent = true;
+    else if (/^[^;]+$/.test(line))
+        indent = true;
+
+    if (indent) {
+        var insert = "";
+        var indentPrevLine = /^(\s*)/.exec(line)[1];
+        if (/^ +$/.test(indentPrevLine)) { // 空格的情况
+            insert = "    ";
+        } else if (/^\t*$/.test(indentPrevLine)) { // tab的情况
+            insert = "\t";
+        }
+        if (insert != "") {
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
+        }
+        return true;
+    }
 }
 
 module.exports = processEnter;
