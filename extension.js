@@ -17,7 +17,6 @@ function activate(context) {
 
     // ProvideCompletion
 	require('./src/key_dot.js')(context);
-	require('./src/key_nine.js')(context);
 	require('./src/key_zero.js')(context);
 	require('./src/key_space.js')(context);
 	require('./src/key_minus.js')(context);
@@ -32,6 +31,8 @@ function activate(context) {
     // KeyBindings
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_enter', require('./src/bind_enter.js')));
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_tab', require('./src/bind_tab.js')));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_nine', require('./src/bind_nine.js')));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_zero', require('./src/bind_zero.js')));
 }
 exports.activate = activate;
 

@@ -120,6 +120,14 @@
             {
                 "command": "extension.keybindings_tab",
                 "title": "KeyBindings Tab"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "title": "KeyBindings Nine"
+            },
+            {
+                "command": "extension.keybindings_zero",
+                "title": "KeyBindings Zero"
             }
 		],
 		"keybindings": [
@@ -169,7 +177,91 @@
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
                 "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==c"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==cpp"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==java"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==js"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==javascript"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==php"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==cs"
+            },
+            {
+                "command": "extension.keybindings_zero",
+                "key": "0",
+                "mac": "0",
+                "when": "editorTextFocus && editorLangId==cpp"
             }
 		]
 	},

@@ -80,11 +80,13 @@ function analyzeSkip(editor, document, position) {
 
             vscode.commands.executeCommand('editor.action.insertLineAfter');
         }
+        else {
+            return false;
+        }
     }
     else {
         return false;
     }
-
 
     return true;
 }
