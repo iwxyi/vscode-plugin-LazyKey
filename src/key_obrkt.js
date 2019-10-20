@@ -320,6 +320,17 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 空白处，单独一个大括号
     else if (/^\s*$/.test(left) && /^\]?\s*$/.test(right)) {
+        // 缩进跟随上面
+        var prevLine = position.line <= 0 ? ';' : document.lineAt(new vscode.Position(position.line - 1, 0)).text;
+        var prevIndent = /^(\s*)/.exec(prevLine)[1].length;
+        var indent = /^(\s*)/.exec(line)[1].length;
+        if (indent > prevIndent)
+            vscode.commands.executeCommand('outdent');
+        else if (indent < prevIndent && indent != 0)
+            vscode.commands.executeCommand('editor.action.indentLines');
+        else if (indent < prevIndent && indent == 0)
+            vscode.commands.executeCommand('editor.action.reindentLines');
+
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
