@@ -1,11 +1,18 @@
-const vscode = require('vscode');
+/**
+ * Enter键
+ * - "|"    '|'    无视空文本换行
+ * - |)}    无视右括号换行
+ * - if(|)    {|}    展开括号
+ * - if、无分号行    单行缩进
+ * - if    下下行取消缩进
+ */
 
-var global_position;
+const vscode = require('vscode');
 
 function processEnter()
 {
     // 读取设置是否开启
-    if (!vscode.workspace.getConfiguration().get('LazyKey.SkipEnter')) {
+    if (!vscode.workspace.getConfiguration().get('LazyKey.SmarterEnter')) {
         normalEnter();
         toIndent2();
         return;
@@ -141,7 +148,8 @@ function toIndent(editor, document, position)
     // 单个 if 后面的句子，是否需要 outindent
     var outdent = false;
     if (line.indexOf(';') > -1
-        && (/^[^;]+$/.test(prevLine) || /^[^;]+(\(.+\))?[^;]*$/.test(prevLine))
+        && ((/^[^;]+$/.test(prevLine) || /^[^;]+(\(.+\))?[^;]*$/.test(prevLine))
+        && /^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
     ) {
         outdent = true;
     }

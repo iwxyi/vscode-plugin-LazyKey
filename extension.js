@@ -31,6 +31,7 @@ function activate(context) {
 
     // KeyBindings
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_enter', require('./src/bind_enter.js')));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_tab', require('./src/bind_tab.js')));
 }
 exports.activate = activate;
 

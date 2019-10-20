@@ -91,15 +91,15 @@
 					"default": true,
 					"description": "Auto detect whether the left curly braces { take a single line according above codes."
 				},
-                "LazyKey.SkipEnter": {
+                "LazyKey.SmarterEnter": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Skip the right parentheses after the current cursor when pressing enter key"
+                    "description": "Skip the right parentheses with automated indentation when pressing enter key"
                 },
-                "LazyKey.SkipTab": {
+                "LazyKey.SmarterTab": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Skip the right parentheses after the current cursor when pressing tab key"
+                    "description": "Skip the right parentheses with comma when pressing tab key"
                 },
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",
@@ -116,6 +116,10 @@
             {
                 "command": "extension.keybindings_enter",
                 "title": "KeyBindings Enter"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "title": "KeyBindings Tab"
             }
 		],
 		"keybindings": [
@@ -123,8 +127,50 @@
 				"command": "extension.keybindings_enter",
 				"key": "enter",
 				"mac": "enter",
+				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c"
+			},
+			{
+				"command": "extension.keybindings_enter",
+				"key": "enter",
+				"mac": "enter",
 				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
-			}
+			},
+			{
+				"command": "extension.keybindings_enter",
+				"key": "enter",
+				"mac": "enter",
+				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java"
+			},
+			{
+				"command": "extension.keybindings_enter",
+				"key": "enter",
+				"mac": "enter",
+				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js"
+			},
+			{
+				"command": "extension.keybindings_enter",
+				"key": "enter",
+				"mac": "enter",
+				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript"
+			},
+			{
+				"command": "extension.keybindings_enter",
+				"key": "enter",
+				"mac": "enter",
+				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php"
+			},
+			{
+				"command": "extension.keybindings_enter",
+				"key": "enter",
+				"mac": "enter",
+				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
+			},
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
+            }
 		]
 	},
 	"scripts": {
