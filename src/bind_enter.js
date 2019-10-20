@@ -114,6 +114,14 @@ function toIndent(editor, document, position)
         if (/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(prevLine)) {
 
         }
+        // 左括号，也需要缩进
+        else if (/^\s*{\s*$/.test(line)) {
+
+        }
+        // 如果是右花括号，不缩进
+        else if (line.indexOf('}') > -1) {
+            return true;
+        }
         // 判断上一行是不是同样没有分号
         else if (!/^\s*$/.test(prevLine) && /^[^;]+$/.test(prevLine))
         {
@@ -147,7 +155,10 @@ function toIndent(editor, document, position)
 
     // 单个 if 后面的句子，是否需要 outindent
     var outdent = false;
-    if (line.indexOf(';') > -1
+    if (prevLine.indexOf('{') == -1) {
+        outdent = false;
+    }
+    else if (line.indexOf(';') > -1
         && ((/^[^;]+$/.test(prevLine) || /^[^;]+(\(.+\))?[^;]*$/.test(prevLine))
         && /^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
     ) {
