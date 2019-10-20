@@ -21,6 +21,7 @@
 		"onLanguage:java",
 		"onLanguage:php",
 		"onLanguage:js",
+		"onLanguage:javascript",
 		"onLanguage:jsp",
 		"onLanguage:cs"
 	],
@@ -90,6 +91,16 @@
 					"default": true,
 					"description": "Auto detect whether the left curly braces { take a single line according above codes."
 				},
+                "LazyKey.SkipEnter": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Skip the right parentheses after the current cursor when pressing enter key"
+                },
+                "LazyKey.SkipTab": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Skip the right parentheses after the current cursor when pressing tab key"
+                },
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",
 					"default": true,
@@ -101,13 +112,17 @@
 			{
 				"command": "extension.switchLazyKey",
 				"title": "Im Lazy"
-			}
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "title": "KeyBindings Enter"
+            }
 		],
 		"keybindings": [
 			{
-				"command": "extension.switchLazyKey",
-				"key": "ctrl+f11",
-				"mac": "cmd+f11",
+				"command": "extension.keybindings_enter",
+				"key": "enter",
+				"mac": "enter",
 				"when": "editorTextFocus"
 			}
 		]

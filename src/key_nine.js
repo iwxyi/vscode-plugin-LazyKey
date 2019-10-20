@@ -69,16 +69,16 @@ function provideCompletionItems(document, position, token, context) {
         (tabRight ? "($1)" : "($0)")
          : "(";
 
+    var rand = Math.floor(Math.random() * 100) + 1;
     // 删除左边，输入新字符
     setTimeout(function () {
         // 重新读取文档内容，避免操作两次的情况（真的是莫名其妙啊，幸亏机智的我曲线救国）
         const document = vscode.window.activeTextEditor.document;
         var word = document.getText(document.getWordRangeAtPosition(leftPosition));
         if (!word.endsWith('9')) return; // 已经删除，抵消一次~
-
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': newText });
-    }, 50);
+    }, rand);
 
 
     // 延时出现提示（必须延时才会出现）

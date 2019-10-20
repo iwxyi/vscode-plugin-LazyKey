@@ -15,6 +15,7 @@ function activate(context) {
 		}
 	}));
 
+    // ProvideCompletion
 	require('./src/key_dot.js')(context);
 	require('./src/key_nine.js')(context);
 	require('./src/key_zero.js')(context);
@@ -26,7 +27,10 @@ function activate(context) {
 	require('./src/key_less.js')(context);
 	require('./src/key_comma.js')(context);
 	require('./src/key_obrkt.js')(context);
-	require('./src/key_cbrkt.js')(context);
+    require('./src/key_cbrkt.js')(context);
+
+    // KeyBindings
+    context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_enter', require('./src/bind_enter.js')));
 }
 exports.activate = activate;
 
