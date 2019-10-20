@@ -123,7 +123,7 @@
 				"command": "extension.keybindings_enter",
 				"key": "enter",
 				"mac": "enter",
-				"when": "editorTextFocus"
+				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
 			}
 		]
 	},

@@ -96,18 +96,32 @@ function toIndent(editor, document, position)
 
     // 计算缩进量
     var indent = false;
-    if (/^\s*(if|for|while|foreach|switch)\s\(\s$/.test(line))
+    if (/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(line))
         indent = true;
     // 空白行，不管
     else if (/^\s+$/.test(line))
         return true;
     // 这一行没有分号结尾？
     else if (/^[^;]+$/.test(line)) {
-        // 判断上一行是不是已经缩进了
-        if (!/^\s*$/.test(prevLine) && /^[^;]+$/.test(prevLine))
-            return true;
-        else
-            indent = true;
+        // 上一行是分支，必须缩进
+        if (/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(prevLine)) {
+
+        }
+        // 判断上一行是不是同样没有分号
+        else if (!/^\s*$/.test(prevLine) && /^[^;]+$/.test(prevLine))
+        {
+            // 如果这一行已经缩进了
+            if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
+                return true;
+            // 再继续判断上上行
+            var prevPrevLine = position.line <= 1 ? ';' : document.lineAt(new vscode.Position(position.line - 2, 0)).text;
+            if (!/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(prevPrevLine)
+                && /^[^;]+$/.test(prevPrevLine)
+                && /^(\s*)/.exec(prevLine)[1].length >= /^(\s*)/.exec(prevPrevLine)[1].length)
+                return true;
+
+        }
+        indent = true;
     }
 
     if (indent) {
