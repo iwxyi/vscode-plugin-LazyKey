@@ -11,7 +11,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - Repair the case of `cout < <`
 - Support more case like converting `qDebug(),,` to `qDebug() << `
 - Auto detect whether `< >` or `" "` to be used after `#include` by space key
-- May fixed converting `9` to `()` twice
+- Completely fix converting `9` / `0` to `()` twice
 - Fix putting the current line in the code block bt `[`
 - Add `{ }` at the end of the line beginning with `if/for/...`
 - Auto indent when inserting `{ }` in a blank line
