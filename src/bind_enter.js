@@ -125,6 +125,10 @@ function toIndent(editor, document, position)
         else if (line.indexOf('}') > -1) {
             return true;
         }
+        // 可能是类似 #include <>
+        else if (line.startsWith('#')) {
+            return true;
+        }
         // 判断上一行是不是同样没有分号
         else if (!/^\s*$/.test(prevLine) && /^[^;]+$/.test(prevLine))
         {
