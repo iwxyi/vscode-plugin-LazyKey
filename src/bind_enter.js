@@ -155,7 +155,7 @@ function toIndent(editor, document, position)
 
     // 单个 if 后面的句子，是否需要 outindent
     var outdent = false;
-    if (prevLine.indexOf('{') > -1) {
+    if (prevLine.indexOf('{') > -1 || /[^:]:\s*(\/[\/\*].*)?$/.test(prevLine)) {
         outdent = false;
     }
     else if (line.indexOf(';') > -1
