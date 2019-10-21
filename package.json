@@ -101,10 +101,15 @@
                     "default": true,
                     "description": "Skip the right parentheses with comma when pressing tab key"
                 },
+                "LazyKey.SwitchSingleAndDoubleQuote": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Switch between single to double quote key"
+                },
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",
 					"default": true,
-					"description": "Enable opening toast at startip."
+					"description": "Enable opening toast at startup."
 				}
 			}
 		},
