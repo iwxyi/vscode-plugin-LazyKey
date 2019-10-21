@@ -37,7 +37,7 @@ function provideCompletionItems(document, position, token, context) {
         return;
 
     // 两个补充前面的单引号
-    if (left.endsWith("'"))
+    if (left.endsWith("'") || right.startsWith("'"))
         return;
     else if (/*left.endsWith('"') &&*/ right.startsWith('"')) {
         vscode.commands.executeCommand('deleteLeft');
