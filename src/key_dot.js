@@ -16,6 +16,8 @@ function provideCompletionItems(document, position, token, context) {
         vscode.workspace.getConfiguration().update('LazyKey.DotToPointDisabledOnce', false, true);
         return;
     }
+    if (['c', 'cpp', 'php'].indexOf(document.languageId) == -1)
+        return;
 
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;

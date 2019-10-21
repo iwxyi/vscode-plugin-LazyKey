@@ -10,6 +10,8 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
         || !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
         return;
+    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
+        return;
 
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;

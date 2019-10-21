@@ -2,6 +2,12 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.0.3]
+
+- Support labels like `public:`
+- Limit the range of effect languages
+
+
 ## [v0.0.2]
 
 - Support `JavaSript`

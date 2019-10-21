@@ -9,7 +9,9 @@ function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
     || !(vscode.workspace.getConfiguration().get('LazyKey.NumberToParentheses')))
-    return;
+        return;
+    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
+        return;
 
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;
