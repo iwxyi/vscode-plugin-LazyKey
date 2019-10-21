@@ -29,8 +29,10 @@ function processEnter()
     var position = selection.active;
 
     if (!analyzeSkip(editor, document, position))
+    {
         normalEnter();
-    toIndent(editor, document, position);
+        toIndent(editor, document, position);
+    }
 }
 
 /**
@@ -68,13 +70,14 @@ function analyzeSkip(editor, document, position)
         return true;
     }
     // 还有 if ( | )
-    else if (/^\s*(if|for|while|foreach|switch)\s\(\s$/.test(left) && /^\s\)/.test(right)) {
+    else if (/^\s*(if|for|while|foreach|switch)\s*\(\s*$/.test(left) && /^\s*\)/.test(right)) {
         largeEnter();
         return true;
     }
 
     // 添加下一行，理论上缩进和当前行是一样的
     vscode.commands.executeCommand('editor.action.insertLineAfter');
+    toIndent(editor, document, position);
 
     return true;
 }

@@ -5,6 +5,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 ## [v0.0.3]
 
 - Convert `''` to `""` without shift key
+- Jump `;` and `"`, but can't input them together
 - Auto indentation support labels like `public:`
 - Limit the range of effect languages
 
