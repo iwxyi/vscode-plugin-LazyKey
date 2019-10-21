@@ -16,7 +16,6 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
         || !(vscode.workspace.getConfiguration().get('LazyKey.AutoSemicolon')))
         return;
-    console.log(['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId));
     if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
         return;
 

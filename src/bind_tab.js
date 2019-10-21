@@ -44,12 +44,15 @@ function analyzeSkip(editor, document, position) {
     var line = document.lineAt(position).text;
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
+
     // 开头位置，缩进
     if (/^\s*$/.test(left)) {
         vscode.commands.executeCommand('tab');
     }
     // 右边是可以跳过的符号
-    else if (/^['"\)\]]/.test(right)) {
+    else if (/^['"\)\]]/.test(right)
+        // 字符串数组 [‘’, ""]
+        || (document.languageId == 'javascript' && (right.startsWith("']") || right.startsWith("\"]")) ) ) {
         // 判断左边是不是有上一个tab添加的", "
         if (/, $/.test(left)) {
             vscode.commands.executeCommand('deleteLeft');
@@ -60,7 +63,8 @@ function analyzeSkip(editor, document, position) {
         vscode.commands.executeCommand('cursorRight');
 
         // 继续判断是否为参数，添加参数分隔符
-        if (right.length >= 2 && right.substring(1, 2) == ")") {
+        if (right.length >= 2 && (right.substring(1, 2) == ")" ||
+            (document.languageId == 'javascript' && (right.startsWith("']") || right.startsWith("\"]"))) ) ) {
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ', ' });
         }
     }
