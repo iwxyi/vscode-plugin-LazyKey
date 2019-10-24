@@ -9,6 +9,8 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - Auto indentation support more like `public:` and `#include`
 - Limit the range of effect languages
 - Fix inserting a line after `return a;`
+- Support single line comment `//`
+- Support multiple line comment `/* */` and auto insert `*`
 
 
 ## [v0.0.2]
