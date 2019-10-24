@@ -5,9 +5,10 @@ All notable changes to the "lazykey" extension will be documented in this file.
 ## [v0.0.3]
 
 - Convert `''` to `""` without shift key
-- Jump `;` and `"`, but can't input them together
-- Auto indentation support labels like `public:`
+- Jump `` ` and `"`, but can't input them together
+- Auto indentation support more like `public:` and `#include`
 - Limit the range of effect languages
+- Fix inserting a line after `return a;`
 
 
 ## [v0.0.2]

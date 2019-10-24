@@ -98,9 +98,9 @@ It may change your button habits and make you lazy.
 
 ## Release Notes
 
-### 1.0.0
+### 0.0.3
 
-Add some key mapping.
+Fix some problems.
 
 -----------------------------------------------------------------------------------------------------------
 

@@ -39,7 +39,7 @@ function provideCompletionItems(document, position, token, context) {
         if (inpt != "-")
             return;
         // 必须要右边全部空的
-        if (right != "")
+        if (right != "" && ! /^[_\)\]\}\s]/.test(right))
             return ;
 
         var newText = "";
@@ -64,6 +64,10 @@ function provideCompletionItems(document, position, token, context) {
         }
         // _ 或 _var 或 _a_b_0_1 这样的变量存在
         else if (/(^|\s+)_[\w\d_]*\b$/.test(full)) {
+            newText = "_";
+        }
+        // 开头 var_    这种情况应该不会是减号吧
+        else if (/\s*[\w_][\w\d_]*$/.test(left)) {
             newText = "_";
         }
         // 自减
