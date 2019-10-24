@@ -102,15 +102,38 @@ function largeEnter()
 function toIndent(editor, document, position)
 {
     var line = document.lineAt(position).text;
+    var left = line.substring(0, position.character);
+    var right = line.substring(position.character);
     var prevLine = position.line <= 0 ? ';' : document.lineAt(new vscode.Position(position.line - 1, 0)).text;
 
     // 计算缩进量
     var indent = false;
+    var addin = '';
     if (/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(line))
         indent = true;
-    // 空白行，不管
-    else if (/^\s+$/.test(line))
+    // 空白行（可能包含注释），不管
+    else if (/^\s+(\/\/.*)?$/.test(line))
         return true;
+    // 多行注释开始
+    else if (/^\s*\/\*.*/.test(left) && !/\*\//.test(left)) {
+        indent = false;
+        // 判断星号数量
+        var star = /^\s*\/(\**)/.exec(left)[1];
+        addin = ' * $0\n';
+        if (star.length > 2 && /^\s*\*\//.test(right)) {
+            star = star.substr(2);
+            addin += ' ' + star;
+            if (right.startsWith(' */'))
+                vscode.commands.executeCommand('deleteRight');
+        } else if (!right.startsWith(' ')) {
+            addin += ' ';
+        }
+    }
+    // 多行注释星号
+    else if (/^\s*\*\s?/.test(line) && /\/?\*/.test(prevLine)) {
+        indent = false;
+        addin = '* ';
+    }
     // 这一行没有分号结尾？
     else if (/^[^;]+$/.test(line)) {
         // 上一行是分支，必须缩进
@@ -158,6 +181,10 @@ function toIndent(editor, document, position)
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
         }
         return true;
+    }
+
+    if (addin != '') {
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': addin });
     }
 
     // 单个 if 后面的句子，是否需要 outindent
