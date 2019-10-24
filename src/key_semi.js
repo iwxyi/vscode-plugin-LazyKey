@@ -4,7 +4,7 @@
  * - 后面是注释，不动
  * - 末尾已有分号，换行
  * - 连续分号，换行
- * - 单行变量声明，换行
+ * - 单行变量声明/方法操作，换行
  * - 到末尾
  */
 const vscode = require('vscode');
@@ -54,8 +54,11 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 单行变量声明，末尾添加分号，换行
     // Type var;    Type var = xxx;    Type var(xxx);
-    else if (/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.+?>|&?|\*?)\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)
-        && !/^\s*(return|print|die|exit|assert)\b/.test(left)) {
+    // 或者方法操作    obj.method()     point->method(asd)
+    else if ((/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.+?>|&?|\*?)\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)
+        && !/^\s*(return|print|die|exit|assert)\b/.test(left)) ||
+        (/^\s*[\(\)\w\d_\*:]+(\.|\->)[\w\d]+\(/.test(left) && /^['"\)\]]+$/.test(right))
+        ) {
         var delay = false;
         // 如果不是在行尾，则将分号移动到末尾
         if (right != "") {
