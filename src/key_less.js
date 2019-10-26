@@ -47,7 +47,11 @@ function provideCompletionItems(document, position, token, context) {
             newText = " < ";
         }
         // vector<    template<
-        else if (/^\s*[\w:_]+\s*$/.test(left)) {
+        else if (/^\s*(\w+\s+)*[\w:_]+\s*$/.test(left)) {
+            return ;
+        }
+        // Vector
+        else if (/[A_Z][\w\d_]*$/.test(left)){
             return ;
         }
         // cout <<

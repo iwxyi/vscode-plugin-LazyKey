@@ -56,8 +56,8 @@ function provideCompletionItems(document, position, token, context) {
     // Type var;    Type var = xxx;    Type var(xxx);
     // 或者方法操作    obj.method()     point->method(asd)
     else if ((/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.+?>|&?|\*?)\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left)
-        && !/^\s*(return|print|die|exit|assert)\b/.test(left)) ||
-        (/^\s*[\(\)\w\d_\*:]+(\.|\->)[\w\d]+\(/.test(left) && /^['"\)\]]+$/.test(right)) ) {
+        && !/^\s*(return|print|die|exit|assert)\b/.test(left))
+        /*|| (/^\s*[\(\)\w\d_\*:]+(\.|\->)[\w\d]+\(/.test(left) && /^['"\)\]]+$/.test(right))*/ ) {
         var delay = false;
         // 如果不是在行尾，则将分号移动到末尾
         if (right != "") {
