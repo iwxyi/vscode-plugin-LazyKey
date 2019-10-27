@@ -63,16 +63,16 @@ function provideCompletionItems(document, position, token, context) {
         else
             newText = "\"$0\"";
     }
-    // 提供变量名预测
+    // 提供变量名预测 private String s
     else if (vscode.workspace.getConfiguration().get('LazyKey.GenerateVariableName')
         && (document.languageId == 'cpp' || document.languageId == 'java' || document.languageId == 'c')
-        && /^\s*[\w]+$/.test(left) && right == '') {
+        && /^\s*([a-z]+\s+)*[A-Z][\w]+$/.test(left) && right == '') {
         var completionItems = [];
         var names = getNamesFromVariableType(word);
         for (var name of names) {
             if (name == '') continue;
             var completionItem = new vscode.CompletionItem(name);
-            completionItem.kind = vscode.CompletionItemKind.Variable;
+            completionItem.kind = vscode.CompletionItemKind.Snippet;
             completionItem.detail = 'LazyKey: auto generate variable name';
             completionItem.filterText = name;
             // completionItem.insertText = new vscode.SnippetString('aaaabbbccc');
@@ -97,27 +97,28 @@ function provideCompletionItems(document, position, token, context) {
 
 /**
  * 根据变量类型自动生成变量名
- * 备注：suggest排序倒着来的，排前面的反而要在后面
+ * 备注：suggest排序按名字的，没法排顺序……
  */
 function getNamesFromVariableType(type)
 {
     if (type == '' || type == 'var' || type == 'let')
         return '';
 
-    // String: string
+    // String: string, s
     if (/^[A-Z][a-z]*$/.test(type))
-        return [type.toLowerCase()];
-    // QString: string, qString
+        return [type.toLowerCase(), type.substring(0, 1).toLowerCase()];
+    // QString: string, qString, s
     else if (/^[A-Z][A-Z][a-z]*$/.test(type)) {
         return [
             /^[A-Z]([A-Z][a-z]*)$/.exec(type)[1].toLowerCase(), // string
-            type.substring(0, 1).toLowerCase()+/^[A-Z]([A-Z][a-z]*)$/.exec(type)[1] // qString
+            type.substring(0, 1).toLowerCase()+/^[A-Z]([A-Z][a-z]*)$/.exec(type)[1], // qString
+            type.substring(1, 2).toLowerCase() // s
         ];
     }
     // MyStringVari: myStringVari, vari
     else if (/^[A-Z][a-z]\w*$/.test(type)) {
         return [
-            type.substring(0, 1).toLowerCase() + /^[A-Z]([A-Z][a-z]*)$/.exec(type)[1], // myStringVari
+            type.substring(0, 1).toLowerCase() + /^[A-Z](\w*)$/.exec(type)[1], // myStringVari
             /([A-Z][a-z]*)$/.exec(type)[1].toLowerCase() // vari
         ];
     }
