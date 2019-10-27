@@ -109,7 +109,10 @@ function toIndent(editor, document, position)
     // 计算缩进量
     var indent = false;
     var addin = '';
-    if (/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(line))
+    if (/^\s*(\}\s*)?(if|else|else\s*if|for|do|while|foreach|switch)\s*\(.*\)[^;]*$/.test(line))
+        indent = true;
+    // 左括号结尾
+    else if (/\{\s*$/)
         indent = true;
     // 空白行（可能包含注释），不管
     else if (/^\s+(\/\/.*)?$/.test(line))
@@ -137,7 +140,7 @@ function toIndent(editor, document, position)
     // 这一行没有分号结尾？
     else if (/^[^;]+$/.test(line)) {
         // 上一行是分支，必须缩进
-        if (/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(prevLine)) {
+        if (/^\s*(\}\s*)?(if|for|else|else\s*if|do|while|foreach|switch)\s*\(.*\)[^;]*$/.test(prevLine)) {
 
         }
         // 左括号，也需要缩进
@@ -145,7 +148,7 @@ function toIndent(editor, document, position)
 
         }
         // 如果是右花括号，不缩进
-        else if (line.indexOf('}') > -1) {
+        else if (line.indexOf('}') > -1 && (line.indexOf('{') == -1 || line.lastIndexOf('}') > line.lastIndexOf('{'))) {
             return true;
         }
         // 可能是类似 #include <>

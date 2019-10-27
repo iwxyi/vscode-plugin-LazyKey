@@ -7,6 +7,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - Add auto generate variable name
 - Don't affect the code in comment/quote/RegExp
 - Fix `0` can't be entered in some cases
+- Fix the `=` in the cases of `var a1=` and `if (a1=)`
 
 
 ## [v0.0.3]
