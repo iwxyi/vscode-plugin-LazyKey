@@ -19,6 +19,17 @@ function provideCompletionItems(document, position, token, context) {
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.text != undefined) return;
 
+    var full = document.getText();
+    // 左边已经有这个的格式了，就不进行操作了
+    {
+        var prevLine = position.line <= 0 ? ';' : document.lineAt(new vscode.Position(position.line - 1, 0)).text;
+        var line = document.lineAt(position).text;
+        var left = line.substring(0, position.character);
+        if (/(\S<|<\S)./.test(left) || /(\S<|<\S)/.test(prevLine))
+            return;
+    }
+
+
     // 倒序遍历每一个光标
     // 多个，有一个需要添加则进行添加
     var selections = editor.selections;
@@ -26,7 +37,6 @@ function provideCompletionItems(document, position, token, context) {
     for (var i = selections.length - 1; i >= 0; --i) {
         // 获取全文和当前行内容
         position = selections[i].end;
-        var full = document.getText();
         var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
         var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
         var line = document.lineAt(position).text;
@@ -40,6 +50,9 @@ function provideCompletionItems(document, position, token, context) {
         // 必须要右边全部空的
         if (right != "" && !right.startsWith(")"))
             return;
+        // 注释、字符串、正则
+        if (!isInCode(document, position, left, right))
+            continue;
 
         var newText = "";
         // cout <    qDebug() <
@@ -88,6 +101,33 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
+}
+
+function isInCode(document, position, left, right) {
+    // 单行注释 //
+    if (/\/\//.test(left))
+        return false;
+
+    // 块注释 /* */
+    if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 字符串 "str|str"    双引号个数是偶数个
+    var res = left.match(new RegExp(/(?<!\\)"/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 字符串 'str|str'    单引号个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)'/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 正则 /reg|asd/    斜杠个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)\//g));
+    if (document.languageId == 'javascript' && res != null && res.length % 2)
+        return false;
+
+    return true;
 }
 
 /**

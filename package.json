@@ -109,7 +109,7 @@
                 "LazyKey.GenerateVariableName": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Auto generate variable name when pressing space key after the variable type"
+                    "description": "Auto generate variable name when pressing space key after the class type"
                 },
 				"LazyKey.ShowTipOnStart": {
 					"type": "boolean",

@@ -100,7 +100,10 @@ function analyzeZero(editor, document, position) {
         if (/[\w]+\($/.test(left)) {
             var wordPos = new vscode.Position(position.line, position.character-2);
             var word = document.getText(document.getWordRangeAtPosition(wordPos));  // 左边的单词
-            if (full.match(new RegExp("\\b" + word + "\\(\\)", 'g')).length <= 1) {
+            var match1 = full.match(new RegExp("\\b" + word + "\\(\\)", 'g'));
+            var match2 = full.match(new RegExp("\\b" + word + "\\([^\\)]", 'g'));
+            if (match1 != null && match1.length <= 1
+                && match2 != null && match2.length > 0) {
                 isNoParaFunc = false;
             }
         }

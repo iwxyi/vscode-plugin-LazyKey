@@ -27,7 +27,6 @@ function provideCompletionItems(document, position, token, context) {
     for (var i = selections.length - 1; i >= 0; --i) {
         // 获取全文和当前行内容
         position = selections[i].end;
-        var full = document.getText();
         var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
         var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
         var line = document.lineAt(position).text;
@@ -40,7 +39,10 @@ function provideCompletionItems(document, position, token, context) {
             return;
         // 必须要右边全部空的
         if (right != "" && ! /^[_\)\]\}\s]/.test(right))
-            return ;
+            return;
+        // 注释、字符串、正则
+        if (!isInCode(document, position, left, right))
+            continue;
 
         var newText = "";
         // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
@@ -109,6 +111,33 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
+}
+
+function isInCode(document, position, left, right) {
+    // 单行注释 //
+    if (/\/\//.test(left))
+        return false;
+
+    // 块注释 /* */
+    if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 字符串 "str|str"    双引号个数是偶数个
+    var res = left.match(new RegExp(/(?<!\\)"/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 字符串 'str|str'    单引号个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)'/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 正则 /reg|asd/    斜杠个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)\//g));
+    if (document.languageId == 'javascript' && res != null && res.length % 2)
+        return false;
+
+    return true;
 }
 
 /**
