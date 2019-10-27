@@ -65,7 +65,7 @@ function analyzeSkip(editor, document, position)
 
     }
     // fun{|} 这种连续的情况
-    else if (leftChar == "{" && rightChar == "}") {
+    else if ((leftChar == "{" && rightChar == "}") || (leftChar == "[" && rightChar == "]")) {
         largeEnter();
         return true;
     }
