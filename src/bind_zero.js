@@ -86,16 +86,27 @@ function analyzeZero(editor, document, position) {
             else if (c == ')')
                 rr++;
         }
-
         // 如果左右括号已经匹配了，则跳过本次
         var isSkip = (ll + rl <= lr + rr);
+
+        // 如果是函数，则判断是否需要带参数
+        var isNoParaFunc = right.startsWith(")");
+        // func(|0)
+        if (/[\w]+\($/.test(left)) {
+            var wordPos = new vscode.Position(position.line, position.character-2);
+            var word = document.getText(document.getWordRangeAtPosition(wordPos));  // 左边的单词
+            if (full.match(new RegExp("\\b" + word + "\\(\\)", 'g')).length <= 1) {
+                isNoParaFunc = false;
+            }
+        }
+
         if (!isSkip) { // 有添加的部分，则执行添加
             isAllSkip = false;
-        } else if (right.length == 0 || right.substring(0, 1) != ")") {
+        } else if (right.length == 0 || !isNoParaFunc) {
             canSkipIfAllSkip = false;
         }
 
-        var newText = isSkip ? (right.startsWith(")") ? "" : "0") : ")";
+        var newText = isSkip ? (isNoParaFunc ? "" : "0") : ")";
 
         // 点号的位置替换为指针
         var newEdit = vscode.TextEdit.insert(position, newText);
