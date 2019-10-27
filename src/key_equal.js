@@ -45,8 +45,12 @@ function provideCompletionItems(document, position, token, context) {
 
         var newText = "";
         // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
+        // var a1 =
+        if (/^\s*(\w+\s+)([\w_][\w\d_]*)$/.test(left) && right == '') {
+            newText = " = ";
+        }
         // var 1=
-        if (/ 1$/.test(left)) {
+        else if (/ 1$/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = "!= ";
         }
