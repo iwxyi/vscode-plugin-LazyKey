@@ -17,7 +17,6 @@ function activate(context) {
 
     // ProvideCompletion
 	require('./src/key_dot.js')(context);
-	require('./src/key_zero.js')(context);
 	require('./src/key_space.js')(context);
 	require('./src/key_minus.js')(context);
 	require('./src/key_equal.js')(context);

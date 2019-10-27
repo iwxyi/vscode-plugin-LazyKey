@@ -66,10 +66,11 @@ function provideCompletionItems(document, position, token, context) {
     // 提供变量名预测
     else if (vscode.workspace.getConfiguration().get('LazyKey.GenerateVariableName')
         && (document.languageId == 'cpp' || document.languageId == 'java' || document.languageId == 'c')
-        && /[A-Z][\w]+$/.test(word)) {
+        && /^\s*[\w]+$/.test(left) && right == '') {
         var completionItems = [];
         var names = getNamesFromVariableType(word);
         for (var name of names) {
+            if (name == '') continue;
             var completionItem = new vscode.CompletionItem(name);
             completionItem.kind = vscode.CompletionItemKind.Variable;
             completionItem.detail = 'LazyKey: auto generate variable name';
@@ -94,23 +95,44 @@ function provideCompletionItems(document, position, token, context) {
     }
 }
 
+/**
+ * 根据变量类型自动生成变量名
+ * 备注：suggest排序倒着来的，排前面的反而要在后面
+ */
 function getNamesFromVariableType(type)
 {
-    if (type == '')
+    if (type == '' || type == 'var' || type == 'let')
         return '';
 
-    // String
+    // String: string
     if (/^[A-Z][a-z]*$/.test(type))
         return [type.toLowerCase()];
-    // QString
+    // QString: string, qString
     else if (/^[A-Z][A-Z][a-z]*$/.test(type)) {
         return [
             /^[A-Z]([A-Z][a-z]*)$/.exec(type)[1].toLowerCase(), // string
-            type.substring(0, 1).toLowerCase()+/^[A-Z]([A-Z][a-z]*)$/.exec(type)[1], // qString
+            type.substring(0, 1).toLowerCase()+/^[A-Z]([A-Z][a-z]*)$/.exec(type)[1] // qString
+        ];
+    }
+    // MyStringVari: myStringVari, vari
+    else if (/^[A-Z][a-z]\w*$/.test(type)) {
+        return [
+            type.substring(0, 1).toLowerCase() + /^[A-Z]([A-Z][a-z]*)$/.exec(type)[1], // myStringVari
+            /([A-Z][a-z]*)$/.exec(type)[1].toLowerCase() // vari
+        ];
+    }
+    // CMyString: myString, cMyString, string
+    else if (/^[A-Z][A-Z]\w*$/.test(type)) {
+        console.log(/^[A-Z][A-Z](\w*)$/.exec(type)[1]);
+
+        return [
+            type.substring(1, 2).toLowerCase() + /^[A-Z][A-Z](\w*)$/.exec(type)[1], // myStringVari
+            type.substring(0, 1).toLowerCase() + /^[A-Z](\w*)$/.exec(type)[1], // cMyStringVari
+            /([A-Z][a-z]*)$/.exec(type)[1].toLowerCase() // vari
         ];
     }
 
-    return 'aaaaa';
+    return '';
 }
 
 /**
