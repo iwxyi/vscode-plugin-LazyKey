@@ -67,7 +67,7 @@ function provideCompletionItems(document, position, token, context) {
             newText = "_";
         }
         // 开头 var_    这种情况应该不会是减号吧
-        else if (/\s*[\w_][\w\d_]*$/.test(left)) {
+        else if (/^\s*[\w_][\w\d_]*$/.test(left)) {
             newText = "_";
         }
         // 自减
