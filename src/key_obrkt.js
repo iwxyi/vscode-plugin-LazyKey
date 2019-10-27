@@ -149,7 +149,7 @@ function provideCompletionItems(document, position, token, context) {
         return;
     }
     // 末尾，需要将下一行包含到代码块中（未考虑连续多行缩进）
-    else if (/^\s*(if|else|for|foreach|while|switch)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right) && position.line < document.lineCount - 1
+    else if (/^\s*(if|else|else\s+if|for|foreach|while|switch)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right) && position.line < document.lineCount - 1
         && /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
         vscode.commands.executeCommand('deleteLeft');
         var ins = "{";
