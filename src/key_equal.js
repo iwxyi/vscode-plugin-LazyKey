@@ -56,8 +56,16 @@ function provideCompletionItems(document, position, token, context) {
         }
         // var1=
         else if (/\S1$/.test(left)) {
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            newText = " != ";
+            // 判断存不存在名字叫“var1”的变量
+            var wordPos = new vscode.Position(position.line, position.character - 2);
+            var word = document.getText(document.getWordRangeAtPosition(wordPos));  // 左边的单词(包含末尾的1)
+            var match1 = full.match(new RegExp("\\b" + word, 'g'));
+            if (match1 != null && match1.length > 1) { // 不存在
+                newText = " = ";
+            } else {
+                leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
+                newText = " != ";
+            }
         }
         // var =
         else if (/(\b[\w_][\w\d_]*\b|\)|\])$/.test(left)) {
