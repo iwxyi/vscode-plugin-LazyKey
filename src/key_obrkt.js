@@ -41,12 +41,9 @@ function provideCompletionItems(document, position, token, context) {
     // 如果是需要方括号的地方，比如 = []
     if (/(=|>|return)\s*$/.test(left))
         return;
-    // 注释
-    if (/\/\//.test(left) || (/\/\*/.test(left)))
-        return;
-    // 字符串
-
-    // 正则
+    // 注释、字符串、正则
+    if (!isInCode(document, position, left, right))
+        return ;
 
 
     // 如果右边已经有左花括号了，那么就直接：下一行为空则下移，否则插入
@@ -359,6 +356,34 @@ function provideCompletionItems(document, position, token, context) {
     else {
         return ;
     }
+}
+
+function isInCode(document, position, left, right)
+{
+	// 单行注释 //
+    if (/\/\//.test(left))
+        return false;
+
+    // 块注释 /* */
+    if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 字符串 "str|str"    双引号个数是偶数个
+    var res = left.match(new RegExp(/(?<!\\)"/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 字符串 'str|str'    单引号个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)'/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 正则 /reg|asd/    斜杠个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)\//g));
+    if (document.languageId == 'javascript' && res != null && res.length % 2)
+        return false;
+
+    return true;
 }
 
 /**
