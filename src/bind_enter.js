@@ -112,7 +112,7 @@ function toIndent(editor, document, position)
     if (/^\s*(\}\s*)?(if|else|else\s*if|for|do|while|foreach|switch)\s*\(.*\)[^;]*$/.test(line))
         indent = true;
     // 左括号结尾
-    else if (/\{\s*$/)
+    else if (/\{\s*$/.test(line))
         indent = true;
     // 空白行（可能包含注释），不管
     else if (/^\s+(\/\/.*)?$/.test(line))
