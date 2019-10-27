@@ -37,6 +37,11 @@ function analyzeNine(editor, document, position) {
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
 
+
+    // 注释、字符串、正则
+    if (!isInCode(document, position, left, right))
+        return false;
+
     // 不处理连续数字
     if (/\d+$/.test(left) || /^\d+/.test(right))
         return false;
@@ -86,6 +91,33 @@ function analyzeNine(editor, document, position) {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
+
+    return true;
+}
+
+function isInCode(document, position, left, right) {
+    // 单行注释 //
+    if (/\/\//.test(left))
+        return false;
+
+    // 块注释 /* */
+    if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 字符串 "str|str"    双引号个数是偶数个
+    var res = left.match(new RegExp(/(?<!\\)"/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 字符串 'str|str'    单引号个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)'/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 正则 /reg|asd/    斜杠个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)\//g));
+    if (document.languageId == 'javascript' && res != null && res.length % 2)
+        return false;
 
     return true;
 }

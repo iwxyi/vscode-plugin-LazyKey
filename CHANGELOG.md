@@ -5,6 +5,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 ## [v0.0.4]
 
 - Add auto generate variable name
+- Don't affect the code in comment/quote/RegExp
 - Fix `0` can't be entered in some cases
 
 

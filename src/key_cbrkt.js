@@ -45,6 +45,9 @@ function provideCompletionItems(document, position, token, context) {
     // 判断左1是不是输入的符号
     if (inpt != "]")
         return;
+    // 注释、字符串、正则
+    if (!isInCode(document, position, left, right))
+        return;
 
     // 右边是 ] ，不进行处理
     if (right.startsWith(']')) {
@@ -98,6 +101,33 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertLineAfter');
     }
+}
+
+function isInCode(document, position, left, right) {
+    // 单行注释 //
+    if (/\/\//.test(left))
+        return false;
+
+    // 块注释 /* */
+    if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 字符串 "str|str"    双引号个数是偶数个
+    var res = left.match(new RegExp(/(?<!\\)"/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 字符串 'str|str'    单引号个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)'/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 正则 /reg|asd/    斜杠个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)\//g));
+    if (document.languageId == 'javascript' && res != null && res.length % 2)
+        return false;
+
+    return true;
 }
 
 /**
