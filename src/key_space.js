@@ -63,6 +63,23 @@ function provideCompletionItems(document, position, token, context) {
         else
             newText = "\"$0\"";
     }
+    // 提供变量名预测
+    else if (vscode.workspace.getConfiguration().get('LazyKey.GenerateVariableName')
+        && (document.languageId == 'cpp' || document.languageId == 'java' || document.languageId == 'c')
+        && /[A-Z][\w]+$/.test(word)) {
+        var completionItems = [];
+        var names = getNamesFromVariableType(word);
+        for (var name of names) {
+            var completionItem = new vscode.CompletionItem(name);
+            completionItem.kind = vscode.CompletionItemKind.Variable;
+            completionItem.detail = 'LazyKey: auto generate variable name';
+            completionItem.filterText = name;
+            // completionItem.insertText = new vscode.SnippetString('aaaabbbccc');
+            completionItems.push(completionItem);
+        }
+
+        return completionItems;
+    }
     else                                    // 什么都不需要做
         return ;
 
@@ -75,6 +92,25 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
+}
+
+function getNamesFromVariableType(type)
+{
+    if (type == '')
+        return '';
+
+    // String
+    if (/^[A-Z][a-z]*$/.test(type))
+        return [type.toLowerCase()];
+    // QString
+    else if (/^[A-Z][A-Z][a-z]*$/.test(type)) {
+        return [
+            /^[A-Z]([A-Z][a-z]*)$/.exec(type)[1].toLowerCase(), // string
+            type.substring(0, 1).toLowerCase()+/^[A-Z]([A-Z][a-z]*)$/.exec(type)[1], // qString
+        ];
+    }
+
+    return 'aaaaa';
 }
 
 /**
