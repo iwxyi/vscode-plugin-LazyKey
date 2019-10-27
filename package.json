@@ -3,7 +3,7 @@
     "displayName": "LazyKey",
     "publisher": "mrxy001",
 	"description": "Minimize keystrokes through automated keymaps",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"keywords": ["lazy", "key", "auto", "macros"],
 	"engines": {
 		"vscode": "^1.36.0"

@@ -56,7 +56,7 @@ function analyzeZero(editor, document, position) {
         if (/\D$/.test(left) && right.startsWith(')'))     // 排除单纯一个0并右括号结束，例如：at(0|)、at(a, 0|)
             ;
         else if (/\d+$/.test(left) || /^\d+/.test(right))
-            return;
+            return false;
 
         // 判断是插入 0 还是插入 )
         // 左边是自增/自减，很可能是右括号
@@ -64,13 +64,13 @@ function analyzeZero(editor, document, position) {
             ;
         // 左边是空白或者运算符，很可能是 0
         else if (/[ =\+\-*\/%\.<>]$/.test(left))
-            return;
+            return false;
         // 一些函数后面必定有参数的，也是 0
         else if (/(at|insert|of|remove|add|set\w+)\($/.test(left) && right.startsWith(')'))
-            return;
+            return false;
         // 判断 单词0 是否存在
         else if (/[\w_]+$/.test(left) && full.match(new RegExp("\\b" + word + "0", 'g')) != null)
-            return;
+            return false;
 
         // 光标左右的左右括号的数量
         var ll = 0, lr = 0, rl = 0, rr = 0;
@@ -87,7 +87,7 @@ function analyzeZero(editor, document, position) {
                 rr++;
         }
 
-        // 如果左右括号已经匹配了，则跳过
+        // 如果左右括号已经匹配了，则跳过本次
         var isSkip = (ll + rl <= lr + rr);
         if (!isSkip) { // 有添加的部分，则执行添加
             isAllSkip = false;
@@ -95,10 +95,12 @@ function analyzeZero(editor, document, position) {
             canSkipIfAllSkip = false;
         }
 
-        var newText = isSkip ? "" : ")";
+        var newText = isSkip ? (right.startsWith(")") ? "" : "0") : ")";
 
         // 点号的位置替换为指针
         var newEdit = vscode.TextEdit.insert(position, newText);
+        if ((isAllSkip==true && newText != ''))
+            isAllSkip = false;
 
         // 添加本次的修改
         textEdits.push(newEdit);

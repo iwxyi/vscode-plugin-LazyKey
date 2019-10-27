@@ -2,6 +2,10 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.0.4]
+- Fix `0` can't be entered in some cases
+
+
 ## [v0.0.3]
 
 - Convert `''` to `""` without shift key
