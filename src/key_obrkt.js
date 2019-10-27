@@ -38,6 +38,16 @@ function provideCompletionItems(document, position, token, context) {
     // 去掉自动添加的右括号（但是如果不是自动添加的话，也没有办法判断）
     if (right.startsWith(']'))
         right = right.substring(1, right.length);
+    // 如果是需要方括号的地方，比如 = []
+    if (/(=|>|return)\s*$/.test(left))
+        return;
+    // 注释
+    if (/\/\//.test(left) || (/\/\*/.test(left)))
+        return;
+    // 字符串
+
+    // 正则
+
 
     // 如果右边已经有左花括号了，那么就直接：下一行为空则下移，否则插入
     if (/\{\s*(\/[\/\*].*$)?/.test(right)) {
