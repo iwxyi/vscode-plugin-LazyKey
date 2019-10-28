@@ -2,6 +2,13 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.0.5]
+
+- Fix the problem of `-`
+- Add unequal of `getVal()1=`
+- Add outdent of double `;` after an `if` line
+
+
 ## [v0.0.4]
 
 - Add auto generate variable name

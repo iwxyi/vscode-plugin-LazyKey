@@ -50,6 +50,20 @@ function provideCompletionItems(document, position, token, context) {
         || /;\s*$/.test(left)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertLineAfter');
+
+        // 判断上一行是不是没有括号的分支语句，若是则反缩进一层
+        if (position.line > 0) {
+            var prevLinePosition = new vscode.Position(position.line - 1, 0);
+            var prevLine = document.lineAt(prevLinePosition).text;
+            if (/^\s*(if|else if|else|for|while|foreach)\s*\(.+\)\s*(\/[\/\*].*)?$/.test(prevLine)) {
+                // 判断缩进数量
+                if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
+                    setTimeout(function () {
+                        vscode.commands.executeCommand('outdent');
+                    }, 100);
+            }
+        }
+
         return ;
     }
     // 单行变量声明，末尾添加分号，换行
