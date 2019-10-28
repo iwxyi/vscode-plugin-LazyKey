@@ -27,6 +27,7 @@ function provideCompletionItems(document, position, token, context) {
     for (var i = selections.length - 1; i >= 0; --i) {
         // 获取全文和当前行内容
         position = selections[i].end;
+        var full = document.getText();
         var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
         var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
         var line = document.lineAt(position).text;
