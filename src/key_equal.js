@@ -54,6 +54,11 @@ function provideCompletionItems(document, position, token, context) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = "!= ";
         }
+        // getA()1 =    arr[3]1 =
+        else if (/[\)\]]1$/.test(left)) {
+            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
+            newText = " != ";
+        }
         // var1=
         else if (/\S1$/.test(left)) {
             // 判断存不存在名字叫“var1”的变量
