@@ -49,6 +49,10 @@ function provideCompletionItems(document, position, token, context) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 2);
             vscode.workspace.getConfiguration().update('LazyKey.DotToPointDisabledOnce', true, true);
         }
+        // 数字小数点
+        else if (/\d$/.test(left)) {
+            return;
+        }
         else {
             newText = "->";
             // 两个点号变成指针
