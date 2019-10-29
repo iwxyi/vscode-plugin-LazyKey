@@ -4,6 +4,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 
 ## [v0.0.5]
 
+- Fix digital decimal point
 - Fix the problem of `-`
 - Add unequal of `getVal()1=`
 - Add outdent of double `;` after an `if` line

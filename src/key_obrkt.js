@@ -373,8 +373,8 @@ function provideCompletionItems(document, position, token, context) {
 
         // 判断有没有已经存在的变量（指针、数组）
         if (/^\w+$/.test(word)) {
-            var re = (new RegExp('\\b' + word + '\\[')).exec(full)[1];
-            var re2 = (new RegExp('\\b\\*\\s*' + word + '\\b')).exec(full)[1];
+            var re = full.match(new RegExp('\\b' + word + '\\[', 'g'));
+            var re2 = full.match(new RegExp('\\b\\*\\s*' + word + '\\b', 'g'));
             if ((re != null && re.length > 1)
                 || (re2 != null && re2.length>1)) {
                 return ;
