@@ -135,7 +135,13 @@ function provideCompletionItems(document, position, token, context) {
             }
         }
     }
-    // lambda中括号    , [|]
+    // 函数左括号 private final void fun    void std::string s()
+    else if (/^\s*([\w\d_:]+\s+)[\w\d_:]+\($/.test(left) && /^\)\s*$/.test(right)) {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorLineEnd');
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n{\n\t$0\n}' });
+    }
+    // lambda或数组参数中括号    , [|]
     else if (/[,=(]\s*$/.test(left)) {
         return;
     }
@@ -144,7 +150,6 @@ function provideCompletionItems(document, position, token, context) {
         // 判断上一个方括号左边是什么
         var count = 0, pos = 0;
         var rev = left.split('').reverse().join('');
-        console.log(left);
         for (var c of rev)
         {
             if (c == '[')
