@@ -71,6 +71,28 @@ function provideCompletionItems(document, position, token, context) {
             var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
             if (word != "this" && !doublePoint && !re1.test(full) && !re2.test(full) && !re3.test(full))
                 return;
+
+            // 判断上面最近的那个是否是指针
+            var pos = position;
+            var reDot = new RegExp("\\b" + word + "\\.");
+            var rePoi = new RegExp("\\b" + word + "\\->");
+            var usePoint = true;
+            while (pos.line>0)
+            {
+                pos = new vscode.Position(pos.line - 1, 0);
+                var prevLine = document.lineAt(pos).text;
+                if (reDot.test(prevLine)) {
+                    usePoint = false;
+                    break;
+                } else if (rePoi.test(prevLine)) {
+                    usePoint = true;
+                    break;
+                }
+            }
+
+            if (!doublePoint && !usePoint) {
+                continue;
+            }
         }
 
         // 点号的位置替换为指针
@@ -79,6 +101,10 @@ function provideCompletionItems(document, position, token, context) {
         // 添加本次的修改
         textEdits.push(newEdit);
     }
+
+    // 不需要做出变化
+    if (textEdits.length == 0)
+        return ;
 
     // 应用到编辑器
     let wordspaceEdit = new vscode.WorkspaceEdit();
