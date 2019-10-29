@@ -63,6 +63,10 @@ function provideCompletionItems(document, position, token, context) {
         else if (/^\s*(\w+\s+)*[\w:_]+\s*$/.test(left)) {
             return ;
         }
+        // fun(QList<int> li)
+        else if (/^\b[A-Z]/.test(word)) {
+            return;
+        }
         // Vector
         else if (/[A_Z][\w\d_]*$/.test(left)){
             return ;
