@@ -136,11 +136,31 @@ function provideCompletionItems(document, position, token, context) {
         }
     }
     // lambda中括号    , [|]
-    else if (/,\s*$/.test(left)) {
+    else if (/[,=(]\s*$/.test(left)) {
         return;
     }
     // lambda花括号    , [=]{|}    ,[i,j,l...](a,b,c){|}
     else if (/\[[\w\d_,\s&=\*]*\]\s*(\([\w\d_,\s&=\*]*\))?/.test(left)) {
+        // 判断上一个方括号左边是什么
+        var count = 0, pos = 0;
+        var rev = left.split('').reverse().join('');
+        console.log(left);
+        for (var c of rev)
+        {
+            if (c == '[')
+                count++;
+            else if (c == ']')
+                count--;
+            pos++;
+            if (count == 0 && pos>0)
+                break;
+        }
+        // 除去最近方括号后的左边文本
+        var lef = left.substring(0, left.length - pos);
+        // 如果是以可能的lambda起始结尾
+        if (!/[,=\(]\s*$/.test(lef))
+            return ;
+
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{$0}' });
         return;
@@ -346,6 +366,21 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 一行的最右边添加大括号（不包括下一行）。和上一项的区别是判断添不添加空格
     else if (/^[^\{]+$/.test(left) && /^\s*$/.test(right)) {
+        // 判断是不是变量声明 const int a[3]
+        if (/\s*(\w+\s+)[\w_].+[\w\d_]$/.test(left)) {
+            return ;
+        }
+
+        // 判断有没有已经存在的变量（指针、数组）
+        if (/^\w+$/.test(word)) {
+            var re = (new RegExp('\\b' + word + '\\[')).exec(full)[1];
+            var re2 = (new RegExp('\\b\\*\\s*' + word + '\\b')).exec(full)[1];
+            if ((re != null && re.length > 1)
+                || (re2 != null && re2.length>1)) {
+                return ;
+            }
+        }
+
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
         if (left.endsWith(' '))
