@@ -201,6 +201,25 @@ function toIndent(editor, document, position)
     ) {
         outdent = true;
     }
+    // break; 反向缩进
+    else if (/^\s*break;\s*$/.test(line)) {
+        // 判断有没有冒号：
+        var indentLine = /^(\s*)/.exec(line)[1].length; // 当前行缩进
+        var line = position.line;
+        var isCase = false;
+        while (--line>=0) {
+            var pos = new vscode.Position(line, 0);
+            var prevLine = document.lineAt(pos).text;
+            var indentPrevLine = /^(\s*)/.exec(prevLine)[1].length
+            if (indentPrevLine < indentLine) {
+                isCase = /^(\s*)case.+:[^\{]*$/.test(prevLine);
+                break;
+            }
+        }
+        if (isCase) {
+            outdent = true;
+        }
+    }
     else {
         outdent = false;
     }

@@ -6,6 +6,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 
 - Fix digital decimal point
 - Fix the problem of `-`
+- Fix multiple points `->`
 - Add unequal of `getVal()1=`
 - Add outdent of double `;` after an `if` line
 - Support multidimensional array by using `[` key

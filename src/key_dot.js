@@ -26,6 +26,7 @@ function provideCompletionItems(document, position, token, context) {
     // 倒序遍历每一个光标
     var selections = editor.selections;
     let textEdits = [];
+    var isPoint = false; // 避免多个光标只有第一个会变成指针
     for (var i = selections.length-1; i>= 0; --i)
     {
         // 获取全文和当前行内容
@@ -94,12 +95,13 @@ function provideCompletionItems(document, position, token, context) {
                 }
             }
 
-            if (!doublePoint && !usePoint) {
+            if (!doublePoint && !usePoint && !isPoint) {
                 continue;
             }
         }
 
         // 点号的位置替换为指针
+        isPoint = true;
         var newEdit = vscode.TextEdit.replace(new vscode.Range(leftPosition, position), newText);
 
         // 添加本次的修改
@@ -109,6 +111,12 @@ function provideCompletionItems(document, position, token, context) {
     // 不需要做出变化
     if (textEdits.length == 0)
         return ;
+    // 多个光标，并且都需要改变，那么可能是多个指针（目前无法解决）
+    else if (selections.length>1) {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '->'});
+        return;
+    }
 
     // 应用到编辑器
     let wordspaceEdit = new vscode.WorkspaceEdit();
