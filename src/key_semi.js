@@ -95,6 +95,10 @@ function provideCompletionItems(document, position, token, context) {
             }
         }
     }
+    // 末尾有结尾的花括号
+    else if (/\}/.test(right)) {
+        return ;
+    }
     // 普通操作：到末尾添加分号
     else {
         vscode.commands.executeCommand('deleteLeft');
