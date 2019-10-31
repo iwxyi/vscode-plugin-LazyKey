@@ -136,7 +136,7 @@ function provideCompletionItems(document, position, token, context) {
         }
     }
     // 函数左括号 private final void fun    void std::string s()
-    else if (/^\s*([\w\d_:]+\s+)[\w\d_:]+\($/.test(left) && /^\)\s*$/.test(right)) {
+    else if (/^\s*([\w\d_:]+(\*&\s)+)[\w\d_:]+\($/.test(left) && /^\)\s*$/.test(right)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n{\n\t$0\n}' });
