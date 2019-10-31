@@ -9,6 +9,8 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - Fix multiple points `->`
 - Add unequal of `getVal()1=`
 - Add outdent of double `;` after an `if` line
+- Auto oudent after `break;` if necessary
+- Prevent indentation in switch fragment
 - Support multidimensional array by using `[` key
 - Convert the dot to a pointer according to the context
 

@@ -52,16 +52,38 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('editor.action.insertLineAfter');
 
         // 判断上一行是不是没有括号的分支语句，若是则反缩进一层
-        if (position.line > 0) {
-            var prevLinePosition = new vscode.Position(position.line - 1, 0);
-            var prevLine = document.lineAt(prevLinePosition).text;
-            if (/^\s*(if|else if|for|while|foreach)\s*\(.+\)\s*(\/[\/\*].*)?$/.test(prevLine)
-                || /^\s*else\s*(\/[\/\*].*)?/.test(left)) {
-                // 判断缩进数量
-                if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
-                    setTimeout(function () {
-                        vscode.commands.executeCommand('outdent');
-                    }, 100);
+        if (position.line == 0)
+            return ;
+
+        var prevLinePosition = new vscode.Position(position.line - 1, 0);
+        var prevLine = document.lineAt(prevLinePosition).text;
+        if (/^\s*(if|else if|for|while|foreach)\s*\(.+\)\s*(\/[\/\*].*)?$/.test(prevLine)
+            || /^\s*else\s*(\/[\/\*].*)?/.test(left)) {
+            // 判断缩进数量
+            if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
+                setTimeout(function () {
+                    vscode.commands.executeCommand('outdent');
+                }, 100);
+        }
+        // case x: ...break;
+        else if (/^\s*break;;\s*$/.test(line)) {
+            // 判断有没有 case x:
+            var indentLine = /^(\s*)/.exec(line)[1].length; // 当前行缩进
+            var line = position.line;
+            var isCase = false;
+            while (--line >= 0) {
+                var pos = new vscode.Position(line, 0);
+                var prevLine = document.lineAt(pos).text;
+                var indentPrevLine = /^(\s*)/.exec(prevLine)[1].length
+                if (indentPrevLine < indentLine) {
+                    isCase = /^(\s*)case.+:[^\{]*$/.test(prevLine);
+                    break;
+                }
+            }
+            if (isCase) {
+                setTimeout(function () {
+                    vscode.commands.executeCommand('outdent');
+                }, 100);
             }
         }
 

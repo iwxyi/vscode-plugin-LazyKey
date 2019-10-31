@@ -203,7 +203,7 @@ function toIndent(editor, document, position)
     }
     // break; 反向缩进
     else if (/^\s*break;\s*$/.test(line)) {
-        // 判断有没有冒号：
+        // 判断有没有 case x：
         var indentLine = /^(\s*)/.exec(line)[1].length; // 当前行缩进
         var line = position.line;
         var isCase = false;
