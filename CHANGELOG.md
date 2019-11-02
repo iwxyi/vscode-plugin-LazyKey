@@ -11,6 +11,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - Add outdent of double `;` after an `if` line
 - Auto oudent after `break;` if necessary
 - Prevent indentation in switch fragment
+- Prevent `9` and `0` in cases like `0.9`/`0.01`
 - Support multidimensional array by using `[` key
 - Convert the dot to a pointer according to the context
 

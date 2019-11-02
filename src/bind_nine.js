@@ -42,8 +42,8 @@ function analyzeNine(editor, document, position) {
     if (!isInCode(document, position, left, right))
         return false;
 
-    // 不处理连续数字
-    if (/\d+$/.test(left) || /^\d+/.test(right))
+    // 不处理连续数字。或者小数点
+    if (/\d+\.?$/.test(left) || /^\d+/.test(right))
         return false;
 
     // 判断各种情况是 9 还是 (

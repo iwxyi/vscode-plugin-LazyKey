@@ -57,10 +57,10 @@ function analyzeZero(editor, document, position) {
         var left = line.substring(0, position.character);
         var right = line.substring(position.character);
 
-        // 不处理连续数字
+        // 不处理连续数字或者小数点
         if (/\D$/.test(left) && right.startsWith(')'))     // 排除单纯一个0并右括号结束，例如：at(0|)、at(a, 0|)
             ;
-        else if (/\d+$/.test(left) || /^\d+/.test(right))
+        else if (/\d+\.?$/.test(left) || /^\d+/.test(right))
             return false;
 
         // 判断是插入 0 还是插入 )
