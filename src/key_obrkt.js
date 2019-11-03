@@ -45,7 +45,6 @@ function provideCompletionItems(document, position, token, context) {
     if (!isInCode(document, position, left, right))
         return ;
 
-
     // 如果右边已经有左花括号了，那么就直接：下一行为空则下移，否则插入
     if (/\{\s*(\/[\/\*].*$)?/.test(right)) {
         var isNextLineBlank = false;
@@ -171,7 +170,8 @@ function provideCompletionItems(document, position, token, context) {
         return;
     }
     // 末尾，需要将下一行包含到代码块中（未考虑连续多行缩进）
-    else if (/^\s*(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right) && position.line < document.lineCount - 1
+    else if (((/^\s*(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)) || (/^\s*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)))
+        && position.line < document.lineCount - 1
         && /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
         vscode.commands.executeCommand('deleteLeft');
         var ins = "{";
@@ -189,7 +189,8 @@ function provideCompletionItems(document, position, token, context) {
         }, 100);
     }
     // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
-    else if (position.line > 0 && /^\s*(if|else|for|foreach|while)\s*\(.+\)[^;]*/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
+    else if (position.line > 0 && (/^\s*(if|else|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
+        || /^\s*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text))
         && /^\s+$/.test(left) && /\S/.test(right)
         && /^(\s*)/.exec(left)[1].length >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
         // 获取当前行左边缩进的值
