@@ -97,12 +97,12 @@ function analyzeZero(editor, document, position) {
         // 如果是函数，则判断是否需要带参数
         var isNoParaFunc = right.startsWith(")");
         // func(|0)
-        if (/[\w]+\($/.test(left)) {
+        if (/[\w]+\($/.test(left) && right.startsWith(')')) {
             var wordPos = new vscode.Position(position.line, position.character-2);
             var word = document.getText(document.getWordRangeAtPosition(wordPos));  // 左边的单词
-            var match1 = full.match(new RegExp("\\b" + word + "\\(\\)", 'g'));
-            var match2 = full.match(new RegExp("\\b" + word + "\\([^\\)]", 'g'));
-            if (match1 != null && match1.length <= 1
+            var match1 = full.match(new RegExp("\\b" + word + "\\(\\)", 'g'));      // 无参数
+            var match2 = full.match(new RegExp("\\b" + word + "\\([^\\)]", 'g'));   // 有参数
+            if (match1 != null && match1.length <= 1 /*本身就有一个*/
                 && match2 != null && match2.length > 0) {
                 isNoParaFunc = false;
             }
