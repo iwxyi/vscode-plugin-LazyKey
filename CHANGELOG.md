@@ -4,6 +4,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 
 ## [v0.0.6]
 
+- Auto fill `()` while inserting completion
 - Add semicolon after `class` / `struct` / `enum`
 - Fix `enter` key jumping to line end in the line only with comment or `)` / `}` / `]`
 - Add spaces before and after the `=` forcibly

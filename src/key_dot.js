@@ -70,11 +70,45 @@ function provideCompletionItems(document, position, token, context) {
                 doublePoint = true;
             }
 
-            // 判断是否是 this, 或上文是否有声明为 *var 或者 var-> 的字符
+            // 如果word不是单词，而是右括号，则获取真实的内容
+            if (left.endsWith(')'))
+            {
+                console.log('是括号');
+                // 函数例子：getPoint(p)   at(index.row())   substring(0, len('strstrstr'))
+                //word = /(\w_[\w\d_]*)\(.+*\)/.exec(left)[1];
+                var pos = left.length-1, level = 1/*右括号数量*/;
+                while (--pos>=0)
+                {
+                    var c = left.charAt(pos);
+                    console.log('char', c)
+                    if (c == '(')
+                        level--;
+                    else if (c == ')')
+                        level++;
+                    if (level <= 0)
+                        break;
+                }
+                var leftWithWord = left.substring(0, pos);
+                if (pos>0 && level == 0) // 找到位置了
+                {
+                    var match = /([\w_][\w\d_]*)\s*$/.exec(leftWithWord);
+                    if (match != null)
+                    {
+                        // 获取到新的单词了
+                        word = match[1];
+
+                        // 因为要和上面配对，所以必须得添加后面成对括号的正则表达式（我好像不会诶，怎么办……）
+
+                    }
+                }
+            }
+
+            // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
+            var re0 = new RegExp("^p_"); // 约定俗成的 p_var 指针类型
             var re1 = new RegExp("\\*\\s*" + word + "\\b");
             var re2 = new RegExp("\\b" + word + "\\s*->");
             var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
-            if (word != "this" && !doublePoint && !re1.test(full) && !re2.test(full) && !re3.test(full))
+            if (word != "this" && !doublePoint && !re0.test(word) && !re1.test(full) && !re2.test(full) && !re3.test(full))
                 return;
 
             // 判断上面最近的那个是否是指针

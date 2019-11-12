@@ -78,7 +78,7 @@ function analyzeContext(old_line, old_left, old_right)
     if (!word.endsWith(insertWord)) // 插入的不只是这个单词？
         return;
 
-    // ==== 判断新的 ====
+    // ==== 判断需不需要括号 ====
     // var offset = document.offsetAt(new vscode.Position(position.line, 0)); // 光标位置
     // var full_left = full.substring(0, offset); // 全文左边
     // 由于不知道正则怎么倒序查找，还是从下往上一行一行找过去吧
@@ -101,6 +101,9 @@ function analyzeContext(old_line, old_left, old_right)
         else
             return ;
     }
+
+    // ==== 判断是不是无参数函数 ====
+    // 为了保证交互统一，不将无参函数的括号放在右边了
 
     // ==== 插入操作 ====
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '($0)'});

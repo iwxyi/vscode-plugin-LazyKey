@@ -276,6 +276,48 @@
                 "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
             },
             {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==c"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cpp"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==java"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==js"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==javascript"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==php"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cs"
+            },
+            {
                 "command": "extension.keybindings_nine",
                 "key": "9",
                 "mac": "9",
