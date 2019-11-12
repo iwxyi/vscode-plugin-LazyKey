@@ -1,95 +1,100 @@
 {
-	"name": "lazykey",
+    "name": "lazykey",
     "displayName": "LazyKey",
     "publisher": "mrxy001",
-	"description": "Minimize keystrokes through automated keymaps",
-	"version": "0.1.0",
-	"keywords": ["lazy", "key", "auto", "macros"],
-	"engines": {
-		"vscode": "^1.36.0"
+    "description": "Minimize keystrokes through automated keymaps",
+    "version": "0.1.0",
+    "keywords": [
+        "lazy",
+        "key",
+        "auto",
+        "macros"
+    ],
+    "engines": {
+        "vscode": "^1.36.0"
     },
     "repository": "https://github.com/MRXY001/vscode-plugin-LazyKey",
-	"categories": [
-		"Keymaps"
-	],
-	"icon": "images/icon.png",
-	"activationEvents": [
-		"onCommand:extension.ImLazy",
-		"onCommand:extension.dotToPoint",
-		"onLanguage:c",
-		"onLanguage:cpp",
-		"onLanguage:java",
-		"onLanguage:js",
-		"onLanguage:javascript",
-		"onLanguage:jsp",
-		"onLanguage:cs"
-	],
-	"main": "./extension.js",
-	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "LazyKey",
-			"properties": {
-				"LazyKey.AllEnabled": {
-					"type": "boolean",
-					"default": true,
-					"description": "enable LazyKey"
-				},
-				"LazyKey.DotToPoint": {
-					"type": "boolean",
-					"default": true,
-					"description": "Convert dot to point of C/C++/PHP class and point.\nIt needs double dot if one variable first uses in file."
-				},
+    "categories": [
+        "Keymaps"
+    ],
+    "icon": "images/icon.png",
+    "activationEvents": [
+        "onCommand:extension.ImLazy",
+        "onCommand:extension.dotToPoint",
+        "onLanguage:c",
+        "onLanguage:cpp",
+        "onLanguage:java",
+        "onLanguage:js",
+        "onLanguage:javascript",
+        "onLanguage:jsp",
+        "onLanguage:cs"
+    ],
+    "main": "./extension.js",
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "LazyKey",
+            "properties": {
+                "LazyKey.AllEnabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "enable LazyKey"
+                },
+                "LazyKey.DotToPoint": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert dot to point of C/C++/PHP class and point.\nIt needs double dot if one variable first uses in file."
+                },
                 "LazyKey.DotToPointDisabledOnce": {
                     "type": "boolean",
                     "default": false,
                     "description": "Disable converting dot to point once. (Don't modify)"
                 },
-				"LazyKey.NumberToParentheses": {
-					"type": "boolean",
-					"default": true,
-					"description": "Convert number 9 and 0 to ( and )."
-				},
-				"LazyKey.TabSkipRightParenthese": {
-					"type": "boolean",
-					"default": false,
-					"description": "Allow using Tab key to skip ) added by 9."
-				},
-				"LazyKey.SpaceFill": {
-					"type": "boolean",
-					"default": true,
-					"description": "Press space key to add parentheses of if/else/for/while/switch"
-				},
-				"LazyKey.AutoOperators": {
-					"type": "boolean",
-					"default": true,
-					"description": "Redefine operators：- / = / + / < / > / , / [ / ]"
-				},
-				"LazyKey.AutoSemicolon": {
-					"type": "boolean",
-					"default": true,
-					"description": "Put the semicolon at the end forcibly."
-				},
-				"LazyKey.AutoSuggestion": {
-					"type": "boolean",
-					"default": false,
-					"description": "Show suggestions when filling operators."
-				},
-				"LazyKey.BranchCurlyBraceInSingleLine": {
-					"type": "boolean",
-					"default": true,
-					"description": "Whether the left curly braces { take a single line of if/for/while/foreach/switch."
-				},
-				"LazyKey.FunctionCurlyBraceInSingleLine": {
-					"type": "boolean",
-					"default": true,
-					"description": "Whether the left curly braces { take a single line of function."
-				},
-				"LazyKey.AutoCurlyBraceInSingleLine": {
-					"type": "boolean",
-					"default": true,
-					"description": "Auto detect whether the left curly braces { take a single line according above codes."
-				},
+                "LazyKey.NumberToParentheses": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert number 9 and 0 to ( and )."
+                },
+                "LazyKey.TabSkipRightParenthese": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Allow using Tab key to skip ) added by 9."
+                },
+                "LazyKey.SpaceFill": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Press space key to add parentheses of if/else/for/while/switch"
+                },
+                "LazyKey.AutoOperators": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Redefine operators：- / = / + / < / > / , / [ / ]"
+                },
+                "LazyKey.AutoSemicolon": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Put the semicolon at the end forcibly."
+                },
+                "LazyKey.AutoSuggestion": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show suggestions when filling operators."
+                },
+                "LazyKey.BranchCurlyBraceInSingleLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether the left curly braces { take a single line of if/for/while/foreach/switch."
+                },
+                "LazyKey.FunctionCurlyBraceInSingleLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Whether the left curly braces { take a single line of function."
+                },
+                "LazyKey.AutoCurlyBraceInSingleLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto detect whether the left curly braces { take a single line according above codes."
+                },
                 "LazyKey.SmarterEnter": {
                     "type": "boolean",
                     "default": true,
@@ -115,17 +120,17 @@
                     "default": true,
                     "description": "Auto complete function's parntheses after complete"
                 },
-				"LazyKey.ShowTipOnStart": {
-					"type": "boolean",
-					"default": true,
-					"description": "Enable opening toast at startup."
-				}
-			}
-		},
-		"commands": [
-			{
-				"command": "extension.switchLazyKey",
-				"title": "Im Lazy"
+                "LazyKey.ShowTipOnStart": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable opening toast at startup."
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "extension.switchLazyKey",
+                "title": "Im Lazy"
             },
             {
                 "command": "extension.keybindings_enter",
@@ -147,49 +152,49 @@
                 "command": "extension.keybindings_zero",
                 "title": "KeyBindings Zero"
             }
-		],
-		"keybindings": [
-			{
-				"command": "extension.keybindings_enter",
-				"key": "enter",
-				"mac": "enter",
-				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c"
-			},
-			{
-				"command": "extension.keybindings_enter",
-				"key": "enter",
-				"mac": "enter",
-				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
-			},
-			{
-				"command": "extension.keybindings_enter",
-				"key": "enter",
-				"mac": "enter",
-				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java"
-			},
-			{
-				"command": "extension.keybindings_enter",
-				"key": "enter",
-				"mac": "enter",
-				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js"
-			},
-			{
-				"command": "extension.keybindings_enter",
-				"key": "enter",
-				"mac": "enter",
-				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript"
-			},
-			{
-				"command": "extension.keybindings_enter",
-				"key": "enter",
-				"mac": "enter",
-				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php"
-			},
-			{
-				"command": "extension.keybindings_enter",
-				"key": "enter",
-				"mac": "enter",
-				"when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
+        ],
+        "keybindings": [
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
             },
             {
                 "command": "extension.keybindings_complete_function",
@@ -401,20 +406,21 @@
                 "mac": "0",
                 "when": "editorTextFocus && editorLangId==cs"
             }
-		]
-	},
-	"scripts": {
-		"test": "node ./test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.36.0",
-		"eslint": "^5.13.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"typescript": "^3.3.1",
-		"vscode-test": "^1.2.0"
-	}
+        ]
+    },
+    "scripts": {
+        "test": "node ./test/runTest.js"
+    },
+    "devDependencies": {
+        "@types/glob": "^7.1.1",
+        "@types/mocha": "^5.2.6",
+        "@types/node": "^10.12.21",
+        "@types/vscode": "^1.36.0",
+        "eslint": "^5.13.0",
+        "glob": "^7.1.4",
+        "mocha": "^6.1.4",
+        "typescript": "^3.3.1",
+        "vscode-test": "^1.2.0"
+    },
+    "dependencies": {}
 }

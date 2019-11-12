@@ -85,7 +85,7 @@ function analyzeContext(old_line, old_left, old_right)
     var pline = position.line;
     var re0 = new RegExp("\\b" + word + "\\s*[^\\(]"); // 无括号
     var re1 = new RegExp("\\b" + word + "\\s*\\(");    // 有括号
-    while (--pline > 0)
+    while (--pline >= 0)
     {
         var line = document.lineAt(new vscode.Position(pline, 0)).text;
         if (re1.test(line)) // 有括号
