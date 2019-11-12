@@ -2,7 +2,7 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
-## [v0.0.6]
+## [v0.1.0]
 
 - Auto fill `()` while inserting completion
 - Convert `.` to `->` support any functions
