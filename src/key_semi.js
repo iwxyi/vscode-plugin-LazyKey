@@ -58,7 +58,7 @@ function provideCompletionItems(document, position, token, context) {
         var prevLinePosition = new vscode.Position(position.line - 1, 0);
         var prevLine = document.lineAt(prevLinePosition).text;
         if (/^\s*(if|else if|for|while|foreach)\s*\(.+\)\s*(\/[\/\*].*)?$/.test(prevLine)
-            || /^\s*else\s*(\/[\/\*].*)?/.test(left)) {
+            || /^\s*else\s*(\/[\/\*].*)?/.test(prevLine)) {
             // 判断缩进数量
             if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
                 setTimeout(function () {
