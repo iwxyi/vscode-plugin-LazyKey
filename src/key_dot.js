@@ -73,14 +73,21 @@ function provideCompletionItems(document, position, token, context) {
             // 如果word不是单词，而是右括号，则获取真实的内容
             if (left.endsWith(')'))
             {
-                console.log('是括号');
                 // 函数例子：getPoint(p)   at(index.row())   substring(0, len('strstrstr'))
+                // 方法一：使用正则表达式来判断
                 //word = /(\w_[\w\d_]*)\(.+*\)/.exec(left)[1];
-                var pos = left.length-1, level = 1/*右括号数量*/;
+                var match = /\b([\w_][\w\d_]*)\s*\(([^\(\)]*?(\([^\(\)]*?\))?[^\(\)]*?)*?\)/.exec(left);
+                if (match != null) // 获取到新的单词了
+                    word = match[1];
+                else // 括号左边没有单词
+                    continue;
+
+                /* // 方法二：使用栈来判断（稳定）
+                var pos = left.length-1; // 锚点移动位置
+                var level = 1; // 右括号数量
                 while (--pos>=0)
                 {
                     var c = left.charAt(pos);
-                    console.log('char', c)
                     if (c == '(')
                         level--;
                     else if (c == ')')
@@ -92,15 +99,19 @@ function provideCompletionItems(document, position, token, context) {
                 if (pos>0 && level == 0) // 找到位置了
                 {
                     var match = /([\w_][\w\d_]*)\s*$/.exec(leftWithWord);
-                    if (match != null)
-                    {
-                        // 获取到新的单词了
+                    if (match != null) // 获取到新的单词了
                         word = match[1];
-
-                        // 因为要和上面配对，所以必须得添加后面成对括号的正则表达式（我好像不会诶，怎么办……）
-
-                    }
+                    else
+                        continue;
                 }
+                else // 无法获取单词
+                    continue; */
+
+                // 因为要和上面配对，所以必须得添加后面成对括号的正则表达式（我好像不会诶，怎么办……）// 我居然一口气写出来了，真的机智！！！
+                var pair = '[^\\(\\)]*?(\\([^\\(\\)]*?\\))?[^\\(\\)]*?'; // 成对括号
+                pair = '(' + pair + ')*?';
+                word = "\\b" + word + "\\(" + pair + "\\)";
+                // 最终结果（雾）："\\b" + word + "\\(([^\\(\\)]*?(\\([^\\(\\)]*?\\))?[^\\(\\)]*?)*?\\)"
             }
 
             // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
