@@ -56,8 +56,8 @@ function analyzeSkip(editor, document, position)
     var leftChar = left.slice(-1);
     var rightChar = right.charAt(0);
 
-    // 首先右边必须是要全部右括号或者分号，允许后面注释
-    if (! /^['"\)\]\};\s]*(\/[\/\*].*)?$/.test(right)) {
+    // 左边不能是空的，而且右边必须是要全部右括号或者分号，允许后面注释
+    if (/^\s*$/.test(left) || ! /^['"\)\]\};\s]*(\/[\/\*].*)?$/.test(right)) {
         return false;
     }
     // 允许空字符串 "|")
