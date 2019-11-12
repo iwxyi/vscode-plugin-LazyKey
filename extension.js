@@ -33,6 +33,7 @@ function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_tab', require('./src/bind_tab.js')));
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_nine', require('./src/bind_nine.js')));
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_zero', require('./src/bind_zero.js')));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_complete_function', require('./src/bind_complete_function.js')));
 }
 exports.activate = activate;
 

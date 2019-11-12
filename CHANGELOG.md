@@ -7,6 +7,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - Add semicolon after `class` / `struct` / `enum`
 - Fix `enter` key jumping to line end in the line only with comment or `)` / `}` / `]`
 - Add spaces before and after the `=` forcibly
+- Fix `0` not enabled
 
 
 ## [v0.0.5]

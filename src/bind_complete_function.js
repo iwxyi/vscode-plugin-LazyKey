@@ -1,0 +1,109 @@
+/**
+ * 函数括号补全
+ * fun()
+ */
+
+const vscode = require('vscode');
+
+function completeAndInsert()
+{
+    // 读取设置是否开启
+    if (!vscode.workspace.getConfiguration().get('LazyKey.CompleteFunctionParentheses')) {
+        return;
+    }
+
+    const editor = vscode.window.activeTextEditor;
+    if (editor.selection.text != undefined) return; // 有选中文本了
+    const document = editor.document;
+    const selection = editor.selection;
+    if (selection.start.line != selection.end.line || selection.start.character != selection.end.character) {
+        return ;
+    }
+    var position = selection.active;
+
+    saveContext(editor, document, position);
+}
+
+function saveContext(old_editor, old_document, old_position)
+{
+    // 保存插入前的左边和右边
+    var old_line = old_document.lineAt(old_position).text;
+    var old_left = old_line.substring(0, old_position.character);
+    var old_right = old_line.substring(old_position.character);
+
+    // 插入操作
+    vscode.commands.executeCommand('acceptSelectedSuggestion');
+
+    // 判断插入后的内容（延迟）
+    setTimeout(function () {
+        analyzeContext(old_line, old_left, old_right);
+    }, 50);
+}
+
+function analyzeContext(old_line, old_left, old_right)
+{
+	// ==== 获取新的上下文 ====
+    const editor = vscode.window.activeTextEditor;
+    if (editor.selection.text != undefined) return; // 有选中文本了
+    const document = editor.document;
+    const selection = editor.selection;
+    if (selection.start.line != selection.end.line || selection.start.character != selection.end.character) {
+        return;
+    }
+    var position = selection.active;
+
+    // ==== 获取新的内容 ====
+    var full = document.getText();
+    var word = document.getText(document.getWordRangeAtPosition(position));  // 点号左边的单词
+    var line = document.lineAt(position).text;
+    var left = line.substring(0, position.character);
+    var right = line.substring(position.character);
+
+    // ==== 新旧比较 ====
+    if (right != old_right) // 如果右边不同的话，直接取消
+        return;
+    if (! /[\w][\w\d_]+$/.test(word)) // 如果不是单词（且至少两个字母），也取消（不敢贸然添加括号）
+        return;
+    if (left.length <= old_left.length) // 如果补全后没有变长，只是修改了文字
+        return;
+
+    // 判断输入的内容：左起相同的长度
+    var count = 0;
+    while (count < left.length && count < old_left.length)
+    {
+        if (left.charAt(count) === old_left.charAt(count))
+            count++;
+    }
+    var insertWord = left.substring(count, left.length ); // 插入的单词右半部分（非完整）
+    if (!word.endsWith(insertWord)) // 插入的不只是这个单词？
+        return;
+
+    // ==== 判断新的 ====
+    // var offset = document.offsetAt(new vscode.Position(position.line, 0)); // 光标位置
+    // var full_left = full.substring(0, offset); // 全文左边
+    // 由于不知道正则怎么倒序查找，还是从下往上一行一行找过去吧
+    var pline = position.line;
+    var re0 = new RegExp("\\b" + word + "\\s*[^\\(]"); // 无括号
+    var re1 = new RegExp("\\b" + word + "\\s*\\(");    // 有括号
+    while (--pline > 0)
+    {
+        var line = document.lineAt(new vscode.Position(pline, 0)).text;
+        if (re1.test(line)) // 有括号
+            break;
+        else if (re0.test(line)) // 没有括号
+            return;
+    }
+    if (pline < 0) // 没有找到，智能判断内容……
+    {
+        if (/^(set|get)/i.test(word) // 开头单词
+            || /(at|with)$/i.test(word)) // 结尾单词
+            ;
+        else
+            return ;
+    }
+
+    // ==== 插入操作 ====
+    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '($0)'});
+}
+
+module.exports = completeAndInsert;
