@@ -45,7 +45,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!isInCode(document, position, left, right))
         return ;
 
-    // 如果右边已经有左花括号了，那么就直接：下一行为空则下移，否则插入
+    // 如果右边已经有左花括号了，那么就：下一行为空则下移，否则插入
     if (/\{\s*(\/[\/\*].*$)?/.test(right)) {
         var isNextLineBlank = false;
         var needSpace = 0, needTab = 0;
@@ -222,7 +222,7 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('outdent');
         }, 100);
     }
-    // 右边全是关闭符号
+    // 右边有且全是关闭符号
     else if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
         // 如果是变量下标，则取消
         if (/^[\w_][\w\d_]*$/.test(word)) { // word 是一个完整的变量
@@ -386,8 +386,14 @@ function provideCompletionItems(document, position, token, context) {
     }
     // 一行的最右边添加大括号（不包括下一行）。和上一项的区别是判断添不添加空格
     else if (/^[^\{]+$/.test(left) && /^\s*$/.test(right)) {
+        var addSemi = false;
+
+        // 判断 class struct enum 变量声明，名为添加分号
+        if (/^\s*(\w+\s+)*(class|struct|enum)\s+[\w\d_]$/.test(left)) {
+            addSemi = true;
+        }
         // 判断是不是变量声明 const int a[3]
-        if (/\s*(\w+\s+)[\w_].+[\w\d_]$/.test(left)) {
+        else if (/^\s*(\w+\s+)*[\w_]+\s+[\w\d_]$/.test(left)) {
             return ;
         }
 
@@ -401,12 +407,16 @@ function provideCompletionItems(document, position, token, context) {
             }
         }
 
+        var snippet = '';
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
         if (left.endsWith(' '))
-            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+            snippet = '{\n\t$0\n}';
         else
-            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' {\n\t$0\n}' });
+            snippet = ' {\n\t$0\n}';
+        if (addSemi)
+            snippet += ';';
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': snippet });
     }
     else {
         return ;

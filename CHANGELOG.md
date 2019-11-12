@@ -2,6 +2,12 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.0.6]
+
+- Add semicolon after `class` / `struct` / `enum`
+
+
+
 ## [v0.0.5]
 
 - Fix digital decimal point
