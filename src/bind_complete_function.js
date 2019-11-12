@@ -64,7 +64,7 @@ function analyzeContext(old_line, old_left, old_right)
         return;
     if (! /[\w][\w\d_]+$/.test(word)) // 如果不是单词（且至少两个字母），也取消（不敢贸然添加括号）
         return;
-    if (left.length <= old_left.length) // 如果补全后没有变长，只是修改了文字
+    if (left.length <= old_left.length || line.length <= old_line.length) // 如果补全后没有变长，只是修改了文字
         return;
 
     // 判断输入的内容：左起相同的长度
@@ -73,6 +73,8 @@ function analyzeContext(old_line, old_left, old_right)
     {
         if (left.charAt(count) === old_left.charAt(count))
             count++;
+        else
+            break;
     }
     var insertWord = left.substring(count, left.length ); // 插入的单词右半部分（非完整）
     if (!word.endsWith(insertWord)) // 插入的不只是这个单词？
