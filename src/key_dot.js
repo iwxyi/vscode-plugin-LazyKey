@@ -74,9 +74,11 @@ function provideCompletionItems(document, position, token, context) {
             if (left.endsWith(')'))
             {
                 // 函数例子：getPoint(p)   at(index.row())   substring(0, len('strstrstr'))
-                /* // 方法一：使用正则表达式来判断
+                // 方法一：使用正则表达式来判断
                 // 实测不支持 substring((0, len('strstrstr'))). 这种嵌套括号，会识别成 len
-                var match = /\b([\w_][\w\d_]*)\s*\(([^\(\)]*?(\([^\(\)]*?\))?[^\(\)]*?)*?\)$/.exec(left);
+                /* var match = /\b([\w_][\w\d_]*)\s*\(([^\(\)]*?(\([^\(\)]*?\))?[^\(\)]*?)*?\)$/.exec(left);
+                // var match = /\b([\w_][\w\d_]*)\s*\(((?<open>\()|(?<-open>\))|[^()]+)*(?(open)(?!))\)$/.exec(left);
+                console.log(match);
                 if (match != null) // 获取到新的单词了
                     word = match[1];
                 else // 括号左边没有单词
@@ -106,7 +108,7 @@ function provideCompletionItems(document, position, token, context) {
                 }
                 else // 无法获取单词
                     continue;
-                console.log(word);
+                // console.log(word);
 
                 // 因为要和上面配对，所以必须得添加后面成对括号的正则表达式（我好像不会诶，怎么办……）
                 // 居然一口气写出来了，真的机智！！！（不过只是简单匹配，不支持嵌套（堆栈）！）

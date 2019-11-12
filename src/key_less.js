@@ -73,7 +73,7 @@ function provideCompletionItems(document, position, token, context) {
         }
         // cout <<
         else if (/ <$/.test(left)) {
-            newText = "< ";
+            newText = "<"; // 就不擅自添加空格了
         }
         // a < b
         else if (/\S$/.test(left)) {
@@ -100,7 +100,7 @@ function provideCompletionItems(document, position, token, context) {
     vscode.workspace.applyEdit(wordspaceEdit);
 
     // 延时出现提示（必须延时才会出现）
-    if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
+    if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion') && !newText.endsWith("<")) {
         setTimeout(function () {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
