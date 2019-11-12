@@ -39,9 +39,9 @@ function provideCompletionItems(document, position, token, context) {
         // 判断左1是不是输入的符号
         if (inpt != "=")
             return;
-        // 必须要右边全部空的
+        /* // 必须要右边全部空的
         if (right != "" && !right.startsWith(')'))
-            return;
+            return; */
 
         var newText = "";
         // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
@@ -71,6 +71,10 @@ function provideCompletionItems(document, position, token, context) {
                 leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
                 newText = " != ";
             }
+        }
+        // 右边居然有个等号？
+        else if (/^=/.test(right)) {
+            newText = '=';
         }
         // var =
         else if (/(\b[\w_][\w\d_]*\b|\)|\])$/.test(left)) {
