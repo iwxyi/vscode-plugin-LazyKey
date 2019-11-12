@@ -74,15 +74,15 @@ function provideCompletionItems(document, position, token, context) {
             if (left.endsWith(')'))
             {
                 // 函数例子：getPoint(p)   at(index.row())   substring(0, len('strstrstr'))
-                // 方法一：使用正则表达式来判断
-                //word = /(\w_[\w\d_]*)\(.+*\)/.exec(left)[1];
-                var match = /\b([\w_][\w\d_]*)\s*\(([^\(\)]*?(\([^\(\)]*?\))?[^\(\)]*?)*?\)/.exec(left);
+                /* // 方法一：使用正则表达式来判断
+                // 实测不支持 substring((0, len('strstrstr'))). 这种嵌套括号，会识别成 len
+                var match = /\b([\w_][\w\d_]*)\s*\(([^\(\)]*?(\([^\(\)]*?\))?[^\(\)]*?)*?\)$/.exec(left);
                 if (match != null) // 获取到新的单词了
                     word = match[1];
                 else // 括号左边没有单词
-                    continue;
+                    continue; */
 
-                /* // 方法二：使用栈来判断（稳定）
+                // 方法二：使用栈来判断（更稳定）
                 var pos = left.length-1; // 锚点移动位置
                 var level = 1; // 右括号数量
                 while (--pos>=0)
@@ -105,13 +105,15 @@ function provideCompletionItems(document, position, token, context) {
                         continue;
                 }
                 else // 无法获取单词
-                    continue; */
+                    continue;
+                console.log(word);
 
-                // 因为要和上面配对，所以必须得添加后面成对括号的正则表达式（我好像不会诶，怎么办……）// 我居然一口气写出来了，真的机智！！！
-                var pair = '[^\\(\\)]*?(\\([^\\(\\)]*?\\))?[^\\(\\)]*?'; // 成对括号
-                pair = '(' + pair + ')*?';
-                word = "\\b" + word + "\\(" + pair + "\\)";
-                // 最终结果（雾）："\\b" + word + "\\(([^\\(\\)]*?(\\([^\\(\\)]*?\\))?[^\\(\\)]*?)*?\\)"
+                // 因为要和上面配对，所以必须得添加后面成对括号的正则表达式（我好像不会诶，怎么办……）
+                // 居然一口气写出来了，真的机智！！！（不过只是简单匹配，不支持嵌套（堆栈）！）
+                var ch = '[^\\(\\)]*?';
+                var pair = ch+'(\\('+ch+'\\))?'+ch; // 成对括号
+                var body = pair = '(' + pair + ')*?';
+                word = "\\b" + word + "\\(" + body + "\\)";
             }
 
             // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
