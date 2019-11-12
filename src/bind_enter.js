@@ -50,6 +50,18 @@ function analyzeSkip(editor, document, position)
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
 
+    // 预先判断（因为一些特殊原因）
+    // 有块注释（屏蔽下面的块注释结束）
+    if (/\/\*/.test(line)) {
+        ;
+    }
+    // 块注释结束
+    else if ((/^\s*\*+\/$/.test(left) && right == '') || (/^\s*\*+$/.test(left) && /^\*+\/$/.test(right))) {
+        console.log('asd');
+        vscode.commands.executeCommand('editor.action.insertLineAfter'); // 这样换行可以避免块注释中间带起的缩进
+        return true;
+    }
+
     // 如果不是在字符串中间，则不进行任何操作
     if (left == "" || right == "")
         return false;
@@ -117,7 +129,7 @@ function toIndent(editor, document, position)
     // 空白行（可能包含注释），不管
     else if (/^\s+(\/\/.*)?$/.test(line))
         return true;
-    // 多行注释开始
+    // 多行注释开始（多行注释结束在上面）
     else if (/^\s*\/\*.*/.test(left) && !/\*\//.test(left)) {
         indent = false;
         // 判断星号数量
@@ -133,7 +145,7 @@ function toIndent(editor, document, position)
         }
     }
     // 多行注释星号
-    else if (/^\s*\*\s?/.test(line) && /\/?\*/.test(prevLine)) {
+    else if (/^\s*\*\s?/.test(line) && /\/?\*/.test(prevLine) && !/\*\//.test(left)) {
         indent = false;
         addin = '* ';
     }
