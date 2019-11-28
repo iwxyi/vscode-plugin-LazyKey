@@ -89,7 +89,12 @@ function analyzeContext(old_line, old_left, old_right) {
     var type = 0;
     while (--pline >= 0) {
         var line = document.lineAt(new vscode.Position(pline, 0)).text;
-        if (re1.test(line)) // 有括号且有参数
+        if (re0.test(line)) // 没有括号
+        {
+            type = 0;
+            return;
+        }
+        else if (re1.test(line)) // 有括号且有参数
         {
             type = 1;
             break;
@@ -99,18 +104,18 @@ function analyzeContext(old_line, old_left, old_right) {
             type = 2;
             break;
         }
-        else if (re0.test(line)) // 没有括号
-        {
-            type = 0;
-            return;
-        }
     }
     if (pline < 0) // 没有找到，向下找
     {
         pline = position.line;
         while (++pline < document.lineCount) {
             var line = document.lineAt(new vscode.Position(pline, 0)).text;
-            if (re1.test(line)) // 有括号且有参数
+            if (re0.test(line)) // 没有括号
+            {
+                type = 0;
+                return;
+            }
+            else if (re1.test(line)) // 有括号且有参数
             {
                 type = 1;
                 break;
@@ -119,11 +124,6 @@ function analyzeContext(old_line, old_left, old_right) {
             {
                 type = 2;
                 break;
-            }
-            else if (re0.test(line)) // 没有括号
-            {
-                type = 0;
-                return;
             }
         }
     }
