@@ -98,7 +98,7 @@ It may change your button habits and make you lazy.
 
 ## Release Notes
 
-### 0.0.3
+### 0.1.1
 
 Fix some problems.
 

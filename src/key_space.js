@@ -63,6 +63,30 @@ function provideCompletionItems(document, position, token, context) {
         else
             newText = "\"$0\"";
     }
+    // 指针/引用变量名预测 MyType* | ==> myType / type / p_myType / p_type
+    else if (vscode.workspace.getConfiguration().get('LazyKey.GenerateVariableName')
+        && (document.languageId == 'cpp' || document.languageId == 'c')
+        && /^\s*([a-z]+\s+)*[A-Z][\w]+\s*[\*&]+\s*$/.test(left) && right == '') {
+        var match = /^\s*([a-z]+\s+)*([A-Z][\w]+)\s*([\*&])+\s*$/.exec(left);
+        var VarType = match[2]; // 变量类型名称
+        var PoiType = match[3]; // 指针/引用类型
+        var completionItems = [];
+        names = getNamesFromVariableType(VarType);
+        if (PoiType.indexOf('*')>-1)
+            names = getPointNamesFromNames(names);
+        for (var name of names) {
+            if (name == '') continue;
+            var completionItem = new vscode.CompletionItem(name);
+            completionItem.kind = vscode.CompletionItemKind.Snippet;
+            completionItem.detail = 'LazyKey: auto generate variable name';
+            completionItem.filterText = name;
+            // completionItem.insertText = new vscode.SnippetString('aaaabbbccc');
+            completionItems.push(completionItem);
+        }
+
+        return completionItems;
+        
+    }
     // 提供变量名预测 private String s
     else if (vscode.workspace.getConfiguration().get('LazyKey.GenerateVariableName')
         && (document.languageId == 'cpp' || document.languageId == 'java' || document.languageId == 'c')
@@ -137,9 +161,19 @@ function getNamesFromVariableType(type)
 }
 
 /**
+ * 根据已有的变量名，声明指针类型的变量
+ */
+function getPointNamesFromNames(names)
+{
+    var list = names.slice(); // 深拷贝
+    for (var name of names) {
+        list.push('p_' + name);
+    }
+    return list;
+}
+
+/**
  * 光标选中当前自动补全item时触发动作，一般情况下无需处理
- * @param {*} item
- * @param {*} token
  */
 function resolveCompletionItem(item, token) {
     return null;
