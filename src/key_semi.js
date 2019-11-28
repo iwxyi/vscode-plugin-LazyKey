@@ -89,9 +89,11 @@ function provideCompletionItems(document, position, token, context) {
 
         return ;
     }
-    // 非变量声明的类似变量声明 new delete emit，分号不换行
+    // 非变量声明的类似变量声明 new delete emit，分号不换行（只到末尾）
     else if (/^\s*(new|delete|emit|return|die|exit)\b/.test(left)) {
-        ;
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorLineEnd');
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ';' });
     }
     // 单行变量声明，末尾添加分号，换行
     // Type var;    Type var = xxx;    Type var(xxx);
