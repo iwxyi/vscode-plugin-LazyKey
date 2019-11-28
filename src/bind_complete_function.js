@@ -5,8 +5,7 @@
 
 const vscode = require('vscode');
 
-function completeAndInsert()
-{
+function completeAndInsert() {
     // 读取设置是否开启
     if (!vscode.workspace.getConfiguration().get('LazyKey.CompleteFunctionParentheses')) {
         return;
@@ -17,15 +16,14 @@ function completeAndInsert()
     const document = editor.document;
     const selection = editor.selection;
     if (selection.start.line != selection.end.line || selection.start.character != selection.end.character) {
-        return ;
+        return;
     }
     var position = selection.active;
 
     saveContext(editor, document, position);
 }
 
-function saveContext(old_editor, old_document, old_position)
-{
+function saveContext(old_editor, old_document, old_position) {
     // 保存插入前的左边和右边
     var old_line = old_document.lineAt(old_position).text;
     var old_left = old_line.substring(0, old_position.character);
@@ -40,9 +38,8 @@ function saveContext(old_editor, old_document, old_position)
     }, 50);
 }
 
-function analyzeContext(old_line, old_left, old_right)
-{
-	// ==== 获取新的上下文 ====
+function analyzeContext(old_line, old_left, old_right) {
+    // ==== 获取新的上下文 ====
     const editor = vscode.window.activeTextEditor;
     if (editor.selection.text != undefined) return; // 有选中文本了
     const document = editor.document;
@@ -69,14 +66,13 @@ function analyzeContext(old_line, old_left, old_right)
 
     // 判断输入的内容：左起相同的长度
     var count = 0;
-    while (count < left.length && count < old_left.length)
-    {
+    while (count < left.length && count < old_left.length) {
         if (left.charAt(count) === old_left.charAt(count))
             count++;
         else
             break;
     }
-    var insertWord = left.substring(count, left.length ); // 插入的单词右半部分（非完整）
+    var insertWord = left.substring(count, left.length); // 插入的单词右半部分（非完整）
     if (!word.endsWith(insertWord)) // 插入的不只是这个单词？
         return;
 
@@ -85,30 +81,49 @@ function analyzeContext(old_line, old_left, old_right)
     // var full_left = full.substring(0, offset); // 全文左边
     // 由于不知道正则怎么倒序查找，还是从下往上一行一行找过去吧
     var pline = position.line;
-    var re0 = new RegExp("\\b" + word + "\\s*[^\\(]"); // 无括号
-    var re1 = new RegExp("\\b" + word + "\\s*\\(");    // 有括号
-    while (--pline >= 0)
-    {
+    var re0 = new RegExp("\\b" + word + "\\s*[^\\(]");      // 无括号
+    var re1 = new RegExp("\\b" + word + "\\s*\\([^\\)]");   // 有括号且有参数
+    var re2 = new RegExp("\\b" + word + "\\s*\\(\\)");      // 右括号且无参数
+    var type = 0;
+    while (--pline >= 0) {
         var line = document.lineAt(new vscode.Position(pline, 0)).text;
-        if (re1.test(line)) // 有括号
+        if (re1.test(line)) // 有括号且有参数
+        {
+            type = 1;
             break;
+        }
+        else if (re2.test(line)) // 右括号且无参数
+        {
+            type = 2;
+            break;
+        }
         else if (re0.test(line)) // 没有括号
+        {
+            type = 0;
             return;
+        }
     }
-    if (pline < 0) // 没有找到，智能判断内容……
+    if (pline < 0) // 没有找到，猜测内容……
     {
         if (/^(set|get)/i.test(word) // 开头单词
             || /(at|with)$/i.test(word)) // 结尾单词
             ;
         else
-            return ;
+            return;
     }
 
     // ==== 判断是不是无参数函数 ====
-    // 为了保证交互统一，不将无参函数的括号放在右边了
+    // 之前为了保证交互统一，不将无参函数的括号放在右边了
+    var ins;
+    if (type == 0)
+        return;
+    else if (type == 1)
+        ins = '($0)';
+    else
+        ins = '()$0';
 
     // ==== 插入操作 ====
-    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '($0)'});
+    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins });
 }
 
 module.exports = completeAndInsert;
