@@ -27,7 +27,7 @@ function processNine() {
 }
 
 /**
- * 判断需不需要跳过右边的内容
+ * 判断是不是添加左括号
  */
 function analyzeNine(editor, document, position) {
     // 获取全文和当前行内容
@@ -79,7 +79,7 @@ function analyzeNine(editor, document, position) {
     // ((|)))
     var withRight = !(ll + rl < lr + rr && rl < rr);
     var tabRight = vscode.workspace.getConfiguration().get('LazyKey.TabSkipRightParenthese');
-    var newText = withRight ?
+    var newText = (withRight && right == '') ?
         (tabRight ? "($1)" : "($0)")
         : "(";
 
