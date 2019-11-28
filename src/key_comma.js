@@ -40,8 +40,12 @@ function provideCompletionItems(document, position, token, context) {
             return;
 
         var newText = "";
+        // var,
+        if (right == '') {
+            newText = ", ";
+        }
         // (var,|)
-        if (right!="" && right.startsWith(')')) {
+        else if (right!="" && right.startsWith(')')) {
             newText = ", ";
         }
         // cout ,,
