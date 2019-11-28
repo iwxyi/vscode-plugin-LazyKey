@@ -130,13 +130,13 @@ function analyzeContext(old_line, old_left, old_right) {
     
     if (pline >= document.lineCount) // 还是没有找到，猜测内容……
     {
-        if (/^(set|get)/i.test(word) // 开头单词
-            || /(at|with)$/i.test(word)) // 结尾单词
-            ;
+        if (/^(set|get|load)/i.test(word) // 开头单词
+        || /(at|with|of)$/i.test(word)) // 结尾单词
+            type = 1; // 当做有参数的
         else
             return;
     }
-
+    
     // ==== 判断是不是无参数函数 ====
     // 之前为了保证交互统一，不将无参函数的括号放在右边了
     var ins;
