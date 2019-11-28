@@ -105,7 +105,30 @@ function analyzeContext(old_line, old_left, old_right) {
             return;
         }
     }
-    if (pline < 0) // 没有找到，猜测内容……
+    if (pline < 0) // 没有找到，向下找
+    {
+        pline = position.line;
+        while (++pline < document.lineCount) {
+            var line = document.lineAt(new vscode.Position(pline, 0)).text;
+            if (re1.test(line)) // 有括号且有参数
+            {
+                type = 1;
+                break;
+            }
+            else if (re2.test(line)) // 右括号且无参数
+            {
+                type = 2;
+                break;
+            }
+            else if (re0.test(line)) // 没有括号
+            {
+                type = 0;
+                return;
+            }
+        }
+    }
+    
+    if (pline >= document.lineCount) // 还是没有找到，猜测内容……
     {
         if (/^(set|get)/i.test(word) // 开头单词
             || /(at|with)$/i.test(word)) // 结尾单词

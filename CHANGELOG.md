@@ -2,6 +2,13 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.1.2]
+
+- Predict point variable's name
+- Support fill function's `()` according the whole file
+
+
+
 ## [v0.1.1]
 
 - Support block comment
