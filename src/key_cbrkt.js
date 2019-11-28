@@ -67,14 +67,14 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('cursorRight');
     }
     // 下一行是单独的 }，则跳到下行
-    // 如果下下行还是空的，则继续跳到下一行
+    // 如果下下行还是空的，则继续跳到下一行(如果下下下行是空的；否则插入新下一行)
     else if (position.line < document.lineCount - 1 && /^\s*\}\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorDown');
         vscode.commands.executeCommand('cursorLineEnd');
 
         var nextNextLine = position.line < document.lineCount - 2 ?
-        document.lineAt(new vscode.Position(position.line + 2, 0)).text : "";
+            document.lineAt(new vscode.Position(position.line + 2, 0)).text : ";";
 
         // 计算缩进……
         var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text; // 此处固定为 }，带缩进
@@ -85,11 +85,20 @@ function provideCompletionItems(document, position, token, context) {
         if (/^\s*$/.test(nextNextLine)) {
             vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('cursorLineEnd');
+            var ins = '';
             if (/^$/.test(nextNextLine)) { // 是完全空的一行，没有缩进，需要计算添加
                 if (indent == '') // 这一块的总体缩进就是空的，不需要缩进
-                    return ;
-                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': indent});
+                    ins = '';
+                else
+                    ins = indent;
             }
+            // 如果判断下下下行的内容，如果非空非有大括号，则需要插入新的一行代替
+            var nextNextNextLine = position.line < document.lineCount - 3 ?
+                document.lineAt(new vscode.Position(position.line + 3, 0)).text : "";
+            if (!/^\\s*\\}?\\s*$/.test(nextNextNextLine)) // 右大括号的下下行有内容，需要添加一个空行分隔
+                ins += '$0\n' + indent;
+            if (ins != '')
+                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins});
         }
         // 下一行还是结束的 } ，按现在这个操作，应该是要继续写代码吧
         else if (/^\s*\}/.test(nextNextLine)) {
