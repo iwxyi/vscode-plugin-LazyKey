@@ -120,7 +120,10 @@ function analyzeContext(old_line, old_left, old_right) {
     if (type == 0)
         return;
     else if (type == 1)
-        ins = '($0)';
+        if (/^[\w]_/.test(right)) // 右边已经有内容了，最多只插入左括号（不过这种情况不会触发自动补全吧？）
+            ins = '(';
+        else
+            ins = '($0)';
     else
         ins = '()$0';
 
