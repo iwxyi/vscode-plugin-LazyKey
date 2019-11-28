@@ -135,12 +135,17 @@ function toIndent(editor, document, position)
         // 判断星号数量
         var star = /^\s*\/(\**)/.exec(left)[1];
         addin = ' * $0\n';
-        if (star.length > 2 && /^\s*\*\//.test(right)) {
+        if (star.length > 2 && /^\s*\*\//.test(right)) { // 右边有注释结束
             star = star.substr(2);
             addin += ' ' + star;
             if (right.startsWith(' */'))
                 vscode.commands.executeCommand('deleteRight');
-        } else if (!right.startsWith(' ')) {
+        } else if (right.indexOf('*/') == -1) { // 可能没有自动补全的 */
+            // 判断后面有没有结束标志
+            
+            // 自动插入注释结束标志
+            addin += ' */';
+        } else if (!right.startsWith(' ')) { // 后面没有空白的
             addin += ' ';
         }
     }
