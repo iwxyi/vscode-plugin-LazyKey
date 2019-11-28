@@ -75,6 +75,8 @@ function analyzeContext(old_line, old_left, old_right) {
     var insertWord = left.substring(count, left.length); // 插入的单词右半部分（非完整）
     if (!word.endsWith(insertWord)) // 插入的不只是这个单词？
         return;
+    if (right.startsWith('(')) // 右边已经有括号了，即使是函数也不需要自动补全
+        return;
 
     // ==== 判断需不需要括号 ====
     // var offset = document.offsetAt(new vscode.Position(position.line, 0)); // 光标位置
