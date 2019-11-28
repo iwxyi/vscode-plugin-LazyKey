@@ -142,9 +142,20 @@ function toIndent(editor, document, position)
                 vscode.commands.executeCommand('deleteRight');
         } else if (right.indexOf('*/') == -1) { // 可能没有自动补全的 */
             // 判断后面有没有结束标志
-            
+            // 就是简单判断下一行是不是 * 开头吧
+            var nextLine = position.line < document.lineCount - 1 ?
+                document.lineAt( new vscode.Position(position.line + 1, 0) ).text
+                : "";
+            var hasRight = false;
+            if (/^\s*\*/.test(nextLine)) // 下一行是*开头。后面很可能有注释（没有深入判断）
+            {
+                hasRight = true;
+                addin = ' * $0';
+            }
+
             // 自动插入注释结束标志
-            addin += ' */';
+            if (!hasRight)
+                addin += ' */';
         } else if (!right.startsWith(' ')) { // 后面没有空白的
             addin += ' ';
         }

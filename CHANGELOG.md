@@ -4,6 +4,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 
 ## [v0.1.1]
 
+- Support block comment
 - Not complete `)` when inserting '(' while having text on the right
 - Make `]` jumping more intelligent
 - Distinguish function parameters while complete `()`
