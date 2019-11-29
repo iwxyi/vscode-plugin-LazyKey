@@ -148,15 +148,22 @@ function provideCompletionItems(document, position, token, context) {
     else if (/\[[\w\d_,\s&=\*]*\]\s*(\([\w\d_,\s&=\*]*\))?/.test(left)) {
         // 判断上一个方括号左边是什么
         var count = 0, pos = 0;
-        var rev = left.split('').reverse().join('');
+        var rev = left.split('').reverse().join(''); // 字符串反序
+        var detected = false;
         for (var c of rev)
         {
             if (c == '[')
+            {
                 count++;
+                detected = true;
+            }
             else if (c == ']')
+            {
                 count--;
+                detected = true;
+            }
             pos++;
-            if (count == 0 && pos>0)
+            if (count == 0 && detected)
                 break;
         }
         // 除去最近方括号后的左边文本
