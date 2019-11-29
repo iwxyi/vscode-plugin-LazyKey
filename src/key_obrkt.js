@@ -196,7 +196,7 @@ function provideCompletionItems(document, position, token, context) {
         }, 100);
     }
     // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
-    else if (position.line > 0 && (/^\s*(if|else|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
+    else if (position.line > 0 && (/^\s*(if|else(\s+if)|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
         || /^\s*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text))
         && /^\s+$/.test(left) && /\S/.test(right)
         && /^(\s*)/.exec(left)[1].length >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
