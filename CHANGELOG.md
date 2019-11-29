@@ -6,6 +6,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 
 - Predict point variable's name
 - Support fill function's `()` according the whole file
+- Add `()` after `foreach` when pressing space key
 
 
 
