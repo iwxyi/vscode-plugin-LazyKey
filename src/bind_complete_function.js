@@ -130,7 +130,7 @@ function analyzeContext(old_line, old_left, old_right) {
     
     if (pline >= document.lineCount) // 还是没有找到，猜测内容……
     {
-        if (/^(set|get|load)/i.test(word) // 开头单词
+        if (/^(set|get|load|is)[_A-Z]/i.test(word) // 开头单词
         || /(at|with|of)$/i.test(word)) // 结尾单词
             type = 1; // 当做有参数的
         else

@@ -41,7 +41,7 @@ function provideCompletionItems(document, position, token, context) {
 
         var newText = "";
         // var,
-        if (right == '') {
+        if (right == '' && !/,\s*$/.test(left)) {
             newText = ", ";
         }
         // (var,|)

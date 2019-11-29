@@ -108,6 +108,10 @@ function provideCompletionItems(document, position, token, context) {
 
     // 延时出现提示（必须延时才会出现）
     if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
+        var full = document.getText();
+        var position = document.position();
+        var line = document.lineAt(position).text;
+        var inpt = line.substring(position.character - 1, position.character);
         setTimeout(function () {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
