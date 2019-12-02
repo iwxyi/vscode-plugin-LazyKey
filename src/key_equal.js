@@ -86,11 +86,11 @@ function provideCompletionItems(document, position, token, context) {
             newText = '= ';
         }
         // var ==    var ===    var +=    var /=
-        else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+[+\-\*\/%=]=*$/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+[+\-\*\/%=<>]=*$/.test(left)) {
             newText = '= ';
         }
         // var+=|    ==>    var += |
-        else if (/(\b[\w_][\w\d_]*\b|\)|\])[\-\+\*\/%=]$/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\])[\-\+\*\/%=<>]$/.test(left)) {
             var insertEdit = vscode.TextEdit.insert(new vscode.Position(leftPosition.line, leftPosition.character - 1), ' ');
             textEdits.push(insertEdit);
 
@@ -99,7 +99,7 @@ function provideCompletionItems(document, position, token, context) {
             newText = "= ";
         }
         // var + =|    ==>    var += |
-        else if (/(\b[\w_][\w\d_]*\b|\)|\]) [\-\+\*\/%=] $/.test(left)) {
+        else if (/(\b[\w_][\w\d_]*\b|\)|\]) [\-\+\*\/%=<>] $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = "= ";
         }
