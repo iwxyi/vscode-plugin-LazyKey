@@ -79,7 +79,7 @@ function analyzeNine(editor, document, position) {
     // ((|)))
     var withRight = !(ll + rl < lr + rr && rl < rr);
     var tabRight = vscode.workspace.getConfiguration().get('LazyKey.TabSkipRightParenthese');
-    var newText = (withRight && right == '') ?
+    var newText = (withRight && (right == ''||right == ")"||right == ";"||right == "]")) ?
         (tabRight ? "($1)" : "($0)")
         : "(";
 
