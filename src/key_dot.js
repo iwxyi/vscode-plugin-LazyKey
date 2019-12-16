@@ -27,7 +27,7 @@ function provideCompletionItems(document, position, token, context) {
     var selections = editor.selections;
     let textEdits = [];
     var isPoint = false; // 避免多个光标只有第一个会变成指针
-    for (var i = selections.length-1; i>= 0; --i)
+    for (var i = selections.length-1; i >= 0; --i)
     {
         // 获取全文和当前行内容
         position = selections[i].end;
@@ -114,10 +114,11 @@ function provideCompletionItems(document, position, token, context) {
                 // 居然一口气写出来了，真的机智！！！（不过只是简单匹配，不支持嵌套（堆栈）！）
                 var ch = '[^\\(\\)]*?';
                 var pair = ch+'(\\('+ch+'\\))?'+ch; // 成对括号
-                var body = pair = '(' + pair + ')*?';
-                word = "\\b" + word + "\\(" + body + "\\)";
+                var body = '(' + pair + ')*?';
+                var patt = "\\b" + word + "\\(" + body + "\\)";
+                word = patt; // 别动这里！改了一点点就无法运行了！(注释可以动)
             }
-
+            
             // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
             var re0 = new RegExp("^p_"); // 约定俗成的 p_var 指针类型
             var re1 = new RegExp("\\*\\s*" + word + "\\b");
