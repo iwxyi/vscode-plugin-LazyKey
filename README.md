@@ -2,7 +2,7 @@
 
 A special plugin for lazy people by using the fewest keystrokes in the normal syntax of C/C++/Java/JS/PHP.
 
-[中文版介绍](https://github.com/MRXY001/vscode-plugin-LazyKey/README-zh.md)
+[中文版介绍](https://github.com/MRXY001/vscode-plugin-LazyKey/blob/master/README-zh.md)
 
 ## Features
 
