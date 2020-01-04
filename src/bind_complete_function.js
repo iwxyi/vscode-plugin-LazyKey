@@ -127,7 +127,7 @@ function analyzeContext(old_line, old_left, old_right) {
             }
         }
     }
-    
+
     if (pline >= document.lineCount) // 还是没有找到，猜测内容……
     {
         if (/^(set|get|load|is)[_A-Z]/i.test(word) // 开头单词
@@ -136,7 +136,7 @@ function analyzeContext(old_line, old_left, old_right) {
         else
             return;
     }
-    
+
     // ==== 判断是不是无参数函数 ====
     // 之前为了保证交互统一，不将无参函数的括号放在右边了
     var ins;
