@@ -52,12 +52,16 @@ function provideCompletionItems(document, position, token, context) {
         // var 1=
         else if (/ 1$/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            newText = "!= ";
+            newText = "!=";
+            if (!right.startsWith(' '))
+                newText += ' ';
         }
         // getA()1 =    arr[3]1 =
         else if (/[\)\]]1$/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            newText = " != ";
+            newText = " !=";
+            if (!right.startsWith(' '))
+                newText += ' ';
         }
         // var1=
         else if (/\S1$/.test(left)) {
@@ -65,12 +69,29 @@ function provideCompletionItems(document, position, token, context) {
             var wordPos = new vscode.Position(position.line, position.character - 2);
             var word = document.getText(document.getWordRangeAtPosition(wordPos));  // 左边的单词(包含末尾的1)
             var match1 = full.match(new RegExp("\\b" + word, 'g'));
-            if (match1 != null && match1.length > 1) { // 不存在
-                newText = " = ";
+            if (match1 != null && match1.length > 1) { // 存在这样的变量
+                newText = " =";
             } else {
                 leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-                newText = " != ";
+                newText = " !=";
             }
+            if (!right.startsWith(' '))
+                newText += ' ';
+        }
+        // var_=
+        else if (/\S_$/.test(left)) {
+            // 判断存不存在名字叫“var1”的变量
+            var wordPos = new vscode.Position(position.line, position.character - 2);
+            var word = document.getText(document.getWordRangeAtPosition(wordPos));  // 左边的单词(包含末尾的1)
+            var match1 = full.match(new RegExp("\\b" + word, 'g'));
+            if (match1 != null && match1.length > 1) { // 存在这样的变量
+                newText = " =";
+            } else {
+                leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
+                newText = " -=";
+            }
+            if (!right.startsWith(' '))
+                newText += ' ';
         }
         // 右边居然有个等号？
         else if (/^=/.test(right)) {
@@ -83,11 +104,15 @@ function provideCompletionItems(document, position, token, context) {
         // var = =    var == =    var !==
         else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+!?=+ $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            newText = '= ';
+            newText = '=';
+            if (!right.startsWith(' '))
+                newText += ' ';
         }
         // var ==    var ===    var +=    var /=
         else if (/(\b[\w_][\w\d_]*\b|\)|\])\s+[+\-\*\/%=<>]=*$/.test(left)) {
-            newText = '= ';
+            newText = '=';
+            if (!right.startsWith(' '))
+                newText += ' ';
         }
         // var+=|    ==>    var += |
         else if (/(\b[\w_][\w\d_]*\b|\)|\])[\-\+\*\/%=<>]$/.test(left)) {
@@ -101,13 +126,17 @@ function provideCompletionItems(document, position, token, context) {
         // var + =|    ==>    var += |
         else if (/(\b[\w_][\w\d_]*\b|\)|\]) [\-\+\*\/%=<>] $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
-            newText = "= ";
+            newText = "=";
+            if (!right.startsWith(' '))
+                newText += ' ';
         }
         // var===
         else if (/(\b[\w_][\w\d_]*\b|\)|\])==$/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 2);
             position = new vscode.Position(leftPosition.line, leftPosition.character + 1);
-            newText = " === ";
+            newText = " ===";
+            if (!right.startsWith(' '))
+                newText += ' ';
         }
         else { // 不知道什么情况
             return ;
