@@ -68,7 +68,7 @@ function analyzeSkip(editor, document, position) {
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ', ' });
         }
     }
-    // 当前行末尾，调到后面的出口，例如：}|
+    // 当前行末尾，跳到后面的出口，例如：}|
     else if (/^\s*$/.test(right)) {
         // 最后一行，添加行(感觉不太可能)
         if (position.line >= document.lineCount - 1) {

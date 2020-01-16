@@ -59,9 +59,11 @@ function analyzeContext(old_line, old_left, old_right) {
     // ==== 新旧比较 ====
     if (right != old_right) // 如果右边不同的话，直接取消
         return;
-    if (! /[\w][\w\d_]+$/.test(word)) // 如果不是单词（且至少两个字母），也取消（不敢贸然添加括号）
+    else if (left == old_left) // 一模一样，相当于为了加括号
+        ;
+    else if (!/[\w][\w\d_]+$/.test(word)) // 如果不是单词（且至少两个字母），也取消（不敢贸然添加括号）
         return;
-    if (left.length <= old_left.length || line.length <= old_line.length) // 如果补全后没有变长，只是修改了文字
+    else if (left.length <= old_left.length || line.length <= old_line.length) // 如果补全后没有变长，只是修改了文字
         return;
 
     // 判断输入的内容：左起相同的长度
