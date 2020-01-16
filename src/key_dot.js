@@ -66,9 +66,11 @@ function provideCompletionItems(document, position, token, context) {
                 // 剩下就是一个点的情况，加上输入的一共是两个点
                 leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
                 word = document.getText(document.getWordRangeAtPosition(leftPosition));
-                left = line.substring(0, leftPosition.character - 1);
+                // left = line.substring(0, leftPosition.character - 1);
                 doublePoint = true;
             }
+            
+            var usePoint = true;
 
             // 如果word不是单词，而是右括号，则获取真实的内容
             if (left.endsWith(')'))
@@ -86,7 +88,7 @@ function provideCompletionItems(document, position, token, context) {
 
                 // 方法二：使用栈来判断（更稳定）
                 var pos = left.length-1; // 锚点移动位置
-                var level = 1; // 右括号数量
+                var level = 1; // 右括号-左括号数量
                 while (--pos>=0)
                 {
                     var c = left.charAt(pos);
@@ -112,36 +114,39 @@ function provideCompletionItems(document, position, token, context) {
 
                 // 因为要和上面配对，所以必须得添加后面成对括号的正则表达式（我好像不会诶，怎么办……）
                 // 居然一口气写出来了，真的机智！！！（不过只是简单匹配，不支持嵌套（堆栈）！）
-                var ch = '[^\\(\\)]*?';
-                var pair = ch+'(\\('+ch+'\\))?'+ch; // 成对括号
-                var body = '(' + pair + ')*?';
-                var patt = "\\b" + word + "\\(" + body + "\\)";
-                word = patt; // 别动这里！改了一点点就无法运行了！(注释可以动)
+                /* var ch = '[^\\(\\)]*?'; // 非括号单词
+                var pair = ch+'(\\('+ch+'\\))?'+ch; // 内部括号对
+                var body = '(' + pair + ')*?'; // 多个内容
+                var patt = "\\b" + word + "\\(" + body + "\\)"; // 外部括号
+                word = patt; // 别动这里！改了一点点就无法运行了！(注释可以动) */
+                if (!isFunctionReturnPoint(word, document, position.line))
+                    return ;
+                usePoint = true;
             }
-            
-            // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
-            var re0 = new RegExp("^p_"); // 约定俗成的 p_var 指针类型
-            var re1 = new RegExp("\\*\\s*" + word + "\\b");
-            var re2 = new RegExp("\\b" + word + "\\s*->");
-            var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
-            if (word != "this" && !doublePoint && !re0.test(word) && !re1.test(full) && !re2.test(full) && !re3.test(full))
-                return;
-
-            // 判断上面最近的那个是否是指针
-            var pos = position;
-            var reDot = new RegExp("\\b" + word + "\\.");
-            var rePoi = new RegExp("\\b" + word + "\\->");
-            var usePoint = true;
-            while (pos.line>0)
+            else if (/^[\w_\d]$/.test(word))// 左边是单词
             {
-                pos = new vscode.Position(pos.line - 1, 0);
-                var prevLine = document.lineAt(pos).text;
-                if (reDot.test(prevLine)) {
-                    usePoint = false;
-                    break;
-                } else if (rePoi.test(prevLine)) {
-                    usePoint = true;
-                    break;
+                // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
+                var re0 = new RegExp("^p_"); // 约定俗成的 p_var 指针类型
+                var re1 = new RegExp("\\*\\s*" + word + "\\b");
+                var re2 = new RegExp("\\b" + word + "\\s*->");
+                var re3 = new RegExp("\\b" + word + "\\b\\s*=\\s*new\\b");
+                if (word != "this" && !doublePoint && !re0.test(word) && !re1.test(full) && !re2.test(full) && !re3.test(full))
+                    return;
+                
+                // 判断上面最近的那个是否是指针
+                var pos = position;
+                var reDot = new RegExp("\\b" + word + "\\.");
+                var rePoi = new RegExp("\\b" + word + "\\->");
+                while (pos.line > 0) {
+                    pos = new vscode.Position(pos.line - 1, 0);
+                    var prevLine = document.lineAt(pos).text;
+                    if (reDot.test(prevLine)) {
+                        usePoint = false;
+                        break;
+                    } else if (rePoi.test(prevLine)) {
+                        usePoint = true;
+                        break;
+                    }
                 }
             }
 
@@ -179,6 +184,43 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
+}
+
+/**
+ * 判断是一个word(...)->是不是指针
+ */
+function isFunctionReturnPoint(word, document, line_index)
+{
+    while (--line_index >= 0) {
+        var position = new vscode.Position(line_index, 0);
+        var line = document.lineAt(position).text;
+        if (line.indexOf(word+'(') != -1 || line.indexOf(word+' (')) // 这一行有函数名
+        {
+            var pos = line.indexOf(word+'(');
+            if (pos == -1)
+                pos = line.indexOf(word+' (') + 1;
+            pos += word.length; // 跳过第一个左括号
+            var count = 1;
+            while (++pos < line.length) {
+                var c = line.charAt(pos);
+                if (c == '(')
+                    count++;
+                else if (c == ')')
+                    count--;
+                if (count == 0)
+                    break;
+            }
+            if (pos < line.length)
+            {
+                var right = line.substring(pos+1);
+                if (right.startsWith('.'))
+                    return false;
+                else if (right.startsWith('->'))
+                    return true;
+            }
+        }
+    }
+    return false;
 }
 
 /**
