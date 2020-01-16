@@ -2,6 +2,8 @@
 
 A special plugin for lazy people by using the fewest keystrokes in the normal syntax of C/C++/Java/JS/PHP.
 
+[中文版介绍](https://github.com/MRXY001/vscode-plugin-LazyKey/blob/master/README-zh.md)
+
 ## Features
 
 LazyKey redefines the following keys:
@@ -14,8 +16,8 @@ LazyKey redefines the following keys:
 - `right square bracket`
 - `minus`
 - `equal`
-- `zero`
 - `nine`
+- `zero`
 - `less`
 
 ![pic1](https://github.com/MRXY001/vscode-plugin-LazyKey/blob/master/images/LazyKey_Picture1.gif?raw=true)
@@ -24,7 +26,7 @@ LazyKey redefines the following keys:
 
 ### space key
 
-- Add ` ()` after `if` / `for` / `while` / `foreach` / `switch` by pressing space key
+- Add `()` after `if` / `for` / `while` / `foreach` / `switch` by pressing space key
   for example, convert `if|` to `if (|)`. (`|` is the current cursor)
 
 ### comma key
