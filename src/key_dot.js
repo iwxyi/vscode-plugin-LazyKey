@@ -123,7 +123,7 @@ function provideCompletionItems(document, position, token, context) {
                     return ;
                 usePoint = true;
             }
-            else if (/^[\w_\d]$/.test(word))// 左边是单词
+            else if (/^[\w_\d]+$/.test(word))// 左边是单词
             {
                 // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
                 var re0 = new RegExp("^p_"); // 约定俗成的 p_var 指针类型
