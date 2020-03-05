@@ -232,7 +232,7 @@ function provideCompletionItems(document, position, token, context) {
     // 右边有且全是关闭符号
     else if (/^[\]\)"'\s]+\s*(\/[\/\*].*)?$/.test(right)) {
         // 如果是变量下标，则取消
-        if (/^[\w_][\w\d_]*$/.test(word)) { // word 是一个完整的变量
+        if (/^\$?[\w_][\w\d_]*$/.test(word)) { // word 是一个完整的变量
             if (full.match(new RegExp("\\b" + word + "\\s*\\[", 'g')).length > 1) // 这个变量有下标
                 return;
         }
@@ -400,14 +400,18 @@ function provideCompletionItems(document, position, token, context) {
             addSemi = true;
         }
         // 判断是不是变量声明 const int a[3]
-        else if (/^\s*(\w+\s+)*[\w_]+\s+[\w\d_]$/.test(left)) {
+        else if (/^\s*(\w+\s+)*\$?[\w_]+\s+[\w\d_]$/.test(left)) {
+            return ;
+        }
+        // 判断是不是PHP变量
+        else if (/\$[\w\d_]+$/.test(left)) {
             return ;
         }
 
         // 判断有没有已经存在的变量（指针、数组）
         if (/^\w+$/.test(word)) {
-            var re = full.match(new RegExp('\\b' + word + '\\[', 'g'));
-            var re2 = full.match(new RegExp('\\b\\*\\s*' + word + '\\b', 'g'));
+            var re = full.match(new RegExp('\$?\\b' + word + '\\[', 'g'));
+            var re2 = full.match(new RegExp('\$?\\b\\*\\s*' + word + '\\b', 'g'));
             if ((re != null && re.length > 1)
                 || (re2 != null && re2.length>1)) {
                 return ;
