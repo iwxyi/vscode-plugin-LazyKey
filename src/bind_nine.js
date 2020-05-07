@@ -32,7 +32,7 @@ function processNine() {
 function analyzeNine(editor, document, position) {
     // 获取全文和当前行内容
     var full = document.getText();
-    var word = document.getText(document.getWordRangeAtPosition(position));  // 点号左边的单词
+    var word = document.getText(document.getWordRangeAtPosition(position)); // 点号左边的单词
     var line = document.lineAt(position).text;
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
@@ -52,7 +52,10 @@ function analyzeNine(editor, document, position) {
         return false;
 
     // 光标左右的左右括号的数量
-    var ll = 0, lr = 0, rl = 0, rr = 0;
+    var ll = 0,
+        lr = 0,
+        rl = 0,
+        rr = 0;
     for (var j = 0; j < left.length; j++) {
         var c = left.charAt(j);
         if (c == '(')
@@ -79,15 +82,15 @@ function analyzeNine(editor, document, position) {
     // ((|)))
     var withRight = !(ll + rl < lr + rr && rl < rr);
     var tabRight = vscode.workspace.getConfiguration().get('LazyKey.TabSkipRightParenthese');
-    var newText = (withRight && (right == ''||right == ")"||right == ";"||right == "]")) ?
-        (tabRight ? "($1)" : "($0)")
-        : "(";
+    var newText = (withRight && (right == '' || right == ")" || right == ";" || right == "]")) ?
+        (tabRight ? "($1)" : "($0)") :
+        "(";
 
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': newText });
 
     // 延时出现提示（必须延时才会出现）
     if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
-        setTimeout(function () {
+        setTimeout(function() {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
@@ -104,7 +107,7 @@ function isInCode(document, position, left, right) {
     if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
         return false;
 
-    // 字符串 "str|str"    双引号个数是偶数个
+    /* // 字符串 "str|str"    双引号个数是偶数个
     var res = left.match(new RegExp(/(?<!\\)"/g));
     if (res != null && res.length % 2)
         return false;
@@ -112,6 +115,8 @@ function isInCode(document, position, left, right) {
     // 字符串 'str|str'    单引号个数是偶数个
     res = left.match(new RegExp(/(?<!\\)'/g));
     if (res != null && res.length % 2)
+        return false; */
+    if (isInQuote(left))
         return false;
 
     // 正则 /reg|asd/    斜杠个数是偶数个
@@ -126,8 +131,32 @@ function isInCode(document, position, left, right) {
  * 仅仅添加一行
  */
 function normalNine() {
-    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '9'});
+    vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '9' });
 }
 
+/**
+ * 是否在引号内。支持单引号和双引号
+ */
+function isInQuote(left) {
+    var mode = 0; // 0：不在引号中；1：单引号中；2：双引号中
+    for (var i = 0; i < left.length; i++) {
+        if (i > 0 && left[i - 1] === '\\') // 转义字符
+            continue;
+        if (left[i] === "'") {
+            if (mode == 1) {
+                mode = 0;
+            } else if (mode == 0) {
+                mode = 1;
+            }
+        } else if (left[i] === '"') {
+            if (mode == 2) {
+                mode = 0;
+            } else if (mode == 0) {
+                mode = 2;
+            }
+        }
+    }
+    return mode != 0;
+}
 
 module.exports = processNine;

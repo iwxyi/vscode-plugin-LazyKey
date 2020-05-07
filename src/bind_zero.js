@@ -32,7 +32,7 @@ function processZero() {
 function analyzeZero(editor, document, position) {
     // 获取全文和当前行内容
     var full = document.getText();
-    var word = document.getText(document.getWordRangeAtPosition(position));  // 点号左边的单词
+    var word = document.getText(document.getWordRangeAtPosition(position)); // 点号左边的单词
     var line = document.lineAt(position).text;
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
@@ -52,21 +52,21 @@ function analyzeZero(editor, document, position) {
         // 获取全文和当前行内容
         position = selections[i].end;
         var full = document.getText();
-        var word = document.getText(document.getWordRangeAtPosition(position));  // 左边的单词
+        var word = document.getText(document.getWordRangeAtPosition(position)); // 左边的单词
         var line = document.lineAt(position).text;
         var left = line.substring(0, position.character);
         var right = line.substring(position.character);
 
         // 不处理连续数字或者小数点
-        if (/\D$/.test(left) && right.startsWith(')'))     // 排除单纯一个0并右括号结束，例如：at(0|)、at(a, 0|)
-            ;
+        if (/\D$/.test(left) && right.startsWith(')')) // 排除单纯一个0并右括号结束，例如：at(0|)、at(a, 0|)
+        ;
         else if (/\d+\.?$/.test(left) || /^\d+/.test(right))
             return false;
 
         // 判断是插入 0 还是插入 )
         // 左边是自增/自减，很可能是右括号
         if (/(\+\+|\-\-)$/.test(left))
-            ;
+        ;
         // 左边是空白或者运算符，很可能是 0
         else if (/[ =\+\-*\/%\.<>]$/.test(left))
             return false;
@@ -78,7 +78,10 @@ function analyzeZero(editor, document, position) {
             return false;
 
         // 光标左右的左右括号的数量
-        var ll = 0, lr = 0, rl = 0, rr = 0;
+        var ll = 0,
+            lr = 0,
+            rl = 0,
+            rr = 0;
         for (let c of left) {
             if (c == '(')
                 ll++;
@@ -98,12 +101,12 @@ function analyzeZero(editor, document, position) {
         var isNoParaFunc = right.startsWith(")");
         // func(|0)
         if (/[\w]+\($/.test(left) && right.startsWith(')')) {
-            var wordPos = new vscode.Position(position.line, position.character-2);
-            var word = document.getText(document.getWordRangeAtPosition(wordPos));  // 左边的单词
-            var match1 = full.match(new RegExp("\\b" + word + "\\(\\)", 'g'));      // 无参数
-            var match2 = full.match(new RegExp("\\b" + word + "\\([^\\)]", 'g'));   // 有参数
-            if (match1 != null && match1.length <= 1 /*本身就有一个*/
-                && match2 != null && match2.length > 0) {
+            var wordPos = new vscode.Position(position.line, position.character - 2);
+            var word = document.getText(document.getWordRangeAtPosition(wordPos)); // 左边的单词
+            var match1 = full.match(new RegExp("\\b" + word + "\\(\\)", 'g')); // 无参数
+            var match2 = full.match(new RegExp("\\b" + word + "\\([^\\)]", 'g')); // 有参数
+            if (match1 != null && match1.length <= 1 /*本身就有一个*/ &&
+                match2 != null && match2.length > 0) {
                 isNoParaFunc = false;
             }
         }
@@ -118,7 +121,7 @@ function analyzeZero(editor, document, position) {
 
         // 点号的位置替换为指针
         var newEdit = vscode.TextEdit.insert(position, newText);
-        if ((isAllSkip==true && newText != ''))
+        if ((isAllSkip == true && newText != ''))
             isAllSkip = false;
 
         // 添加本次的修改
@@ -147,7 +150,7 @@ function isInCode(document, position, left, right) {
     if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
         return false;
 
-    // 字符串 "str|str"    双引号个数是偶数个
+    /* // 字符串 "str|str"    双引号个数是偶数个
     var res = left.match(new RegExp(/(?<!\\)"/g));
     if (res != null && res.length % 2)
         return false;
@@ -155,6 +158,8 @@ function isInCode(document, position, left, right) {
     // 字符串 'str|str'    单引号个数是偶数个
     res = left.match(new RegExp(/(?<!\\)'/g));
     if (res != null && res.length % 2)
+        return false; */
+    if (isInQuote(left))
         return false;
 
     // 正则 /reg|asd/    斜杠个数是偶数个
@@ -172,5 +177,29 @@ function normalZero() {
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '0' });
 }
 
+/**
+ * 是否在引号内。支持单引号和双引号
+ */
+function isInQuote(left) {
+    var mode = 0; // 0：不在引号中；1：单引号中；2：双引号中
+    for (var i = 0; i < left.length; i++) {
+        if (i > 0 && left[i - 1] === '\\') // 转义字符
+            continue;
+        if (left[i] === "'") {
+            if (mode == 1) {
+                mode = 0;
+            } else if (mode == 0) {
+                mode = 1;
+            }
+        } else if (left[i] === '"') {
+            if (mode == 2) {
+                mode = 0;
+            } else if (mode == 0) {
+                mode = 2;
+            }
+        }
+    }
+    return mode != 0;
+}
 
 module.exports = processZero;
