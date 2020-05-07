@@ -16,7 +16,7 @@ function provideCompletionItems(document, position, token, context) {
         vscode.workspace.getConfiguration().update('LazyKey.DotToPointDisabledOnce', false, true);
         return;
     }
-    console.log('---------------------');
+
     if (['c', 'cpp', 'php'].indexOf(document.languageId) == -1)
         return;
 
@@ -52,6 +52,8 @@ function provideCompletionItems(document, position, token, context) {
             newText = ".";
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 2);
             vscode.workspace.getConfiguration().update('LazyKey.DotToPointDisabledOnce', true, true);
+            // 短期内箭头无效
+            // setTimeout(function() { vscode.workspace.getConfiguration().update('LazyKey.DotToPointDisabledOnce', false, true); }, 500);
         }
         // 数字小数点
         else if (/\d$/.test(left)) {
