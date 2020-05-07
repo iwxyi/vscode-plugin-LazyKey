@@ -7,8 +7,8 @@ const vscode = require('vscode');
 
 function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
-    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
-        || !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
+    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
+        !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
         return;
     if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
         return;
@@ -25,8 +25,8 @@ function provideCompletionItems(document, position, token, context) {
         // 获取全文和当前行内容
         position = selections[i].end;
         var full = document.getText();
-        var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
-        var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
+        var leftPosition = new vscode.Position(position.line, position.character - 1); // 左边单词右位置
+        var word = document.getText(document.getWordRangeAtPosition(leftPosition)); // 点号左边的单词
         var line = document.lineAt(position).text;
         var inpt = line.substring(position.character - 1, position.character);
         var left = line.substring(0, leftPosition.character);
@@ -45,7 +45,7 @@ function provideCompletionItems(document, position, token, context) {
             newText = ", ";
         }
         // (var,|)
-        else if (right!="" && right.startsWith(')')) {
+        else if (right != "" && right.startsWith(')')) {
             newText = ", ";
         }
         // cout ,,
@@ -67,8 +67,7 @@ function provideCompletionItems(document, position, token, context) {
         else if (/\S, $/.test(left)) {
             leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 2);
             newText = " << ";
-        }
-        else {
+        } else {
             return;
         }
 
@@ -85,7 +84,7 @@ function provideCompletionItems(document, position, token, context) {
 
     // 延时出现提示（必须延时才会出现）
     if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
-        setTimeout(function () {
+        setTimeout(function() {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
@@ -100,11 +99,10 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function (context) {
+module.exports = function(context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
-        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'python', 'jsp'] }, {
-            provideCompletionItems,
-            resolveCompletionItem
-        }, ','));
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'python', 'jsp'] }, {
+        provideCompletionItems,
+        resolveCompletionItem
+    }, ','));
 };
