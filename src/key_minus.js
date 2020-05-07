@@ -10,8 +10,8 @@ const vscode = require('vscode');
 
 function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
-    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
-        || !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
+    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
+        !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
         return;
     if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
         return;
@@ -28,8 +28,8 @@ function provideCompletionItems(document, position, token, context) {
         // 获取全文和当前行内容
         position = selections[i].end;
         var full = document.getText();
-        var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
-        var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
+        var leftPosition = new vscode.Position(position.line, position.character - 1); // 左边单词右位置
+        var word = document.getText(document.getWordRangeAtPosition(leftPosition)); // 点号左边的单词
         var line = document.lineAt(position).text;
         var inpt = line.substring(position.character - 1, position.character);
         var left = line.substring(0, leftPosition.character);
@@ -39,7 +39,7 @@ function provideCompletionItems(document, position, token, context) {
         if (inpt != "-")
             return;
         // 必须要右边全部空的
-        if (right != "" && ! /^[_\)\]\}\s]/.test(right))
+        if (right != "" && !/^[_\)\]\}\s]/.test(right))
             return;
         // 注释、字符串、正则
         if (!isInCode(document, position, left, right))
@@ -54,12 +54,12 @@ function provideCompletionItems(document, position, token, context) {
             newText = "_";
         }
         // 单词_xxx 这样的变量上下文存在 var_
-        else if (/\b[\w_][\w\d_]*$/.test(left) && (new RegExp("\\b"+word+"_")).test(full)){
+        else if (/\b[\w_][\w\d_]*$/.test(left) && (new RegExp("\\b" + word + "_")).test(full)) {
             newText = "_";
         }
         // 排除情况：) |
         else if (/\)\s+$/.test(left)) {
-            return ;
+            return;
         }
         // 排除情况：)|
         else if (/\)$/.test(left)) {
@@ -75,11 +75,11 @@ function provideCompletionItems(document, position, token, context) {
         }
         // 自减
         else if (/(\b[\w_][\w\d_]*|\)|\])-$/.test(left)) {
-            return ;
+            return;
         }
         // 前一个误判情况 准备自减的 var- 被当作了下划线 var_
         else if (/(\b[\w_][\w\d_]*|\)|\])_$/.test(left)) {
-            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character-1);
+            leftPosition = new vscode.Position(leftPosition.line, leftPosition.character - 1);
             newText = "--";
         }
         // 前一个误判情况，准备自减的 var- 被当做减法 var -
@@ -90,9 +90,8 @@ function provideCompletionItems(document, position, token, context) {
         // 变量减法(不支持下划线结尾的变量)
         else if (/(\b[\w_]([\w\d_]*[\w\d])?|\)|\])$/.test(left)) {
             newText = " - ";
-        }
-        else {    // 不知道怎么处理
-            return ;
+        } else { // 不知道怎么处理
+            return;
         }
 
         // 点号的位置替换为指针
@@ -106,13 +105,16 @@ function provideCompletionItems(document, position, token, context) {
     wordspaceEdit.set(document.uri, textEdits);
     vscode.workspace.applyEdit(wordspaceEdit);
 
+    // 是否需要提示判断
+    if (newText.indexOf('--') > -1)
+        return;
     // 延时出现提示（必须延时才会出现）
     if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
         var full = document.getText();
         var position = document.position();
         var line = document.lineAt(position).text;
         var inpt = line.substring(position.character - 1, position.character);
-        setTimeout(function () {
+        setTimeout(function() {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
@@ -154,11 +156,10 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function (context) {
+module.exports = function(context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
-        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'python', 'jsp'] }, {
-            provideCompletionItems,
-            resolveCompletionItem
-        }, '-'));
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'python', 'jsp'] }, {
+        provideCompletionItems,
+        resolveCompletionItem
+    }, '-'));
 };
