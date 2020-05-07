@@ -2,6 +2,17 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.2.1]
+
+- 优化=使 `var_=` => `var -=`
+- 优化后面后花括号时等号不跳转到末尾
+- 优化 `++`、`--`、`==` 后面不弹出自动补全
+- 字符串内禁用 `.`、`9`、`0` 的自动转换
+- 修复类似 `f(a()+b())` 嵌套导致算法出现自循环
+- 修复更多bug
+
+
+
 ## [v0.1.2]
 
 - Predict point variable's name
