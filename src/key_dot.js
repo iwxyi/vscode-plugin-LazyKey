@@ -58,7 +58,30 @@ function provideCompletionItems(document, position, token, context) {
         // 数字小数点
         else if (/\d$/.test(left)) {
             return;
-        } else {
+        }
+        // 如果左边是空的
+        else if (/^\s*$/.test(left)) {
+            var usePoint = true;
+            var pos = position;
+            var reDot = new RegExp("^\\s*\\.");
+            var rePoi = new RegExp("^\\s*->");
+            while (pos.line > 0) {
+                pos = new vscode.Position(pos.line - 1, 0);
+                var prevLine = document.lineAt(pos).text;
+                if (reDot.test(prevLine)) {
+                    usePoint = false;
+                    break;
+                } else if (rePoi.test(prevLine)) {
+                    usePoint = true;
+                    break;
+                }
+            }
+            if (!usePoint)
+                return;
+            newText = "->";
+        }
+        // 其他情况
+        else {
             newText = "->";
             // 两个点号变成指针
             var doublePoint = false;
