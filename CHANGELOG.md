@@ -2,6 +2,12 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.2.2]
+
+- 修复`@override`、`private:`等换行的问题
+
+
+
 ## [v0.2.1]
 
 - 优化=使 `var_=` => `var -=`

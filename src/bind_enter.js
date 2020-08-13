@@ -9,8 +9,7 @@
 
 const vscode = require('vscode');
 
-function processEnter()
-{
+function processEnter() {
     // 读取设置是否开启
     if (!vscode.workspace.getConfiguration().get('LazyKey.SmarterEnter')) {
         normalEnter();
@@ -28,8 +27,7 @@ function processEnter()
     }
     var position = selection.active;
 
-    if (!analyzeSkip(editor, document, position))
-    {
+    if (!analyzeSkip(editor, document, position)) {
         normalEnter();
         toIndent(editor, document, position);
     }
@@ -38,26 +36,23 @@ function processEnter()
 /**
  * 判断需不需要跳过右边的内容
  */
-function analyzeSkip(editor, document, position)
-{
+function analyzeSkip(editor, document, position) {
     const left_parentheses = ['\'', '"', '(', '[', '{', '<'];
     const right_parentheses = ['\'', '"', ')', ']', '}', '>'];
 
     // 获取全文和当前行内容
     var full = document.getText();
-    var word = document.getText(document.getWordRangeAtPosition(position));  // 点号左边的单词
+    var word = document.getText(document.getWordRangeAtPosition(position)); // 点号左边的单词
     var line = document.lineAt(position).text;
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
 
     // 预先判断（因为一些特殊原因）
     // 有块注释（屏蔽下面的块注释结束）
-    if (/\/\*/.test(line)) {
-        ;
+    if (/\/\*/.test(line)) {;
     }
     // 块注释结束
     else if ((/^\s*\*+\/$/.test(left) && right == '') || (/^\s*\*+$/.test(left) && /^\*+\/$/.test(right))) {
-        console.log('asd');
         vscode.commands.executeCommand('editor.action.insertLineAfter'); // 这样换行可以避免块注释中间带起的缩进
         return true;
     }
@@ -69,7 +64,7 @@ function analyzeSkip(editor, document, position)
     var rightChar = right.charAt(0);
 
     // 左边不能是空的，而且右边必须是要全部右括号或者分号，允许后面注释
-    if (/^\s*$/.test(left) || ! /^['"\)\]\};\s]*(\/[\/\*].*)?$/.test(right)) {
+    if (/^\s*$/.test(left) || !/^['"\)\]\};\s]*(\/[\/\*].*)?$/.test(right)) {
         return false;
     }
     // 允许空字符串 "|")
@@ -97,8 +92,7 @@ function analyzeSkip(editor, document, position)
 /**
  * 仅仅添加一行
  */
-function normalEnter()
-{
+function normalEnter() {
     // vscode.commands.executeCommand('lineBreakInsert'); // 这个是在后面插入一行
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n' });
 }
@@ -106,13 +100,11 @@ function normalEnter()
 /**
  * 添加两行，扩展括号
  */
-function largeEnter()
-{
+function largeEnter() {
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n\t$0\n' });
 }
 
-function toIndent(editor, document, position)
-{
+function toIndent(editor, document, position) {
     var line = document.lineAt(position).text;
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
@@ -144,8 +136,8 @@ function toIndent(editor, document, position)
             // 判断后面有没有结束标志
             // 就是简单判断下一行是不是 * 开头吧
             var nextLine = position.line < document.lineCount - 1 ?
-                document.lineAt( new vscode.Position(position.line + 1, 0) ).text
-                : "";
+                document.lineAt(new vscode.Position(position.line + 1, 0)).text :
+                "";
             var hasRight = false;
             if (/^\s*\*/.test(nextLine)) // 下一行是*开头。后面很可能有注释（没有深入判断）
             {
@@ -175,6 +167,10 @@ function toIndent(editor, document, position)
         else if (/^\s*{\s*$/.test(line)) {
 
         }
+        // private:    goto:    应当缩进
+        else if (/^\s*(\b\w+\b\s*):$/.test(line)) {
+
+        }
         // 如果是右花括号，不缩进
         else if (line.indexOf('}') > -1 && (line.indexOf('{') == -1 || line.lastIndexOf('}') > line.lastIndexOf('{'))) {
             return true;
@@ -183,17 +179,20 @@ function toIndent(editor, document, position)
         else if (line.startsWith('#')) {
             return true;
         }
+        // @override 不缩进
+        else if (/^\s*@/.test(line)) {
+            return true;
+        }
         // 判断上一行是不是同样没有分号
-        else if (!/^\s*$/.test(prevLine) && /^[^;]+$/.test(prevLine))
-        {
+        else if (!/^\s*$/.test(prevLine) && /^[^;]+$/.test(prevLine)) {
             // 如果这一行已经缩进了
             if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
                 return true;
             // 再继续判断上上行
             var prevPrevLine = position.line <= 1 ? ';' : document.lineAt(new vscode.Position(position.line - 2, 0)).text;
-            if (!/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(prevPrevLine)
-                && /^[^;]+$/.test(prevPrevLine)
-                && /^(\s*)/.exec(prevLine)[1].length >= /^(\s*)/.exec(prevPrevLine)[1].length)
+            if (!/^\s*(if|for|while|foreach|switch)\s*\(.*\)[^;]*$/.test(prevPrevLine) &&
+                /^[^;]+$/.test(prevPrevLine) &&
+                /^(\s*)/.exec(prevLine)[1].length >= /^(\s*)/.exec(prevPrevLine)[1].length)
                 return true;
 
         }
@@ -222,10 +221,9 @@ function toIndent(editor, document, position)
     var outdent = false;
     if (prevLine.indexOf('{') > -1 || /[^:]:\s*(\/[\/\*].*)?$/.test(prevLine)) {
         outdent = false;
-    }
-    else if (line.indexOf(';') > -1
-        && ((/^[^;]+$/.test(prevLine) || /^[^;]+(\(.+\))?[^;]*$/.test(prevLine))
-        && /^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
+    } else if (line.indexOf(';') > -1 &&
+        ((/^[^;]+$/.test(prevLine) || /^[^;]+(\(.+\))?[^;]*$/.test(prevLine)) &&
+            /^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
     ) {
         outdent = true;
     }
@@ -235,7 +233,7 @@ function toIndent(editor, document, position)
         var indentLine = /^(\s*)/.exec(line)[1].length; // 当前行缩进
         var line = position.line;
         var isCase = false;
-        while (--line>=0) {
+        while (--line >= 0) {
             var pos = new vscode.Position(line, 0);
             var prevLine = document.lineAt(pos).text;
             var indentPrevLine = /^(\s*)/.exec(prevLine)[1].length
@@ -247,13 +245,12 @@ function toIndent(editor, document, position)
         if (isCase) {
             outdent = true;
         }
-    }
-    else {
+    } else {
         outdent = false;
     }
 
     if (outdent) {
-        setTimeout(function () {
+        setTimeout(function() {
             vscode.commands.executeCommand('outdent');
         }, 50);
     }
