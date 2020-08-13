@@ -4,7 +4,8 @@ All notable changes to the "lazykey" extension will be documented in this file.
 
 ## [v0.2.2]
 
-- 修复`@override`、`private:`等换行的问题
+- 优化 `@override`、`private:`、`}else{` 等换行
+- 优化 `int*[3]` 这一类方括号
 
 
 

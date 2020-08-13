@@ -164,7 +164,7 @@ function toIndent(editor, document, position) {
 
         }
         // 左括号，也需要缩进
-        else if (/^\s*{\s*$/.test(line)) {
+        else if (/^\s*{\s*$/.test(left)) {
 
         }
         // private:    goto:    应当缩进
