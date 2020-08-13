@@ -95,7 +95,9 @@ This extension contributes the following settings:
 
 ## Known Issues
 
-It may change your button habits and make you lazy.
+LazyKey may not work correctly in some cases, such as mixing tab and space.
+
+And it may change your button habits and make you lazy.
 
 ## Release Notes
 
