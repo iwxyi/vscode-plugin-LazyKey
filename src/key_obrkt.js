@@ -178,30 +178,47 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{$0}' });
         return;
     }
-    // 末尾，需要将下一行包含到代码块中（未考虑连续多行缩进）
+    // 末尾，需要将下一行包含到代码块中
     else if (((/^\s*(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)) || (/^\s*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))) &&
         position.line < document.lineCount - 1 &&
         /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
+
         vscode.commands.executeCommand('deleteLeft');
         var ins = "{";
         if (!left.endsWith(' ')) ins = " " + ins;
         if (!right.startsWith(' ') && !right.startsWith('\t')) ins += " ";
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins });
 
+        // 判断下面需要包括几行
+        // 只通过缩进进行判断
+        var downCount = 1;
+        var totalCount = document.lineCount;
+        var indentLine = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length;
+        while (position.line + downCount < totalCount - 1) {
+            if (/^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount, 0)).text)[1].length <
+                /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length)
+                downCount++;
+            else
+                break;
+        }
+
         // insert 会有延迟，所以延迟后继续
         setTimeout(function() {
-            vscode.commands.executeCommand('cursorDown');
+            for (var i = 0; i < downCount; i++)
+                vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('cursorLineEnd');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
-            vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
+            for (var i = 0; i < downCount; i++)
+                vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
         }, 100);
     }
     // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
-    else if (position.line > 0 && (/^\s*(if|else(\s+if)|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text) ||
+    else if (position.line > 0 && (/^\s*(if|else(\s+if)?|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text) ||
             /^\s*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)) &&
-        /^\s+$/.test(left) && /\S/.test(right) &&
+        /^\s*$/.test(left) && /\S/.test(right) &&
         /^(\s*)/.exec(left)[1].length >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
+
         // 获取当前行左边缩进的值
         var indentSelectStart = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length;
         var indentSelectEnd = /^(\s*)/.exec(line)[1].length + 1;
@@ -216,6 +233,19 @@ function provideCompletionItems(document, position, token, context) {
             indentSnippet += '\t';
         else
             indentSnippet += '    ';
+
+        // 判断需要缩进几行
+        var downCount = 0; // 从当前行开始，所以和上面的1不同
+        var totalCount = document.lineCount;
+        var indentLine = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line, 0)).text)[1].length;
+        while (position.line + downCount < totalCount - 1) {
+            if (/^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount, 0)).text)[1].length <
+                /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length)
+                downCount++;
+            else
+                break;
+        }
+
         // 第一步：插入左括号并换行
         var textEdit1 = vscode.TextEdit.replace(new vscode.Range(positionStart, positionEnd), '{\n' + indentSnippet);
         let textEdits = [];
@@ -226,9 +256,12 @@ function provideCompletionItems(document, position, token, context) {
 
         // 第二步：在下一行插入右括号，并且 outdent
         setTimeout(function() {
+            for (var i = 0; i < downCount; i++)
+                vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
-            vscode.commands.executeCommand('outdent');
+            for (var i = 0; i <= downCount; i++)
+                vscode.commands.executeCommand('outdent');
         }, 100);
     }
     // 右边有且全是关闭符号
