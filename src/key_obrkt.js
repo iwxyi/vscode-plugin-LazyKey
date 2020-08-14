@@ -83,8 +83,8 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('editor.action.insertLineAfter');
         }
     }
-    // 如果下一行已经有花括号，那么直接跳到下一行的花括号右边
-    else if (position.line < document.lineCount - 1 && /^\s*\{\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
+    // 行中间，如果下一行已经有花括号，那么直接跳到下一行的花括号右边
+    else if (/\S/.test(left) && position.line < document.lineCount - 1 && /^\s*\{\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorDown');
         vscode.commands.executeCommand('cursorLineEnd');
@@ -191,14 +191,21 @@ function provideCompletionItems(document, position, token, context) {
 
         // 判断下面需要包括几行
         // 只通过缩进进行判断
-        var downCount = 1;
+        var downCount = 1; // 下移的行数
+        var outdentCount = 1; // 反缩进的行数
         var totalCount = document.lineCount;
-        var indentLine = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length;
+        var indentLen = /^(\s*)/.exec(line)[1].length; // 当前行的缩进
+        var prevIndentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length;
         while (position.line + downCount < totalCount - 1) {
-            if (/^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount, 0)).text)[1].length <
-                /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length)
+            var currIndentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length;
+            if (indentLen < currIndentLen) {
                 downCount++;
-            else
+                if (currIndentLen > prevIndentLen)
+                    outdentCount++;
+                else if (currIndentLen < prevIndentLen)
+                    outdentCount--;
+                prevIndentLen = currIndentLen;
+            } else
                 break;
         }
 
@@ -209,7 +216,7 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('cursorLineEnd');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
-            for (var i = 0; i < downCount; i++)
+            for (var i = 0; i < outdentCount; i++)
                 vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
         }, 100);
     }
@@ -236,13 +243,20 @@ function provideCompletionItems(document, position, token, context) {
 
         // 判断需要缩进几行
         var downCount = 0; // 从当前行开始，所以和上面的1不同
+        var outdentCount = 1; // 反缩进的行数
         var totalCount = document.lineCount;
-        var indentLine = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line, 0)).text)[1].length;
+        var indentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length;
+        var prevIndentLen = indentLen + 1; // 无法获取当前行的缩进，因为可能会被左放括号给误导，右边仍存在部分缩进
         while (position.line + downCount < totalCount - 1) {
-            if (/^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount, 0)).text)[1].length <
-                /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length)
+            var currIndentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length;
+            if (indentLen < currIndentLen) {
                 downCount++;
-            else
+                if (currIndentLen > prevIndentLen)
+                    outdentCount++;
+                else if (currIndentLen < prevIndentLen)
+                    outdentCount--;
+                prevIndentLen = currIndentLen;
+            } else
                 break;
         }
 
@@ -260,7 +274,7 @@ function provideCompletionItems(document, position, token, context) {
                 vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
-            for (var i = 0; i <= downCount; i++)
+            for (var i = 0; i < outdentCount; i++) // 至少要有一次
                 vscode.commands.executeCommand('outdent');
         }, 100);
     }

@@ -8,6 +8,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - 优化 `int*[3]` 这一类方括号
 - 优化缩进空格和tab混合使用的情况下花括号的缩进
 - 优化左方括号将下面连续单行缩进的代码包括进来
+- 优化`if`、`for`等下面几行代码一键纳入花括号
 - 修复按9键不会自动插入右括号的问题
 
 
