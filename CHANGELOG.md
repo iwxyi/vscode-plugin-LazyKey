@@ -7,6 +7,7 @@ All notable changes to the "lazykey" extension will be documented in this file.
 - 优化 `@override`、`private:`、`}else{` 等换行
 - 优化 `int*[3]` 这一类方括号
 - 优化缩进空格和tab混合使用的情况下花括号的缩进
+- 修复按9键不会自动插入右括号的问题
 
 
 

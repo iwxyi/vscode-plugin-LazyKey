@@ -441,6 +441,10 @@ function isInCode(document, position, left, right) {
     if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
         return false;
 
+    // 其他例如多行块注释；就不仔细判断了
+    if (/^\s*[*#]/.test(left))
+        return false;
+
     // 字符串 "str|str"    双引号个数是偶数个
     var res = left.match(new RegExp(/(?<!\\)"/g));
     if (res != null && res.length % 2)
