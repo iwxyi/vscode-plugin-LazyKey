@@ -80,6 +80,7 @@ LazyKey redefines the following keys:
 ### number zero key
 
 - Convert `0` to `)` in the appropriate place
+  - if need 0, such as `while (|)`, can insert space before
 
 ### less key
 
