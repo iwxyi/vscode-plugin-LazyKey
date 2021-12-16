@@ -96,7 +96,7 @@ function provideCompletionItems(document, position, token, context) {
                 vscode.commands.executeCommand('editor.action.insertLineAfter');
 
                 // 延迟，如果缩进一个，则进行一个缩进
-                setTimeout(function() {
+                setTimeout(function () {
                     var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text;
                     var nextNextLine = document.lineAt(new vscode.Position(position.line + 2, 0)).text;
                     var indentNextLine = /^(\s*)/.exec(nextLine)[1];
@@ -179,7 +179,7 @@ function provideCompletionItems(document, position, token, context) {
         return;
     }
     // 末尾，需要将下一行包含到代码块中
-    else if (((/^\s*(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)) || (/^\s*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))) &&
+    else if (((/^[\s\}]*?(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)) || (/^\s*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))) &&
         position.line < document.lineCount - 1 &&
         /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
 
@@ -210,7 +210,7 @@ function provideCompletionItems(document, position, token, context) {
         }
 
         // insert 会有延迟，所以延迟后继续
-        setTimeout(function() {
+        setTimeout(function () {
             for (var i = 0; i < downCount; i++)
                 vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('cursorLineEnd');
@@ -221,8 +221,8 @@ function provideCompletionItems(document, position, token, context) {
         }, 100);
     }
     // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
-    else if (position.line > 0 && (/^\s*(if|else(\s+if)?|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text) ||
-            /^\s*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)) &&
+    else if (position.line > 0 && (/^[\s\}]*(if|else(\s+if)?|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text) ||
+        /^[\s\}]*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)) &&
         /^\s*$/.test(left) && /\S/.test(right) &&
         /^(\s*)/.exec(left)[1].length >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
 
@@ -269,7 +269,7 @@ function provideCompletionItems(document, position, token, context) {
         vscode.workspace.applyEdit(wordspaceEdit);
 
         // 第二步：在下一行插入右括号，并且 outdent
-        setTimeout(function() {
+        setTimeout(function () {
             for (var i = 0; i < downCount; i++)
                 vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
@@ -399,7 +399,7 @@ function provideCompletionItems(document, position, token, context) {
                 }
             } else { // 有注释
                 var endPosition = line.length - commentLength;
-                var deltaPosition = endPosition - position.character - 1 /*因为多删了一个]*/ ;
+                var deltaPosition = endPosition - position.character - 1 /*因为多删了一个]*/;
                 while (deltaPosition-- > 0) {
                     vscode.commands.executeCommand('cursorRight');
                 }
@@ -408,7 +408,7 @@ function provideCompletionItems(document, position, token, context) {
                 } else {
                     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' { ' });
                 }
-                setTimeout(function() {
+                setTimeout(function () {
                     vscode.commands.executeCommand('cursorLineEnd');
                     if (!isSwitch)
                         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n\t$0\n}' });
@@ -442,7 +442,7 @@ function provideCompletionItems(document, position, token, context) {
         var addSemi = false;
 
         // 判断 class struct enum 变量声明，名为添加分号
-        if (/^\s*(\w+\s+)*(class|struct|enum)\s+[\w\d_]$/.test(left)) {
+        if (/^\s*(\w+\s+)*(class|struct|enum|unoin)\s+[\w\d_]$/.test(left)) {
             addSemi = true;
         }
         // 判断是不是变量声明 const int a[3]
@@ -475,6 +475,7 @@ function provideCompletionItems(document, position, token, context) {
             snippet += ';';
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': snippet });
     } else {
+        console.log('没有合适的');
         return;
     }
 }
@@ -519,7 +520,7 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function(context) {
+module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'jsp'] }, {
         provideCompletionItems,
