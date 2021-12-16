@@ -26,7 +26,7 @@ function provideCompletionItems(document, position, token, context) {
     // 获取全文和当前行内容
     var full = document.getText();
     var leftPosition = new vscode.Position(position.line, position.character - 1); // 左边单词右位置
-    var word = document.getText(document.getWordRangeAtPosition(leftPosition)); // 点号左边的单词
+    var word = document.getText(document.getWordRangeAtPosition(leftPosition)); // 点号左边的单词。如果左边是空格，则是左边全部文字
     var line = document.lineAt(position).text;
     var inpt = line.substring(position.character - 1, position.character);
     var left = line.substring(0, leftPosition.character);
@@ -179,10 +179,10 @@ function provideCompletionItems(document, position, token, context) {
         return;
     }
     // 末尾，需要将下一行包含到代码块中
-    else if (((/^[\s\}]*?(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)) || (/^\s*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))) &&
+    else if (((/^[\s\}]*?(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))
+        || (/^[\s\}]*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))) &&
         position.line < document.lineCount - 1 &&
         /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
-
         vscode.commands.executeCommand('deleteLeft');
         var ins = "{";
         if (!left.endsWith(' ')) ins = " " + ins;
@@ -456,8 +456,8 @@ function provideCompletionItems(document, position, token, context) {
 
         // 判断有没有已经存在的变量（指针、数组）
         if (/^\w+$/.test(word)) {
-            var re = full.match(new RegExp('\$?\\b' + word + '\\[', 'g'));
-            var re2 = full.match(new RegExp('\$?\\b\\*\\s*' + word + '\\b', 'g'));
+            var re = full.match(new RegExp(/\$?\bword\[/g));
+            var re2 = full.match(new RegExp(/\$?\b\*\s*word\b/g));
             if ((re != null && re.length > 1) ||
                 (re2 != null && re2.length > 1)) {
                 return;
