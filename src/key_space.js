@@ -40,7 +40,7 @@ function provideCompletionItems(document, position, token, context) {
     var newText = "";
 
     // if    else if    for    while   switch    ==>    if (|)
-    if (/^\s*(if|else\s+if|for|foreach|while|switch)\s*$/.test(left))
+    if (/^[\s\}]*(if|else\s+if|for|foreach|while|switch)\s*$/.test(left))
         newText = "($0)";
     else if (/^\s*else$/.test(left))        // else   ==>    else if (|)
         newText = "if ($0)";
