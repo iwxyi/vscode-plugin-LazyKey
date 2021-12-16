@@ -442,7 +442,7 @@ function provideCompletionItems(document, position, token, context) {
         var addSemi = false;
 
         // 判断 class struct enum 变量声明，名为添加分号
-        if (/^\s*(\w+\s+)*(class|struct|enum|unoin)\s+[\w\d_]$/.test(left)) {
+        if (/^\s*(\w+\s+)*(class|struct|enum|union)\s+[\w\d_]$/.test(left)) {
             addSemi = true;
         }
         // 判断是不是变量声明 const int a[3]
