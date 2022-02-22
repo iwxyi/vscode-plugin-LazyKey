@@ -220,7 +220,7 @@ function provideCompletionItems(document, position, token, context) {
                 vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
         }, 100);
     }
-    // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
+    // 开头，需要将当前行包含到代码块中
     else if (position.line > 0 && (/^[\s\}]*(if|else(\s+if)?|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text) ||
         /^[\s\}]*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)) &&
         /^\s*$/.test(left) && /\S/.test(right) &&
@@ -274,8 +274,8 @@ function provideCompletionItems(document, position, token, context) {
                 vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
-            for (var i = 0; i < outdentCount; i++) // 至少要有一次
-                vscode.commands.executeCommand('outdent');
+            // for (var i = 0; i < outdentCount; i++) // 至少要有一次
+            vscode.commands.executeCommand('outdent');
         }, 100);
     }
     // 右边有且全是关闭符号
