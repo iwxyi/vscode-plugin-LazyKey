@@ -59,19 +59,19 @@ function analyzeZero(editor, document, position) {
 
         // 不处理连续数字或者小数点
         if (/\D$/.test(left) && right.startsWith(')')) // 排除单纯一个0并右括号结束，例如：at(0|)、at(a, 0|)
-        ;
+            ;
         else if (/\d+\.?$/.test(left) || /^\d+/.test(right))
             return false;
 
         // 判断是插入 0 还是插入 )
         // 左边是自增/自减，很可能是右括号
         if (/(\+\+|\-\-)$/.test(left))
-        ;
+            ;
         // 左边是空白或者运算符，很可能是 0
         else if (/[ =\+\-*\/%\.<>]$/.test(left))
             return false;
         // 一些函数后面必定有参数的，也是 0
-        else if (/(at|insert|of|remove|add|set\w+)\($/.test(left) && right.startsWith(')'))
+        else if (/(at|insert|of|remove|add|set|if|while|when|until)\w*\s*\($/.test(left) && right.startsWith(')'))
             return false;
         // 判断 单词0 是否存在
         else if (/[\w_]+$/.test(left) && full.match(new RegExp("\\b" + word + "0", 'g')) != null)
