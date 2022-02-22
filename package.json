@@ -128,7 +128,8 @@
                 }
             }
         },
-        "commands": [{
+        "commands": [
+            {
                 "command": "extension.switchLazyKey",
                 "title": "Im Lazy"
             },
@@ -153,7 +154,8 @@
                 "title": "KeyBindings Zero"
             }
         ],
-        "keybindings": [{
+        "keybindings": [
+            {
                 "command": "extension.keybindings_enter",
                 "key": "enter",
                 "mac": "enter",
@@ -241,43 +243,43 @@
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==c"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==cpp"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==java"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==js"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==javascript"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==php"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==cs"
             },
             {
                 "command": "extension.keybindings_complete_function",
