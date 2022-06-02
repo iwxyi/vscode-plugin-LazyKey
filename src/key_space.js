@@ -112,11 +112,11 @@ function provideCompletionItems(document, position, token, context) {
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': newText });
 
     // 延时出现提示（必须延时才会出现）
-    if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
+    /* if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
         setTimeout(function () {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
-    }
+    } */
 }
 
 /**
