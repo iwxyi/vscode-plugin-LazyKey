@@ -44,7 +44,7 @@
                 "LazyKey.DotToPoint": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert dot to point of C/C++/PHP class and point.\nIt needs double dot if one variable first uses in file."
+                    "description": "Convert dot to point of C/C++/PHP class and point.\nIt needs double dot if one variable first uses in file"
                 },
                 "LazyKey.DotToPointDisabledOnce": {
                     "type": "boolean",
@@ -54,12 +54,12 @@
                 "LazyKey.NumberToParentheses": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert number 9 and 0 to ( and )."
+                    "description": "Convert number 9 and 0 to ( and )"
                 },
                 "LazyKey.TabSkipRightParenthese": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Allow using Tab key to skip ) added by 9."
+                    "description": "Allow using Tab key to skip ) added by 9"
                 },
                 "LazyKey.SpaceFill": {
                     "type": "boolean",
@@ -74,27 +74,27 @@
                 "LazyKey.AutoSemicolon": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Put the semicolon at the end forcibly."
+                    "description": "Put the semicolon at the end forcibly"
                 },
                 "LazyKey.AutoSuggestion": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Show suggestions when filling operators."
+                    "description": "Show suggestions when filling operators"
                 },
                 "LazyKey.BranchCurlyBraceInSingleLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Whether the left curly braces { take a single line of if/for/while/foreach/switch."
+                    "description": "Whether the left curly braces { take a single line of if/for/while/foreach/switch"
                 },
                 "LazyKey.FunctionCurlyBraceInSingleLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Whether the left curly braces { take a single line of function."
+                    "description": "Whether the left curly braces { take a single line of function"
                 },
                 "LazyKey.AutoCurlyBraceInSingleLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Auto detect whether the left curly braces { take a single line according above codes."
+                    "description": "Auto detect whether the left curly braces { take a single line according above codes"
                 },
                 "LazyKey.SmarterEnter": {
                     "type": "boolean",
@@ -121,17 +121,22 @@
                     "default": true,
                     "description": "Auto complete function's parntheses after complete"
                 },
+                "LazyKey.CN-to-EN": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert Chinese symbols to English symbols"
+                },
                 "LazyKey.ShowTipOnStart": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Enable opening toast at startup."
+                    "description": "Enable opening toast at startup"
                 }
             }
         },
         "commands": [
             {
                 "command": "extension.switchLazyKey",
-                "title": "Im Lazy"
+                "title": "I'm Lazy"
             },
             {
                 "command": "extension.keybindings_enter",

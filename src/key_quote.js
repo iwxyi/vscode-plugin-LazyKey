@@ -14,7 +14,7 @@ const vscode = require('vscode');
 function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
-        || !(vscode.workspace.getConfiguration().get('LazyKey.AutoSemicolon')))
+        || !(vscode.workspace.getConfiguration().get('LazyKey.SwitchSingleAndDoubleQuote')))
         return;
     if (['c', 'cpp', 'java', 'jsp', 'cs'].indexOf(document.languageId) == -1)
         return;

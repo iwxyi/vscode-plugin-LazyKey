@@ -27,6 +27,7 @@ function activate(context) {
 	require('./src/key_obrkt.js')(context);
     require('./src/key_cbrkt.js')(context);
     require('./src/key_quote.js')(context);
+    require('./src/cn_to_en.js')(context);
 
     // KeyBindings
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_enter', require('./src/bind_enter.js')));
