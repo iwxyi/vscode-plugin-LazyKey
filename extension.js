@@ -65,9 +65,8 @@ function activate(context) {
         if (selections.length > 1) // 多个光标的情况，不进行判断
             return;
 
-        var ac = activeEditor.selection.active; // 改变前的位置，索引从0开始
-        var pos = activeEditor.document.offsetAt(ac);
-        require("./src/CN_to_EN_parser.js")(activeEditor.document, ac);
+        var pos = activeEditor.selection.active; // 改变前的位置，索引从0开始
+        require("./src/CN_to_EN_parser.js")(activeEditor.document, pos);
     }
 
     var timeout;
