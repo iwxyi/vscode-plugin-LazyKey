@@ -46,8 +46,17 @@ function activate(context) {
     }, null, context.subscriptions);
 
     // 内容改变（根据插件的不同，保存时可能会触发多次）
+    // 多个光标会触发多次！
     vscode.workspace.onDidChangeTextDocument(event => {
-        if (activeEditor && event.document === activeEditor.document) {
+        var editor = activeEditor;
+        if (editor == undefined)
+            editor = vscode.window.activeTextEditor;
+        var selections = editor.selections;
+        if (selections.length > 1) // 多个光标的情况，不进行判断
+            return ;
+        var ac = editor.selection.active; // 改变前的位置，索引从0开始
+        console.log('position', ac.line, ac.character);
+        if (editor && event.document === editor.document) {
             
         }
     }, null, context.subscriptions);

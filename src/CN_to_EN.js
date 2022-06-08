@@ -13,7 +13,7 @@ function provideCompletionItems(document, position, token, context) {
 
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;
-    if (editor.selection.text != undefined) return;
+    if (!editor || editor.selection.text != undefined) return;
 
     // 获取全文和当前行内容
     var leftPosition = new vscode.Position(position.line, position.character - 1); // 左边单词右位置
