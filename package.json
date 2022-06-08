@@ -121,10 +121,10 @@
                     "default": true,
                     "description": "Auto complete function's parntheses after complete"
                 },
-                "LazyKey.CN-to-EN": {
+                "LazyKey.ChangeSymbol": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert Chinese symbols to English symbols"
+                    "description": "Convert Chinese symbols to English symbols, such as （）【】《》，。；、“”"
                 },
                 "LazyKey.ShowTipOnStart": {
                     "type": "boolean",

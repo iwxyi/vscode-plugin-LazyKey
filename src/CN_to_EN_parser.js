@@ -3,14 +3,7 @@
  */
 const vscode = require('vscode');
 
-function provideCompletionItems(document, position, token, context) {
-    // 读取设置是否进行开启
-    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
-        !(vscode.workspace.getConfiguration().get('LazyKey.ChangeSymbol')))
-        return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
-        return;
-
+function changeSymbol(document, position) {
     // 获取编辑器，判断选中文本
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.selection.text != undefined) return;
@@ -70,18 +63,4 @@ function isInCode(document, position, left, right) {
     return true;
 }
 
-/**
- * 光标选中当前自动补全item时触发动作，一般情况下无需处理
- * @param {*} item
- * @param {*} token
- */
-function resolveCompletionItem(item, token) {
-    return null;
-}
-
-module.exports = function (context) {
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'jsp'] }, {
-        provideCompletionItems,
-        resolveCompletionItem
-    }, ''));
-};
+module.exports = changeSymbol;

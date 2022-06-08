@@ -104,7 +104,7 @@
                     "default": true,
                     "description": "Enter键无视右括号强行换行"
                 },
-                "LazyKey.CN-to-EN": {
+                "LazyKey.ChangeSymbol": {
                     "type": "boolean",
                     "default": true,
                     "description": "中文符号转英文符号"

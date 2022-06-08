@@ -27,7 +27,7 @@ function activate(context) {
     require('./src/key_obrkt.js')(context);
     require('./src/key_cbrkt.js')(context);
     require('./src/key_quote.js')(context);
-    require('./src/cn_to_en.js')(context);
+    // require('./src/cn_to_en.js')(context);
 
     // KeyBindings
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_enter', require('./src/bind_enter.js')));
@@ -36,8 +36,15 @@ function activate(context) {
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_zero', require('./src/bind_zero.js')));
     context.subscriptions.push(vscode.commands.registerCommand('extension.keybindings_complete_function', require('./src/bind_complete_function.js')));
 
+    // ChangeEvents
     var activeEditor;
     let textLast;
+
+    // 打开时的寄存器
+    if (vscode.window.activeTextEditor) {
+        activeEditor = vscode.window.activeTextEditor;
+    }
+
     // 编辑器改变（可能会瞬间触发两次）
     vscode.window.onDidChangeActiveTextEditor(editor => {
         if (editor) {
@@ -48,18 +55,35 @@ function activate(context) {
     // 内容改变（根据插件的不同，保存时可能会触发多次）
     // 多个光标会触发多次！
     vscode.workspace.onDidChangeTextDocument(event => {
-        var editor = activeEditor;
-        if (editor == undefined)
-            editor = vscode.window.activeTextEditor;
-        var selections = editor.selections;
-        if (selections.length > 1) // 多个光标的情况，不进行判断
-            return ;
-        var ac = editor.selection.active; // 改变前的位置，索引从0开始
-        console.log('position', ac.line, ac.character);
-        if (editor && event.document === editor.document) {
-            
+        if (activeEditor && event.document === activeEditor.document) {
+            triggerChangeCNSymbol();
         }
     }, null, context.subscriptions);
+
+    function changeCNSymbol() {
+        var selections = activeEditor.selections;
+        if (selections.length > 1) // 多个光标的情况，不进行判断
+            return;
+
+        var ac = activeEditor.selection.active; // 改变前的位置，索引从0开始
+        var pos = activeEditor.document.offsetAt(ac);
+        require("./src/CN_to_EN_parser.js")(activeEditor.document, ac);
+    }
+
+    var timeout;
+    function triggerChangeCNSymbol() {
+        // 读取设置是否进行开启
+        if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
+            !(vscode.workspace.getConfiguration().get('LazyKey.ChangeSymbol')))
+            return;
+        if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(activeEditor.document.languageId) == -1)
+            return;
+        
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(changeCNSymbol, 1);
+    }
 }
 exports.activate = activate;
 
