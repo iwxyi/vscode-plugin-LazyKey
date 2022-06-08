@@ -1,18 +1,9 @@
 /**
- * 左方括号
- * - 左括号变花括号
- *   - if (|)
- *   - if ()|    包括下一行可能需要包括进去（不支持连续多行缩进）
- *   - ^{|}
- *   - {\ncode}    当前行包括进代码块（不支持连续多行缩进）
- * - 左括号变花括号 Lambda
- *   - , [|])
- *   - []{|})
+ * 在代码区域的 中文符号 转 英文符号
  */
 const vscode = require('vscode');
 
 function provideCompletionItems(document, position, token, context) {
-    console.log('-------');
     // 读取设置是否进行开启
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
         !(vscode.workspace.getConfiguration().get('LazyKey.CN-to-EN')))
