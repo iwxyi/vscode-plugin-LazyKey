@@ -96,15 +96,19 @@ This extension contributes the following settings:
 
 ## Known Issues
 
+- It may not work properly under certain circumstances, such as mixed indentation of tab and space.
+
+- If there is a misjudgment, you can undo it (ctrl+z). Some may need to undo it twice
+
 LazyKey may not work correctly in some cases, such as mixing tab and space.
 
 And it may change your button habits and make you lazy.
 
 ## Release Notes
 
-### 0.1.1
+### 0.2.5
 
-Fix some problems.
+add convert Chinese symbols to English symbols, such as （）【】《》，。、；‘’“”
 
 -----------------------------------------------------------------------------------------------------------
 
