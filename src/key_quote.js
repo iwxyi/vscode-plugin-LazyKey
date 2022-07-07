@@ -16,7 +16,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
         || !(vscode.workspace.getConfiguration().get('LazyKey.SwitchSingleAndDoubleQuote')))
         return;
-    if (['c', 'cpp', 'java', 'jsp', 'cs'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'jsp', 'csharp'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -61,7 +61,7 @@ function resolveCompletionItem(item, token) {
 module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
-        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'cs'] }, {
+        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'csharp'] }, {
             provideCompletionItems,
             resolveCompletionItem
         }, '\''));
