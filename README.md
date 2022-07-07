@@ -106,6 +106,12 @@ And it may change your button habits and make you lazy.
 
 ## Release Notes
 
+### 0.2.6
+
+1. support Verilog and SystemVerilog
+2. add `;` after C++ class/struct/enum
+3. discard to modify `=` on `"xxx"`
+
 ### 0.2.5
 
 add convert Chinese symbols to English symbols, such as （）【】《》，。、；‘’“”

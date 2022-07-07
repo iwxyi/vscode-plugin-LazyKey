@@ -130,7 +130,7 @@ function provideCompletionItems(document, position, token, context) {
         var nextLinePosition = new vscode.Position(position.line + 1, 0);
         var nextLine = document.lineAt(nextLinePosition).text;
         if (vscode.workspace.getConfiguration().get('LazyKey.SemicolonNewLine')
-            || /^\s*\}\s*$/.test(nextLine)) { // 下一行只有右括号
+            && ((isClang && /^\s*\}\s*$/.test(nextLine)) || (isVerilog && /^\s*end\w*\s*$/.test(nextLine)) || /^\s*$/.test(nextLine))) { // 下一行只有右括号/结束/空白行
             if (delay) {
                 setTimeout(function () {
                     vscode.commands.executeCommand('editor.action.insertLineAfter');

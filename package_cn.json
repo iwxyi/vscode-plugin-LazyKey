@@ -77,7 +77,7 @@
                 "LazyKey.SemicolonNewLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "声明变量结束是否全部立即换行，否则只在}上一行处自动换行"
+                    "description": "声明变量添加分号时是否立即换行，只在一个代码块结束位置或空行前面生效"
                 },
                 "LazyKey.AutoSuggestion": {
                     "type": "boolean",

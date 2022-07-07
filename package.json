@@ -81,7 +81,7 @@
                 "LazyKey.SemicolonNewLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Auto create new line after semicolon when declear a variable"
+                    "description": "Auto create a new line after semicolon when declear a variable at the end of a block or before a blank line"
                 },
                 "LazyKey.AutoSuggestion": {
                     "type": "boolean",

@@ -75,9 +75,9 @@ function activate(context) {
         if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
             !(vscode.workspace.getConfiguration().get('LazyKey.ChangeSymbol')))
             return;
-        if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp'].indexOf(activeEditor.document.languageId) == -1)
+        if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp', 'verilog', 'systemverilog'].indexOf(activeEditor.document.languageId) == -1)
             return;
-        
+
         if (timeout) {
             clearTimeout(timeout);
         }
