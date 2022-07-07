@@ -13,7 +13,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
         !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
         return;
-    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp', 'verilog', 'systemverilog'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -114,7 +114,7 @@ function provideCompletionItems(document, position, token, context) {
         var position = document.position();
         var line = document.lineAt(position).text;
         var inpt = line.substring(position.character - 1, position.character);
-        setTimeout(function() {
+        setTimeout(function () {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
@@ -160,9 +160,9 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function(context) {
+module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'python', 'jsp'] }, {
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'python', 'jsp', 'verilog', 'systemverilog'] }, {
         provideCompletionItems,
         resolveCompletionItem
     }, '-'));

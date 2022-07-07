@@ -78,6 +78,11 @@
                     "default": true,
                     "description": "Put the semicolon at the end forcibly"
                 },
+                "LazyKey.SemicolonNewLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto create new line after semicolon when declear a variable"
+                },
                 "LazyKey.AutoSuggestion": {
                     "type": "boolean",
                     "default": false,

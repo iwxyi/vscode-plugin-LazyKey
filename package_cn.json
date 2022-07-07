@@ -72,7 +72,12 @@
                 "LazyKey.AutoSemicolon": {
                     "type": "boolean",
                     "default": true,
-                    "description": "分号强制到末尾，并且换行"
+                    "description": "分号强制到末尾，并且视情况换行"
+                },
+                "LazyKey.SemicolonNewLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "声明变量结束是否全部立即换行，否则只在}上一行处自动换行"
                 },
                 "LazyKey.AutoSuggestion": {
                     "type": "boolean",
