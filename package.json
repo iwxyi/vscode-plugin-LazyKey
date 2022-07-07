@@ -3,7 +3,7 @@
     "displayName": "LazyKey",
     "publisher": "mrxy001",
     "description": "Minimize keystrokes through automated keymaps",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "keywords": [
         "lazy",
         "key",
@@ -205,6 +205,18 @@
                 "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
             },
             {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==systemverilog"
+            },
+            {
                 "command": "extension.keybindings_complete_function",
                 "key": "enter",
                 "mac": "enter",
@@ -245,6 +257,18 @@
                 "key": "enter",
                 "mac": "enter",
                 "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cs"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==systemverilog"
             },
             {
                 "command": "extension.keybindings_tab",
@@ -289,6 +313,18 @@
                 "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==cs"
             },
             {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==systemverilog"
+            },
+            {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
@@ -331,6 +367,18 @@
                 "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cs"
             },
             {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==systemverilog"
+            },
+            {
                 "command": "extension.keybindings_nine",
                 "key": "9",
                 "mac": "9",
@@ -373,6 +421,18 @@
                 "when": "editorTextFocus && editorLangId==cs"
             },
             {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==systemverilog"
+            },
+            {
                 "command": "extension.keybindings_zero",
                 "key": "0",
                 "mac": "0",
@@ -413,6 +473,18 @@
                 "key": "0",
                 "mac": "0",
                 "when": "editorTextFocus && editorLangId==cs"
+            },
+            {
+                "command": "extension.keybindings_zero",
+                "key": "0",
+                "mac": "0",
+                "when": "editorTextFocus && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_zero",
+                "key": "0",
+                "mac": "0",
+                "when": "editorTextFocus && editorLangId==systemverilog"
             }
         ]
     },

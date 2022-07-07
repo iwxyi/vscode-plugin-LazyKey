@@ -51,7 +51,7 @@ LazyKey redefines the following keys:
 - Convert `[` to `{ }` and automatically jump to the next line if the current line is missing a code block
 - Jump into the code block after `if` / `for` / `while` / `foreach` / `switch` if already exists `{ }`
 - Add next line into a code block according to the above two behaviors if posible
-- Convert `[]` to `{ }` and automatically break lines in a blank line
+- Convert `[` to `{ }` and automatically break lines in a blank line (if wrong, undo twice)
 - Support both Lambda brackets, `[]` and `{}`
 
 ### right square bracket

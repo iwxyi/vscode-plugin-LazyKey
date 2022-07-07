@@ -13,7 +13,7 @@ function processEnter() {
     // 读取设置是否开启
     if (!vscode.workspace.getConfiguration().get('LazyKey.SmarterEnter')) {
         normalEnter();
-        toIndent2();
+        toIndentSimple();
         return;
     }
 
@@ -49,7 +49,8 @@ function analyzeSkip(editor, document, position) {
 
     // 预先判断（因为一些特殊原因）
     // 有块注释（屏蔽下面的块注释结束）
-    if (/\/\*/.test(line)) {;
+    if (/\/\*/.test(line)) {
+        ;
     }
     // 块注释结束
     else if ((/^\s*\*+\/$/.test(left) && right == '') || (/^\s*\*+$/.test(left) && /^\*+\/$/.test(right))) {
@@ -82,8 +83,10 @@ function analyzeSkip(editor, document, position) {
         return true;
     }
 
-    // 添加下一行，理论上缩进和当前行是一样的
+    // 添加下一行，理论上默认缩进和当前行是一样的
     vscode.commands.executeCommand('editor.action.insertLineAfter');
+
+    // 判断缩进
     toIndent(editor, document, position);
 
     return true;
@@ -105,6 +108,15 @@ function largeEnter() {
 }
 
 function toIndent(editor, document, position) {
+    if (document.languageId == 'verilog' || document.languageId == 'systemverilog') {
+        toIndentVerilog(editor, document, position);
+    }
+    else {
+        toIndentClang(editor, document, position);
+    }
+}
+
+function toIndentClang(editor, document, position) {
     var line = document.lineAt(position).text;
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
@@ -250,13 +262,53 @@ function toIndent(editor, document, position) {
     }
 
     if (outdent) {
-        setTimeout(function() {
+        setTimeout(function () {
             vscode.commands.executeCommand('outdent');
         }, 50);
     }
 }
 
-function toIndent2() {
+function toIndentVerilog(editor, document, position) {
+    var line = document.lineAt(position).text;
+    var left = line.substring(0, position.character);
+    var right = line.substring(position.character);
+    var prevLine = position.line <= 0 ? ';' : document.lineAt(new vscode.Position(position.line - 1, 0)).text;
+
+    var indent = false;
+    var addin = '';
+    // xxx begin
+    if (/\bbegin\s*$/.test(left)) {
+        indent = true;
+    }
+    // function class module
+    else if (/^(function|class|module)\b/.test(left)) {
+        indent = true;
+    }
+    // end   fork   join
+    else if (/^\s*\w*\s*$/.test(line) || /^\s*end.+\s*$/.test(left)) {
+        indent = false;
+    }
+
+    if (indent) {
+        var insert = "";
+        var indentPrevLine = /^(\s*)/.exec(line)[1];
+        if (/^ +$/.test(indentPrevLine)) { // 空格的情况
+            insert = "    ";
+        } else if (/^\t*$/.test(indentPrevLine)) { // tab的情况
+            insert = "\t";
+        }
+        if (insert != "") {
+            vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': insert });
+        }
+        return true;
+    }
+
+    if (addin != '') {
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': addin });
+    }
+}
+
+function toIndentSimple() {
     const editor = vscode.window.activeTextEditor;
     var document = editor.document;
     var position = editor.selection.active;
@@ -265,9 +317,9 @@ function toIndent2() {
 
     // 计算缩进量
     var indent = false;
-    if (/^\s*(if|for|while|foreach|switch)\s\(\s$/.test(line))
+    if (/^\s*(if|for|while|foreach|switch)\s*\(\s$/.test(line)) // 单独几行大参数
         indent = true;
-    else if (/^[^;]+$/.test(line))
+    else if (/^[^;]+$/.test(line)) // 不是分号结尾（这里不判断注释，因为一行内[条件+操作+注释]很不常见）
         indent = true;
 
     if (indent) {
