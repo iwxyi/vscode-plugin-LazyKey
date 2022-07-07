@@ -28,7 +28,9 @@
         "onLanguage:js",
         "onLanguage:javascript",
         "onLanguage:jsp",
-        "onLanguage:cs"
+        "onLanguage:cs",
+        "onLanguage:verilog",
+        "onLanguage:systemverilog"
     ],
     "main": "./extension.js",
     "contributes": {

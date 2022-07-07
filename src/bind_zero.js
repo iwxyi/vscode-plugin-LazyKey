@@ -154,20 +154,11 @@ function isInCode(document, position, left, right) {
     if (/^\s*[*#]/.test(left))
         return false;
 
-    /* // 字符串 "str|str"    双引号个数是偶数个
-    var res = left.match(new RegExp(/(?<!\\)"/g));
-    if (res != null && res.length % 2)
-        return false;
-
-    // 字符串 'str|str'    单引号个数是偶数个
-    res = left.match(new RegExp(/(?<!\\)'/g));
-    if (res != null && res.length % 2)
-        return false; */
     if (isInQuote(left))
         return false;
 
     // 正则 /reg|asd/    斜杠个数是偶数个
-    res = left.match(new RegExp(/(?<!\\)\//g));
+    var res = left.match(new RegExp(/(?<!\\)\//g));
     if (document.languageId == 'javascript' && res != null && res.length % 2)
         return false;
 

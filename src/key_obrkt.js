@@ -433,17 +433,27 @@ function provideCompletionItems(document, position, token, context) {
         else if (indentLen < prevIndentLen && indentLen == 0)
             vscode.commands.executeCommand('editor.action.reindentLines');
 
+        // 判断分号
+        var addSemi = false;
+        if (document.languageId == 'cpp' && /^\s*(\w+\s+)*(class|struct|enum|union)\s+[\w\d_]+$/.test(prevLine)) {
+            addSemi = true;
+        }
+
+        var snippet = '{\n\t$0\n}';
+        if (addSemi)
+            snippet += ';';
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
-        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': snippet });
     }
     // 一行的最右边添加大括号（不包括下一行）。和上一项的区别是判断添不添加空格
     else if (/^[^\{]+$/.test(left) && /^\s*$/.test(right)) {
         var addSemi = false;
 
         // 判断 class struct enum 变量声明，名为添加分号
-        if (/^\s*(\w+\s+)*(class|struct|enum|union)\s+[\w\d_]$/.test(left)) {
-            addSemi = true;
+        if (/^\s*(\w+\s+)*(class|struct|enum|union)\s+[\w\d_]+$/.test(left)) {
+            if (document.languageId == 'cpp')
+                addSemi = true;
         }
         // 判断是不是变量声明 const int a[3]
         else if (/^\s*(\w+\s+)*\$?[\w_]+\s+[\w\d_]$/.test(left)) {
@@ -466,14 +476,14 @@ function provideCompletionItems(document, position, token, context) {
         }
 
         var snippet = '';
-        vscode.commands.executeCommand('deleteLeft');
-        vscode.commands.executeCommand('cursorLineEnd');
         if (left.endsWith(' '))
             snippet = '{\n\t$0\n}';
         else
             snippet = ' {\n\t$0\n}';
         if (addSemi)
             snippet += ';';
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorLineEnd');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': snippet });
     } else {
         console.log('没有合适的');

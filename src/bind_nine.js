@@ -125,7 +125,7 @@ function isInCode(document, position, left, right) {
         return false;
 
     // 正则 /reg|asd/    斜杠个数是偶数个
-    res = left.match(new RegExp(/(?<!\\)\//g));
+    var res = left.match(new RegExp(/(?<!\\)\//g));
     if (document.languageId == 'javascript' && res != null && res.length % 2)
         return false;
 
