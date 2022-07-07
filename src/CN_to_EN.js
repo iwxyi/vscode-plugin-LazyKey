@@ -8,7 +8,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
         !(vscode.workspace.getConfiguration().get('LazyKey.ChangeSymbol')))
         return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'csharp'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -80,7 +80,7 @@ function resolveCompletionItem(item, token) {
 }
 
 module.exports = function (context) {
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'csharp', 'jsp'] }, {
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'jsp'] }, {
         provideCompletionItems,
         resolveCompletionItem
     }, ''));

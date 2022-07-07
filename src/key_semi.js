@@ -14,7 +14,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
         !(vscode.workspace.getConfiguration().get('LazyKey.AutoSemicolon')))
         return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'csharp', 'verilog'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp', 'verilog', 'systemverilog'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -64,7 +64,7 @@ function provideCompletionItems(document, position, token, context) {
             /^\s*else\s*(\/[\/\*].*)?/.test(prevLine)) {
             // 判断缩进数量
             if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
-                setTimeout(function() {
+                setTimeout(function () {
                     vscode.commands.executeCommand('outdent');
                 }, 100);
         }
@@ -84,7 +84,7 @@ function provideCompletionItems(document, position, token, context) {
                 }
             }
             if (isCase) {
-                setTimeout(function() {
+                setTimeout(function () {
                     vscode.commands.executeCommand('outdent');
                 }, 100);
             }
@@ -102,7 +102,7 @@ function provideCompletionItems(document, position, token, context) {
     // Type var;    Type var = xxx;    Type var(xxx);
     // 或者方法操作    obj.method()     point->method(asd)
     else if ((/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.+?>|&?|\*?)\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left) &&
-            !/^\s*(return|print|die|exit|assert)\b/.test(left))
+        !/^\s*(return|print|die|exit|assert)\b/.test(left))
         /*|| (/^\s*[\(\)\w\d_\*:]+(\.|\->)[\w\d]+\(/.test(left) && /^['"\)\]]+$/.test(right))*/
     ) {
         var delay = false;
@@ -119,7 +119,7 @@ function provideCompletionItems(document, position, token, context) {
         var nextLine = document.lineAt(nextLinePosition).text;
         if (/^\s*\}\s*$/.test(nextLine)) { // 下一行只有右括号
             if (delay) {
-                setTimeout(function() {
+                setTimeout(function () {
                     vscode.commands.executeCommand('editor.action.insertLineAfter');
                 }, 10);
             } else {
@@ -148,9 +148,9 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function(context) {
+module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'csharp', 'jsp'] }, {
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'jsp'] }, {
         provideCompletionItems,
         resolveCompletionItem
     }, ';'));
