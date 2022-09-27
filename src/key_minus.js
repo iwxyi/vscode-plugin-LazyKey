@@ -57,6 +57,10 @@ function provideCompletionItems(document, position, token, context) {
         else if (/\b[\w_][\w\d_]*$/.test(left) && (new RegExp("\\b" + word + "_")).test(full)) {
             newText = "_";
         }
+        // (| 这样的情况，没有 - 的场景，只能是 _
+        else if (/[\(\[\{]\s*$/.test(left)) {
+            newText = "_";
+        }
         // 排除情况：) |
         else if (/\)\s+$/.test(left)) {
             return;
