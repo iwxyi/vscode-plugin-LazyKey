@@ -57,7 +57,7 @@ function isInCode(document, position, left, right) {
 
     // 正则 /reg|asd/    斜杠个数是偶数个
     res = left.match(new RegExp(/(?<!\\)\//g));
-    if (document.languageId == 'javascript' && res != null && res.length % 2)
+    if (document.languageId == 'javascript' && res != null && res.length % 2 && /(;\s*|if.+|=.+)$/.test(left))
         return false;
 
     return true;
