@@ -61,6 +61,10 @@ function provideCompletionItems(document, position, token, context) {
         else if (/[\(\[\{]\s*$/.test(left)) {
             newText = "_";
         }
+        // this->_var
+        else if (/\->\s*$/.test(left)) {
+            newText = "_";
+        }
         // 排除情况：) |
         else if (/\)\s+$/.test(left)) {
             return;
