@@ -72,7 +72,12 @@
                 "LazyKey.AutoSemicolon": {
                     "type": "boolean",
                     "default": true,
-                    "description": "分号强制到末尾，并且换行"
+                    "description": "分号强制到末尾，并且视情况换行"
+                },
+                "LazyKey.SemicolonNewLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "声明变量添加分号时是否立即换行，只在一个代码块结束位置或空行前面生效"
                 },
                 "LazyKey.AutoSuggestion": {
                     "type": "boolean",
@@ -103,6 +108,11 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enter键无视右括号强行换行"
+                },
+                "LazyKey.ChangeSymbol": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "中文符号转英文符号"
                 },
                 "LazyKey.ShowTipOnStart": {
                     "type": "boolean",

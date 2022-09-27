@@ -8,22 +8,28 @@ const vscode = require('vscode');
 function completeAndInsert() {
     // 读取设置是否开启
     if (!vscode.workspace.getConfiguration().get('LazyKey.CompleteFunctionParentheses')) {
+        vscode.commands.executeCommand('acceptSelectedSuggestion');
         return;
     }
 
     const editor = vscode.window.activeTextEditor;
-    if (editor.selection.text != undefined) return; // 有选中文本了
+    if (editor.selection.text != undefined) {
+        vscode.commands.executeCommand('acceptSelectedSuggestion');
+        return; // 有选中文本了（一般不太可能）
+    }
     const document = editor.document;
     const selection = editor.selection;
     if (selection.start.line != selection.end.line || selection.start.character != selection.end.character) {
+        // 也是有选中文本的判断？
+        vscode.commands.executeCommand('acceptSelectedSuggestion');
         return;
     }
     var position = selection.active;
 
-    saveContext(editor, document, position);
+    acceptSuggestion(editor, document, position);
 }
 
-function saveContext(old_editor, old_document, old_position) {
+function acceptSuggestion(old_editor, old_document, old_position) {
     // 保存插入前的左边和右边
     var old_line = old_document.lineAt(old_position).text;
     var old_left = old_line.substring(0, old_position.character);
@@ -133,7 +139,7 @@ function analyzeContext(old_line, old_left, old_right) {
     if (pline >= document.lineCount) // 还是没有找到，猜测内容……
     {
         if (/^(set|get|load|is)[_A-Z]/i.test(word) // 开头单词
-        || /(at|with|of)$/i.test(word)) // 结尾单词
+            || /(at|with|of)$/i.test(word)) // 结尾单词
             type = 1; // 当做有参数的
         else
             return;

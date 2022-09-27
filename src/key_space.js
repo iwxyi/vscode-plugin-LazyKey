@@ -9,7 +9,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
         || !(vscode.workspace.getConfiguration().get('LazyKey.SpaceFill')))
         return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp', 'verilog', 'systemverilog'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -18,7 +18,7 @@ function provideCompletionItems(document, position, token, context) {
 
     // 多光标，为保证稳定性不支持
     var selections = editor.selections;
-    if (selections.length > 1) return ;
+    if (selections.length > 1) return;
 
     // 获取全文和当前行内容
     var full = document.getText();
@@ -34,13 +34,22 @@ function provideCompletionItems(document, position, token, context) {
         return;
 
     // 右边不是空的，那么这个空格就可能是为了分隔
-    if (right!="")
-        return ;
+    if (right != "")
+        return;
 
+    // 语法大类
+    var isClang = true, isVerilog = false;
+    if (document.languageId == 'verilog' || document.languageId == 'systemverilog') {
+        isClang = false;
+        isVerilog = true;
+    }
+    
     var newText = "";
 
     // if    else if    for    while   switch    ==>    if (|)
-    if (/^\s*(if|else\s+if|for|foreach|while|switch)\s*$/.test(left))
+    if (isClang && /^[\s\}]*(if|else\s+if|for|foreach|while|switch)\s*$/.test(left))
+        newText = "($0)";
+    else if (isVerilog && /^[\s\}]*(if|else\s+if|for|foreach|while|switch|repeat)\s*$/.test(left))
         newText = "($0)";
     else if (/^\s*else$/.test(left))        // else   ==>    else if (|)
         newText = "if ($0)";
@@ -72,7 +81,7 @@ function provideCompletionItems(document, position, token, context) {
         var PoiType = match[3]; // 指针/引用类型
         var completionItems = [];
         names = getNamesFromVariableType(VarType);
-        if (PoiType.indexOf('*')>-1)
+        if (PoiType.indexOf('*') > -1)
             names = getPointNamesFromNames(names);
         for (var name of names) {
             if (name == '') continue;
@@ -85,7 +94,7 @@ function provideCompletionItems(document, position, token, context) {
         }
 
         return completionItems;
-        
+
     }
     // 提供变量名预测 private String s
     else if (vscode.workspace.getConfiguration().get('LazyKey.GenerateVariableName')
@@ -106,25 +115,24 @@ function provideCompletionItems(document, position, token, context) {
         return completionItems;
     }
     else                                    // 什么都不需要做
-        return ;
+        return;
 
     // 包括成对括号的，需要撤销两次
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': newText });
 
     // 延时出现提示（必须延时才会出现）
-    if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
+    /* if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
         setTimeout(function () {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
-    }
+    } */
 }
 
 /**
  * 根据变量类型自动生成变量名
  * 备注：suggest排序按名字的，没法排顺序……
  */
-function getNamesFromVariableType(type)
-{
+function getNamesFromVariableType(type) {
     if (type == '' || type == 'var' || type == 'let')
         return '';
 
@@ -135,7 +143,7 @@ function getNamesFromVariableType(type)
     else if (/^[A-Z][A-Z][a-z]*$/.test(type)) {
         return [
             /^[A-Z]([A-Z][a-z]*)$/.exec(type)[1].toLowerCase(), // string
-            type.substring(0, 1).toLowerCase()+/^[A-Z]([A-Z][a-z]*)$/.exec(type)[1], // qString
+            type.substring(0, 1).toLowerCase() + /^[A-Z]([A-Z][a-z]*)$/.exec(type)[1], // qString
             type.substring(1, 2).toLowerCase() // s
         ];
     }
@@ -163,8 +171,7 @@ function getNamesFromVariableType(type)
 /**
  * 根据已有的变量名，声明指针类型的变量
  */
-function getPointNamesFromNames(names)
-{
+function getPointNamesFromNames(names) {
     var list = names.slice(); // 深拷贝
     for (var name of names) {
         list.push('p_' + name);
@@ -182,8 +189,8 @@ function resolveCompletionItem(item, token) {
 module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
-        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'python', 'jsp'] }, {
-            provideCompletionItems,
-            resolveCompletionItem
-        }, ' '));
+        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'python', 'jsp', 'verilog', 'systemverilog'] }, {
+        provideCompletionItems,
+        resolveCompletionItem
+    }, ' '));
 };

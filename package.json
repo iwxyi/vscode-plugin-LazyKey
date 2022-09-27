@@ -3,7 +3,7 @@
     "displayName": "LazyKey",
     "publisher": "mrxy001",
     "description": "Minimize keystrokes through automated keymaps",
-    "version": "0.2.1",
+    "version": "0.2.6",
     "keywords": [
         "lazy",
         "key",
@@ -28,7 +28,9 @@
         "onLanguage:js",
         "onLanguage:javascript",
         "onLanguage:jsp",
-        "onLanguage:cs"
+        "onLanguage:cs",
+        "onLanguage:verilog",
+        "onLanguage:systemverilog"
     ],
     "main": "./extension.js",
     "contributes": {
@@ -44,7 +46,7 @@
                 "LazyKey.DotToPoint": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert dot to point of C/C++/PHP class and point.\nIt needs double dot if one variable first uses in file."
+                    "description": "Convert dot to point of C/C++/PHP class and point.\nIt needs double dot if one variable first uses in file"
                 },
                 "LazyKey.DotToPointDisabledOnce": {
                     "type": "boolean",
@@ -54,12 +56,12 @@
                 "LazyKey.NumberToParentheses": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Convert number 9 and 0 to ( and )."
+                    "description": "Convert number 9 and 0 to ( and )"
                 },
                 "LazyKey.TabSkipRightParenthese": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Allow using Tab key to skip ) added by 9."
+                    "description": "Allow using Tab key to skip ) added by 9"
                 },
                 "LazyKey.SpaceFill": {
                     "type": "boolean",
@@ -74,27 +76,32 @@
                 "LazyKey.AutoSemicolon": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Put the semicolon at the end forcibly."
+                    "description": "Put the semicolon at the end forcibly"
+                },
+                "LazyKey.SemicolonNewLine": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Auto create a new line after semicolon when declear a variable at the end of a block or before a blank line"
                 },
                 "LazyKey.AutoSuggestion": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Show suggestions when filling operators."
+                    "description": "Show suggestions when filling operators"
                 },
                 "LazyKey.BranchCurlyBraceInSingleLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Whether the left curly braces { take a single line of if/for/while/foreach/switch."
+                    "description": "Whether the left curly braces { take a single line of if/for/while/foreach/switch"
                 },
                 "LazyKey.FunctionCurlyBraceInSingleLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Whether the left curly braces { take a single line of function."
+                    "description": "Whether the left curly braces { take a single line of function"
                 },
                 "LazyKey.AutoCurlyBraceInSingleLine": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Auto detect whether the left curly braces { take a single line according above codes."
+                    "description": "Auto detect whether the left curly braces { take a single line according above codes"
                 },
                 "LazyKey.SmarterEnter": {
                     "type": "boolean",
@@ -121,16 +128,22 @@
                     "default": true,
                     "description": "Auto complete function's parntheses after complete"
                 },
+                "LazyKey.ChangeSymbol": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Convert Chinese symbols to English symbols, such as （）【】《》，。；、“”"
+                },
                 "LazyKey.ShowTipOnStart": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Enable opening toast at startup."
+                    "description": "Enable opening toast at startup"
                 }
             }
         },
-        "commands": [{
+        "commands": [
+            {
                 "command": "extension.switchLazyKey",
-                "title": "Im Lazy"
+                "title": "I'm Lazy"
             },
             {
                 "command": "extension.keybindings_enter",
@@ -153,7 +166,8 @@
                 "title": "KeyBindings Zero"
             }
         ],
-        "keybindings": [{
+        "keybindings": [
+            {
                 "command": "extension.keybindings_enter",
                 "key": "enter",
                 "mac": "enter",
@@ -194,6 +208,18 @@
                 "key": "enter",
                 "mac": "enter",
                 "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_enter",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==systemverilog"
             },
             {
                 "command": "extension.keybindings_complete_function",
@@ -238,88 +264,112 @@
                 "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cs"
             },
             {
-                "command": "extension.keybindings_tab",
-                "key": "tab",
-                "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+                "command": "extension.keybindings_complete_function",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==verilog"
             },
             {
-                "command": "extension.keybindings_tab",
-                "key": "tab",
-                "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
-            },
-            {
-                "command": "extension.keybindings_tab",
-                "key": "tab",
-                "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+                "command": "extension.keybindings_complete_function",
+                "key": "enter",
+                "mac": "enter",
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==systemverilog"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==c && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==cpp && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==java && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==js && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==javascript && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==php && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+            },
+            {
+                "command": "extension.keybindings_tab",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !hasNextTabstop && !suggestWidgetVisible && editorLangId==cs && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==c && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==c && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cpp && !(tabnine.tab-override && textInputFocus)"
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==cpp && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==java && !(tabnine.tab-override && textInputFocus)"
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==java && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==js && !(tabnine.tab-override && textInputFocus)"
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==js && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==javascript && !(tabnine.tab-override && textInputFocus)"
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==javascript && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==php && !(tabnine.tab-override && textInputFocus)"
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==php && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cs && !(tabnine.tab-override && textInputFocus)"
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==cs && !(tabnine.tab-override && textInputFocus)"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_complete_function",
+                "key": "tab",
+                "mac": "tab",
+                "when": "editorTextFocus && !hasNextTabstop && suggestWidgetVisible && editorLangId==systemverilog"
             },
             {
                 "command": "extension.keybindings_nine",
@@ -364,6 +414,18 @@
                 "when": "editorTextFocus && editorLangId==cs"
             },
             {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_nine",
+                "key": "9",
+                "mac": "9",
+                "when": "editorTextFocus && editorLangId==systemverilog"
+            },
+            {
                 "command": "extension.keybindings_zero",
                 "key": "0",
                 "mac": "0",
@@ -404,6 +466,18 @@
                 "key": "0",
                 "mac": "0",
                 "when": "editorTextFocus && editorLangId==cs"
+            },
+            {
+                "command": "extension.keybindings_zero",
+                "key": "0",
+                "mac": "0",
+                "when": "editorTextFocus && editorLangId==verilog"
+            },
+            {
+                "command": "extension.keybindings_zero",
+                "key": "0",
+                "mac": "0",
+                "when": "editorTextFocus && editorLangId==systemverilog"
             }
         ]
     },
@@ -421,5 +495,9 @@
         "typescript": "^3.3.1",
         "vscode-test": "^1.2.0"
     },
-    "dependencies": {}
+    "dependencies": {
+        "g": "^2.0.1",
+        "generator-code": "^1.6.11",
+        "vsce": "^2.9.1"
+    }
 }

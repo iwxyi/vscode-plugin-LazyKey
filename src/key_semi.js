@@ -14,7 +14,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
         !(vscode.workspace.getConfiguration().get('LazyKey.AutoSemicolon')))
         return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp', 'verilog', 'systemverilog'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -38,17 +38,23 @@ function provideCompletionItems(document, position, token, context) {
         return;
     // 变量表示：(\b[\w_][\w\d_]*\b|\)|\])
 
+    // 语法大类
+    var isClang = true, isVerilog = false;
+    if (document.languageId == 'verilog' || document.languageId == 'systemverilog') {
+        isClang = false;
+        isVerilog = true;
+    }
+
     // for ( ; ; )
-    if (/\s*for\b\s*\(/.test(left)) {
+    if (isClang && /\s*for\b\s*\(/.test(left)) {
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ' ' });
         return;
     }
-    // 后面是注释 // /*
+    // 后面是注释 // /*|*/
     else if (/^\s*\/[\/\*]/.test(right)) {
         return;
     }
-    // 末尾已有分号，换行
-    // 两个连续分号，换行
+    // 末尾已有分号，换行（两个连续分号）
     else if (/;\s*(\/[\/\*].*)?/.test(right) ||
         /;\s*$/.test(left)) {
         vscode.commands.executeCommand('deleteLeft');
@@ -64,7 +70,7 @@ function provideCompletionItems(document, position, token, context) {
             /^\s*else\s*(\/[\/\*].*)?/.test(prevLine)) {
             // 判断缩进数量
             if (/^(\s*)/.exec(line)[1].length > /^(\s*)/.exec(prevLine)[1].length)
-                setTimeout(function() {
+                setTimeout(function () {
                     vscode.commands.executeCommand('outdent');
                 }, 100);
         }
@@ -84,7 +90,7 @@ function provideCompletionItems(document, position, token, context) {
                 }
             }
             if (isCase) {
-                setTimeout(function() {
+                setTimeout(function () {
                     vscode.commands.executeCommand('outdent');
                 }, 100);
             }
@@ -92,8 +98,14 @@ function provideCompletionItems(document, position, token, context) {
 
         return;
     }
-    // 非变量声明的类似变量声明 new delete emit，分号不换行（只到末尾）
-    else if (/^\s*(new|delete|emit|return|die|exit)\b/.test(left)) {
+    // verilog 声明模块 并换行
+    else if (isVerilog && /^\s*(function|module|class)\b/.test(line)) {
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorLineEnd');
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ';\n\t' });
+    }
+    // 非变量声明的类似变量声明 delete emit，分号不换行（只到末尾）
+    else if (isClang && /^\s*(delete|emit|return|die|exit)\b/.test(left)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ';' });
@@ -101,8 +113,8 @@ function provideCompletionItems(document, position, token, context) {
     // 单行变量声明，末尾添加分号，换行
     // Type var;    Type var = xxx;    Type var(xxx);
     // 或者方法操作    obj.method()     point->method(asd)
-    else if ((/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.+?>|&?|\*?)\s*(\b[\w_][\w\d_]*)\s*(=.+|\(.+)?$/.test(left) &&
-            !/^\s*(return|print|die|exit|assert)\b/.test(left))
+    else if ((/^\s*((const|static|public|private|protected|final|mutable|package|:)\s*)*([\w_\d:]+)\s*(<.*?>|\[.*?\]|&?|\*?)*\s*(\b[\w_][\w\d_]*)\s*(\[.*?\])*\s*(=.+|\{.+|\(.+)?$/.test(left) &&
+        !/^\s*(return|print|die|exit|assert)\b/.test(left))
         /*|| (/^\s*[\(\)\w\d_\*:]+(\.|\->)[\w\d]+\(/.test(left) && /^['"\)\]]+$/.test(right))*/
     ) {
         var delay = false;
@@ -117,9 +129,10 @@ function provideCompletionItems(document, position, token, context) {
         // 如果下一行就是右大括号了，那么直接添加下一行
         var nextLinePosition = new vscode.Position(position.line + 1, 0);
         var nextLine = document.lineAt(nextLinePosition).text;
-        if (/^\s*\}\s*$/.test(nextLine)) { // 下一行只有右括号
+        if (vscode.workspace.getConfiguration().get('LazyKey.SemicolonNewLine')
+            && ((isClang && /^\s*\}\s*$/.test(nextLine)) || (isVerilog && /^\s*end\w*\s*$/.test(nextLine)) || /^\s*$/.test(nextLine))) { // 下一行只有右括号/结束/空白行
             if (delay) {
-                setTimeout(function() {
+                setTimeout(function () {
                     vscode.commands.executeCommand('editor.action.insertLineAfter');
                 }, 10);
             } else {
@@ -148,9 +161,9 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function(context) {
+module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'jsp'] }, {
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'jsp', 'verilog', 'systemverilog'] }, {
         provideCompletionItems,
         resolveCompletionItem
     }, ';'));

@@ -100,7 +100,8 @@ function provideCompletionItems(document, position, token, context) {
             var usePoint = true;
 
             // 如果word不是单词，而是右括号，则获取真实的内容
-            if (left.endsWith(')')) {
+            // 新增判断数组[]
+            if (left.endsWith(')') || left.endsWith(']')) {
                 // 函数例子：getPoint(p)   at(index.row())   substring(0, len('strstrstr'))
                 // 方法一：使用正则表达式来判断
                 // 实测不支持 substring((0, len('strstrstr'))). 这种嵌套括号，会识别成 len
@@ -113,13 +114,16 @@ function provideCompletionItems(document, position, token, context) {
                     continue; */
 
                 // 方法二：使用栈来判断（更稳定）
+                var isSmallBracket = left.endsWith(')');
+                var leftBracket = isSmallBracket ? '(' : '[';
+                var rightBracket = isSmallBracket ? ')' : ']';
                 var pos = left.length - 1; // 锚点移动位置
                 var level = 1; // 右括号-左括号数量
                 while (--pos >= 0) {
                     var c = left.charAt(pos);
-                    if (c == '(')
+                    if (c == leftBracket)
                         level--;
-                    else if (c == ')')
+                    else if (c == rightBracket)
                         level++;
                     if (level <= 0)
                         break;
@@ -143,11 +147,10 @@ function provideCompletionItems(document, position, token, context) {
                 var body = '(' + pair + ')*?'; // 多个内容
                 var patt = "\\b" + word + "\\(" + body + "\\)"; // 外部括号
                 word = patt; // 别动这里！改了一点点就无法运行了！(注释可以动) */
-                if (!isFunctionReturnPoint(word, document, position.line))
+                if (!isFunctionReturnPoint(word, document, position.line, isSmallBracket))
                     return;
                 usePoint = true;
-            } else if (/^[\w_\d]+$/.test(word)) // 左边是单词
-            {
+            } else if (/^[\w_\d]+$/.test(word)) { // 左边是单词
                 // 判断是否是 this或指针类型, 或上文是否有声明为 *var 或者 var-> 的字符
                 var re0 = new RegExp("^p_"); // 约定俗成的 p_var 指针类型
                 var re1 = new RegExp("\\*\\s*" + word + "\\b");
@@ -203,7 +206,7 @@ function provideCompletionItems(document, position, token, context) {
 
     // 延时出现提示（必须延时才会出现）
     if (right == "" || /^\W/.test(right)) { // 如果右边不是字母（即已经有变量了）
-        setTimeout(function() {
+        setTimeout(function () {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
@@ -212,22 +215,24 @@ function provideCompletionItems(document, position, token, context) {
 /**
  * 判断是一个word(...)->是不是指针
  */
-function isFunctionReturnPoint(word, document, line_index) {
+function isFunctionReturnPoint(word, document, line_index, isSmallBracket) {
+    var leftBracket = isSmallBracket ? '(' : '[';
+    var rightBracket = isSmallBracket ? ')' : ']';
     while (--line_index >= 0) {
         var position = new vscode.Position(line_index, 0);
         var line = document.lineAt(position).text;
-        if (line.indexOf(word + '(') != -1 || line.indexOf(word + ' (')) // 这一行有函数名
+        if (line.indexOf(word + leftBracket) != -1 || line.indexOf(word + ' ' + leftBracket) != -1) // 这一行有函数名
         {
-            var pos = line.indexOf(word + '(');
+            var pos = line.indexOf(word + leftBracket);
             if (pos == -1)
-                pos = line.indexOf(word + ' (') + 1;
+                pos = line.indexOf(word + ' ' + leftBracket) + 1;
             pos += word.length; // 跳过第一个左括号
             var count = 1;
             while (++pos < line.length) {
                 var c = line.charAt(pos);
-                if (c == '(')
+                if (c == leftBracket)
                     count++;
-                else if (c == ')')
+                else if (c == rightBracket)
                     count--;
                 if (count == 0)
                     break;
@@ -276,7 +281,7 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function(context) {
+module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php'] }, {
         provideCompletionItems,

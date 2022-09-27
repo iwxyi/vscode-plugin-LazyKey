@@ -23,10 +23,10 @@ function getLeftBracketCompare(str) {
 
 function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
-    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
-        || !(vscode.workspace.getConfiguration().get('LazyKey.AutoSemicolon')))
+    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
+        !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
         return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -35,8 +35,8 @@ function provideCompletionItems(document, position, token, context) {
 
     // 获取全文和当前行内容
     var full = document.getText();
-    var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
-    var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
+    var leftPosition = new vscode.Position(position.line, position.character - 1); // 左边单词右位置
+    var word = document.getText(document.getWordRangeAtPosition(leftPosition)); // 点号左边的单词
     var line = document.lineAt(position).text;
     var inpt = line.substring(position.character - 1, position.character);
     var left = line.substring(0, leftPosition.character);
@@ -51,11 +51,11 @@ function provideCompletionItems(document, position, token, context) {
 
     // 右边是 ] ，不进行处理
     if (right.startsWith(']')) {
-        return ;
+        return;
     }
     // if (a[100]|)  跳过的情况，没有什么好的判断情况
     else if (/\[.*$/.test(left) && getLeftBracketCompare(left) > 0) {
-        return ;
+        return;
     }
     // 右边有可跳出的 }
     else if (/^\s*\}/.test(right)) {
@@ -98,7 +98,7 @@ function provideCompletionItems(document, position, token, context) {
             if (!/^\\s*\\}?\\s*$/.test(nextNextNextLine)) // 右大括号的下下行有内容，需要添加一个空行分隔
                 ins += '$0\n' + indent;
             if (ins != '')
-                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins});
+                vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins });
         }
         // 下一行还是结束的 } ，按现在这个操作，应该是要继续写代码吧
         else if (/^\s*\}/.test(nextNextLine)) {
@@ -106,7 +106,7 @@ function provideCompletionItems(document, position, token, context) {
         }
     }
     // ^ }] 这种情况，一般是双击 ]]，添加下一行
-    else if (/^\s*\}\s*$/.test(left) && right=="") {
+    else if (/^\s*\}\s*$/.test(left) && right == "") {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertLineAfter');
     }
@@ -119,6 +119,10 @@ function isInCode(document, position, left, right) {
 
     // 块注释 /* */
     if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 其他例如多行块注释；就不仔细判断了
+    if (/^\s*[*#]/.test(left))
         return false;
 
     // 字符串 "str|str"    双引号个数是偶数个
@@ -148,11 +152,10 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function (context) {
+module.exports = function(context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
-        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'jsp'] }, {
-            provideCompletionItems,
-            resolveCompletionItem
-        }, ']'));
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'jsp'] }, {
+        provideCompletionItems,
+        resolveCompletionItem
+    }, ']'));
 };

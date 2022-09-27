@@ -14,7 +14,7 @@ function provideCompletionItems(document, position, token, context) {
     if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
         !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
         return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp', 'verilog', 'systemverilog'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -36,6 +36,11 @@ function provideCompletionItems(document, position, token, context) {
         var inpt = line.substring(position.character - 1, position.character);
         var left = line.substring(0, leftPosition.character);
         var right = line.substring(position.character);
+
+        if (i == selections.length - 1) {
+            if (!isInCode(document, position, left, right))
+                return;
+        }
 
         // 判断左1是不是输入的符号
         if (inpt != "=")
@@ -160,10 +165,41 @@ function provideCompletionItems(document, position, token, context) {
         return;
     // 延时出现提示（必须延时才会出现）
     if (vscode.workspace.getConfiguration().get('LazyKey.AutoSuggestion')) {
-        setTimeout(function() {
+        setTimeout(function () {
             vscode.commands.executeCommand('editor.action.triggerSuggest');
         }, 100);
     }
+}
+
+function isInCode(document, position, left, right) {
+    // 单行注释 //
+    if (/\/\//.test(left))
+        return false;
+
+    // 块注释 /* */
+    if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 其他例如多行块注释；就不仔细判断了
+    if (/^\s*[*#]/.test(left))
+        return false;
+
+    // 字符串 "str|str"    双引号个数是偶数个
+    var res = left.match(new RegExp(/(?<!\\)"/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 字符串 'str|str'    单引号个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)'/g));
+    if (res != null && res.length % 2)
+        return false;
+
+    // 正则 /reg|asd/    斜杠个数是偶数个
+    res = left.match(new RegExp(/(?<!\\)\//g));
+    if (document.languageId == 'javascript' && res != null && res.length % 2)
+        return false;
+
+    return true;
 }
 
 /**
@@ -175,9 +211,9 @@ function resolveCompletionItem(item, token) {
     return null;
 }
 
-module.exports = function(context) {
+module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'python', 'jsp'] }, {
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'python', 'jsp', 'verilog', 'systemverilog'] }, {
         provideCompletionItems,
         resolveCompletionItem
     }, '='));

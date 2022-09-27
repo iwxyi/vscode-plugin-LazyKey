@@ -13,10 +13,10 @@ const vscode = require('vscode');
 
 function provideCompletionItems(document, position, token, context) {
     // 读取设置是否进行开启
-    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled'))
-        || !(vscode.workspace.getConfiguration().get('LazyKey.AutoSemicolon')))
+    if (!(vscode.workspace.getConfiguration().get('LazyKey.AllEnabled')) ||
+        !(vscode.workspace.getConfiguration().get('LazyKey.AutoOperators')))
         return;
-    if (['c', 'cpp', 'java', 'js', 'javascript', 'jsp', 'php', 'cs'].indexOf(document.languageId) == -1)
+    if (['c', 'cpp', 'java', 'javascript', 'jsp', 'php', 'csharp'].indexOf(document.languageId) == -1)
         return;
 
     // 获取编辑器，判断选中文本
@@ -25,8 +25,8 @@ function provideCompletionItems(document, position, token, context) {
 
     // 获取全文和当前行内容
     var full = document.getText();
-    var leftPosition = new vscode.Position(position.line, position.character - 1);   // 左边单词右位置
-    var word = document.getText(document.getWordRangeAtPosition(leftPosition));  // 点号左边的单词
+    var leftPosition = new vscode.Position(position.line, position.character - 1); // 左边单词右位置
+    var word = document.getText(document.getWordRangeAtPosition(leftPosition)); // 点号左边的单词。如果左边是空格，则是左边全部文字
     var line = document.lineAt(position).text;
     var inpt = line.substring(position.character - 1, position.character);
     var left = line.substring(0, leftPosition.character);
@@ -43,12 +43,13 @@ function provideCompletionItems(document, position, token, context) {
         return;
     // 注释、字符串、正则
     if (!isInCode(document, position, left, right))
-        return ;
+        return;
 
     // 如果右边已经有左花括号了，那么就：下一行为空则下移，否则插入
     if (/\{\s*(\/[\/\*].*$)?/.test(right)) {
         var isNextLineBlank = false;
-        var needSpace = 0, needTab = 0;
+        var needSpace = 0,
+            needTab = 0;
         if (position.line < document.lineCount - 1) {
             var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text;
             isNextLineBlank = /^\s*$/.test(nextLine);
@@ -82,8 +83,8 @@ function provideCompletionItems(document, position, token, context) {
             vscode.commands.executeCommand('editor.action.insertLineAfter');
         }
     }
-    // 如果下一行已经有花括号，那么直接跳到下一行的花括号右边
-    else if (position.line < document.lineCount - 1 && /^\s*\{\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
+    // 行中间，如果下一行已经有花括号，那么直接跳到下一行的花括号右边
+    else if (/\S/.test(left) && position.line < document.lineCount - 1 && /^\s*\{\s*$/.test(document.lineAt(new vscode.Position(position.line + 1, 0)).text)) {
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorDown');
         vscode.commands.executeCommand('cursorLineEnd');
@@ -104,8 +105,7 @@ function provideCompletionItems(document, position, token, context) {
                         vscode.commands.executeCommand('tab');
                     }
                 });
-            }
-            else if (/^\s*$/.test(nextNextLine)) { // 里面有个空行，继续下移
+            } else if (/^\s*$/.test(nextNextLine)) { // 里面有个空行，继续下移
                 vscode.commands.executeCommand('cursorDown');
                 // vscode.commands.executeCommand('editor.action.indentLines');
 
@@ -113,7 +113,8 @@ function provideCompletionItems(document, position, token, context) {
                 var nextLine = document.lineAt(new vscode.Position(position.line + 1, 0)).text;
                 var indentNextLine = /^(\s*)/.exec(nextLine)[1];
                 var indentNextNextLine = /^(\s*)/.exec(nextNextLine)[1];
-                var needSpace = 0, needTab = 0;
+                var needSpace = 0,
+                    needTab = 0;
                 if (/^ +$/.test(indentNextLine)) { // 空格的情况
                     needSpace = indentNextLine.length + 4 - indentNextNextLine.length;
                 } else if (/^\t*$/.test(indentNextLine)) { // tab的情况
@@ -140,6 +141,10 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('cursorLineEnd');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '\n{\n\t$0\n}' });
     }
+    // new INT8**[x]    声明指针
+    else if (/\*\s*$/.test(left)) {
+        return;
+    }
     // lambda或数组参数中括号    , [|]
     else if (/[,=(]\s*$/.test(left)) {
         return;
@@ -147,18 +152,15 @@ function provideCompletionItems(document, position, token, context) {
     // lambda花括号    , [=]{|}    ,[i,j,l...](a,b,c){|}
     else if (/\[[\w\d_,\s&=\*]*\]\s*(\([\w\d_,\s&=\*]*\))?/.test(left)) {
         // 判断上一个方括号左边是什么
-        var count = 0, pos = 0;
+        var count = 0,
+            pos = 0;
         var rev = left.split('').reverse().join(''); // 字符串反序
         var detected = false;
-        for (var c of rev)
-        {
-            if (c == '[')
-            {
+        for (var c of rev) {
+            if (c == '[') {
                 count++;
                 detected = true;
-            }
-            else if (c == ']')
-            {
+            } else if (c == ']') {
                 count--;
                 detected = true;
             }
@@ -170,36 +172,60 @@ function provideCompletionItems(document, position, token, context) {
         var lef = left.substring(0, left.length - pos);
         // 如果是以可能的lambda起始结尾
         if (!/[,=\(]\s*$/.test(lef))
-            return ;
+            return;
 
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{$0}' });
         return;
     }
-    // 末尾，需要将下一行包含到代码块中（未考虑连续多行缩进）
-    else if (((/^\s*(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)) || (/^\s*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right)))
-        && position.line < document.lineCount - 1
-        && /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
+    // 末尾，需要将下一行包含到代码块中
+    else if (((/^[\s\}]*?(if|else|else\s+if|for|foreach|while)\s*\(.+\)[^;]*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))
+        || (/^[\s\}]*else\s*$/.test(left) && /^\s*(\/[\/\*].*)?$/.test(right))) &&
+        position.line < document.lineCount - 1 &&
+        /^(\s*)/.exec(line)[1].length < /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length) {
         vscode.commands.executeCommand('deleteLeft');
         var ins = "{";
         if (!left.endsWith(' ')) ins = " " + ins;
         if (!right.startsWith(' ') && !right.startsWith('\t')) ins += " ";
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins });
 
+        // 判断下面需要包括几行
+        // 只通过缩进进行判断
+        var downCount = 1; // 下移的行数
+        var outdentCount = 1; // 反缩进的行数
+        var totalCount = document.lineCount;
+        var indentLen = /^(\s*)/.exec(line)[1].length; // 当前行的缩进
+        var prevIndentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + 1, 0)).text)[1].length;
+        while (position.line + downCount < totalCount - 1) {
+            var currIndentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length;
+            if (indentLen < currIndentLen) {
+                downCount++;
+                if (currIndentLen > prevIndentLen)
+                    outdentCount++;
+                else if (currIndentLen < prevIndentLen)
+                    outdentCount--;
+                prevIndentLen = currIndentLen;
+            } else
+                break;
+        }
+
         // insert 会有延迟，所以延迟后继续
         setTimeout(function () {
-            vscode.commands.executeCommand('cursorDown');
+            for (var i = 0; i < downCount; i++)
+                vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('cursorLineEnd');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
-            vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
+            for (var i = 0; i < outdentCount; i++)
+                vscode.commands.executeCommand('outdent'); // 最后的这个 } 需要向左缩进一位
         }, 100);
     }
-    // 开头，需要将当前行包含到代码块中（未考虑连续多行缩进）
-    else if (position.line > 0 && (/^\s*(if|else(\s+if)|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)
-        || /^\s*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text))
-        && /^\s+$/.test(left) && /\S/.test(right)
-        && /^(\s*)/.exec(left)[1].length >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
+    // 开头，需要将当前行包含到代码块中
+    else if (position.line > 0 && (/^[\s\}]*(if|else(\s+if)?|for|foreach|while)\s*\(.+\)[^;]*$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text) ||
+        /^[\s\}]*else\s*(\/[\/\*].*)?$/.test(document.lineAt(new vscode.Position(position.line - 1, 0)).text)) &&
+        /^\s*$/.test(left) && /\S/.test(right) &&
+        /^(\s*)/.exec(left)[1].length >= /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length) {
+
         // 获取当前行左边缩进的值
         var indentSelectStart = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length;
         var indentSelectEnd = /^(\s*)/.exec(line)[1].length + 1;
@@ -214,6 +240,26 @@ function provideCompletionItems(document, position, token, context) {
             indentSnippet += '\t';
         else
             indentSnippet += '    ';
+
+        // 判断需要缩进几行
+        var downCount = 0; // 从当前行开始，所以和上面的1不同
+        var outdentCount = 1; // 反缩进的行数
+        var totalCount = document.lineCount;
+        var indentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line - 1, 0)).text)[1].length;
+        var prevIndentLen = indentLen + 1; // 无法获取当前行的缩进，因为可能会被左放括号给误导，右边仍存在部分缩进
+        while (position.line + downCount < totalCount - 1) {
+            var currIndentLen = /^(\s*)/.exec(document.lineAt(new vscode.Position(position.line + downCount + 1, 0)).text)[1].length;
+            if (indentLen < currIndentLen) {
+                downCount++;
+                if (currIndentLen > prevIndentLen)
+                    outdentCount++;
+                else if (currIndentLen < prevIndentLen)
+                    outdentCount--;
+                prevIndentLen = currIndentLen;
+            } else
+                break;
+        }
+
         // 第一步：插入左括号并换行
         var textEdit1 = vscode.TextEdit.replace(new vscode.Range(positionStart, positionEnd), '{\n' + indentSnippet);
         let textEdits = [];
@@ -224,8 +270,11 @@ function provideCompletionItems(document, position, token, context) {
 
         // 第二步：在下一行插入右括号，并且 outdent
         setTimeout(function () {
+            for (var i = 0; i < downCount; i++)
+                vscode.commands.executeCommand('cursorDown');
             vscode.commands.executeCommand('editor.action.insertLineAfter');
             vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '}' });
+            // for (var i = 0; i < outdentCount; i++) // 至少要有一次
             vscode.commands.executeCommand('outdent');
         }, 100);
     }
@@ -298,22 +347,17 @@ function provideCompletionItems(document, position, token, context) {
                                 singleLine = true;
                             else
                                 continue;
-                        }
-                        else if (reTotal.test(lineContent)) { // 左右括号单独连在一行的，跳过
+                        } else if (reTotal.test(lineContent)) { // 左右括号单独连在一行的，跳过
                             continue;
-                        }
-                        else if (reMerga.test(lineContent)) { // 合在一行的
+                        } else if (reMerga.test(lineContent)) { // 合在一行的
                             singleLine = false;
-                        }
-                        else { // 其他的情况？
+                        } else { // 其他的情况？
                             continue;
                         }
                         break;
-                    }
-                    else if (reAlone.test(lineContent)) {
+                    } else if (reAlone.test(lineContent)) {
                         nextLineAlone = true;
-                    }
-                    else {
+                    } else {
                         nextLineAlone = false;
                     }
                 }
@@ -327,8 +371,8 @@ function provideCompletionItems(document, position, token, context) {
 
             // 分支，判断是否包含下一行，如果有缩进的话
         } else { // 函数
-            singleLine = vscode.workspace.getConfiguration().get('LazyKey.FunctionCurlyBraceInSingleLine')
-                || vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInSingleLine');
+            singleLine = vscode.workspace.getConfiguration().get('LazyKey.FunctionCurlyBraceInSingleLine') ||
+                vscode.workspace.getConfiguration().get('LazyKey.AutoCurlyBraceInSingleLine');
         }
 
         var isSwitch = /^\s*switch\b/.test(left); // switch 的花括号内，因为case，所以不需要缩进
@@ -355,7 +399,7 @@ function provideCompletionItems(document, position, token, context) {
                 }
             } else { // 有注释
                 var endPosition = line.length - commentLength;
-                var deltaPosition = endPosition - position.character - 1/*因为多删了一个]*/;
+                var deltaPosition = endPosition - position.character - 1 /*因为多删了一个]*/;
                 while (deltaPosition-- > 0) {
                     vscode.commands.executeCommand('cursorRight');
                 }
@@ -378,70 +422,86 @@ function provideCompletionItems(document, position, token, context) {
     else if (/^\s*$/.test(left) && /^\]?\s*$/.test(right)) {
         // 缩进跟随上面
         var prevLine = position.line <= 0 ? ';' : document.lineAt(new vscode.Position(position.line - 1, 0)).text;
-        var prevIndent = /^(\s*)/.exec(prevLine)[1].length;
-        var indent = /^(\s*)/.exec(line)[1].length;
-        if (indent > prevIndent)
+        var prevIndent = /^(\s*)/.exec(prevLine)[1];
+        var prevIndentLen = prevIndent.length;
+        var indent = /^(\s*)/.exec(line)[1];
+        var indentLen = indent.length;
+        if (indent.startsWith(prevIndent) && indentLen > prevIndentLen)
             vscode.commands.executeCommand('outdent');
-        else if (indent < prevIndent && indent != 0)
+        else if (prevIndent.startsWith(indent) && indentLen < prevIndentLen && indentLen != 0)
             vscode.commands.executeCommand('editor.action.indentLines');
-        else if (indent < prevIndent && indent == 0)
+        else if (indentLen < prevIndentLen && indentLen == 0)
             vscode.commands.executeCommand('editor.action.reindentLines');
 
+        // 判断分号
+        var addSemi = false;
+        if (document.languageId == 'cpp' && /^\s*(\w+\s+)*(class|struct|enum|union)\s+[\w\d_]+$/.test(prevLine)) {
+            addSemi = true;
+        }
+
+        var snippet = '{\n\t$0\n}';
+        if (addSemi)
+            snippet += ';';
         vscode.commands.executeCommand('deleteLeft');
         vscode.commands.executeCommand('cursorLineEnd');
-        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '{\n\t$0\n}' });
+        vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': snippet });
     }
     // 一行的最右边添加大括号（不包括下一行）。和上一项的区别是判断添不添加空格
     else if (/^[^\{]+$/.test(left) && /^\s*$/.test(right)) {
         var addSemi = false;
 
         // 判断 class struct enum 变量声明，名为添加分号
-        if (/^\s*(\w+\s+)*(class|struct|enum)\s+[\w\d_]$/.test(left)) {
-            addSemi = true;
+        if (/^\s*(\w+\s+)*(class|struct|enum|union)\s+[\w\d_]+$/.test(left)) {
+            if (document.languageId == 'cpp')
+                addSemi = true;
         }
         // 判断是不是变量声明 const int a[3]
         else if (/^\s*(\w+\s+)*\$?[\w_]+\s+[\w\d_]$/.test(left)) {
-            return ;
+            return;
         }
         // 判断是不是PHP变量
         else if (/\$[\w\d_]+$/.test(left)) {
-            return ;
+            return;
         }
 
         // 判断有没有已经存在的变量（指针、数组）
         if (/^\w+$/.test(word)) {
-            var re = full.match(new RegExp('\$?\\b' + word + '\\[', 'g'));
-            var re2 = full.match(new RegExp('\$?\\b\\*\\s*' + word + '\\b', 'g'));
-            if ((re != null && re.length > 1)
-                || (re2 != null && re2.length>1)) {
-                return ;
+            console.log(full);
+            var re = full.match(new RegExp("\\$?\\b" + word + "\\[", "g"));
+            var re2 = full.match(new RegExp("\\*\\s*" + word + "\\b", "g"));
+            if ((re != null && re.length > 1) ||
+                (re2 != null && re2.length > 1)) {
+                return;
             }
         }
 
         var snippet = '';
-        vscode.commands.executeCommand('deleteLeft');
-        vscode.commands.executeCommand('cursorLineEnd');
         if (left.endsWith(' '))
             snippet = '{\n\t$0\n}';
         else
             snippet = ' {\n\t$0\n}';
         if (addSemi)
             snippet += ';';
+        vscode.commands.executeCommand('deleteLeft');
+        vscode.commands.executeCommand('cursorLineEnd');
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': snippet });
-    }
-    else {
-        return ;
+    } else {
+        console.log('没有合适的');
+        return;
     }
 }
 
-function isInCode(document, position, left, right)
-{
-	// 单行注释 //
+function isInCode(document, position, left, right) {
+    // 单行注释 //
     if (/\/\//.test(left))
         return false;
 
     // 块注释 /* */
     if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 其他例如多行块注释；就不仔细判断了
+    if (/^\s*[*#]/.test(left))
         return false;
 
     // 字符串 "str|str"    双引号个数是偶数个
@@ -473,9 +533,8 @@ function resolveCompletionItem(item, token) {
 
 module.exports = function (context) {
     // 注册代码建议提示，只有当按下“.”时才触发
-    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(
-        { scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'js', 'cs', 'jsp'] }, {
-            provideCompletionItems,
-            resolveCompletionItem
-        }, '['));
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider({ scheme: 'file', languages: ['c', 'cpp', 'php', 'java', 'javascript', 'csharp', 'jsp'] }, {
+        provideCompletionItems,
+        resolveCompletionItem
+    }, '['));
 };

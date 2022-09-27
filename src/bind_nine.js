@@ -37,7 +37,6 @@ function analyzeNine(editor, document, position) {
     var left = line.substring(0, position.character);
     var right = line.substring(position.character);
 
-
     // 注释、字符串、正则
     if (!isInCode(document, position, left, right))
         return false;
@@ -82,10 +81,9 @@ function analyzeNine(editor, document, position) {
     // ((|)))
     var withRight = !(ll + rl < lr + rr && rl < rr);
     var tabRight = vscode.workspace.getConfiguration().get('LazyKey.TabSkipRightParenthese');
-    var newText = (withRight && (right == '' || right == ")" || right == ";" || right == "]")) ?
+    var newText = (withRight && (right == '' || right.startsWith(' ') || right.startsWith('\t') || right.startsWith(")") || right.startsWith(";") || right.startsWith("]"))) ?
         (tabRight ? "($1)" : "($0)") :
         "(";
-
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': newText });
 
     // 延时出现提示（必须延时才会出现）
@@ -98,6 +96,9 @@ function analyzeNine(editor, document, position) {
     return true;
 }
 
+/*
+ * 是否是代码正文，而非注释、字符串等
+ */
 function isInCode(document, position, left, right) {
     // 单行注释 //
     if (/\/\//.test(left))
@@ -105,6 +106,10 @@ function isInCode(document, position, left, right) {
 
     // 块注释 /* */
     if (left.lastIndexOf("/*") > -1 && left.indexOf("*/", left.lastIndexOf("/*")) == -1)
+        return false;
+
+    // 其他例如多行块注释；就不仔细判断了
+    if (/^\s*[*#]/.test(left))
         return false;
 
     /* // 字符串 "str|str"    双引号个数是偶数个
@@ -120,7 +125,7 @@ function isInCode(document, position, left, right) {
         return false;
 
     // 正则 /reg|asd/    斜杠个数是偶数个
-    res = left.match(new RegExp(/(?<!\\)\//g));
+    var res = left.match(new RegExp(/(?<!\\)\//g));
     if (document.languageId == 'javascript' && res != null && res.length % 2)
         return false;
 
@@ -128,7 +133,7 @@ function isInCode(document, position, left, right) {
 }
 
 /**
- * 仅仅添加一行
+ * 仅仅添加一个9
  */
 function normalNine() {
     vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': '9' });

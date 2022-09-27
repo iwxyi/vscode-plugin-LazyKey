@@ -2,6 +2,27 @@
 
 All notable changes to the "lazykey" extension will be documented in this file.
 
+## [v0.2.3]
+
+- 支持 `arr[5].member` 格式的指针判断
+- `} else if ()` 右边使用 `[` 自动插入 `{}`
+- `} else if` 下一个行使用 `[` 包裹单行代码
+- `}else if` 和 `} while` 右边空格自动插入 `()`
+- `union` 定义后面使用 `[` 自动插入 `{ };`
+
+
+
+## [v0.2.2]
+
+- 优化 `@override`、`private:`、`}else{` 等换行
+- 优化 `int*[3]` 这一类方括号
+- 优化缩进空格和tab混合使用的情况下花括号的缩进
+- 优化左方括号将下面连续单行缩进的代码包括进来
+- 优化`if`、`for`等下面几行代码一键纳入花括号
+- 修复按9键不会自动插入右括号的问题
+
+
+
 ## [v0.2.1]
 
 - 优化=使 `var_=` => `var -=`

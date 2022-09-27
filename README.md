@@ -51,7 +51,7 @@ LazyKey redefines the following keys:
 - Convert `[` to `{ }` and automatically jump to the next line if the current line is missing a code block
 - Jump into the code block after `if` / `for` / `while` / `foreach` / `switch` if already exists `{ }`
 - Add next line into a code block according to the above two behaviors if posible
-- Convert `[]` to `{ }` and automatically break lines in a blank line
+- Convert `[` to `{ }` and automatically break lines in a blank line (if wrong, undo twice)
 - Support both Lambda brackets, `[]` and `{}`
 
 ### right square bracket
@@ -80,6 +80,7 @@ LazyKey redefines the following keys:
 ### number zero key
 
 - Convert `0` to `)` in the appropriate place
+  - if need 0, such as `while (|)`, can insert space before
 
 ### less key
 
@@ -95,13 +96,25 @@ This extension contributes the following settings:
 
 ## Known Issues
 
-It may change your button habits and make you lazy.
+- It may not work properly under certain circumstances, such as mixed indentation of tab and space.
+
+- If there is a misjudgment, you can undo it (ctrl+z). Some may need to undo it twice
+
+LazyKey may not work correctly in some cases, such as mixing tab and space.
+
+And it may change your button habits and make you lazy.
 
 ## Release Notes
 
-### 0.1.1
+### 0.2.6
 
-Fix some problems.
+1. support Verilog and SystemVerilog
+2. add `;` after C++ class/struct/enum
+3. discard to modify `=` on `"xxx"`
+
+### 0.2.5
+
+add convert Chinese symbols to English symbols, such as （）【】《》，。、；‘’“”
 
 -----------------------------------------------------------------------------------------------------------
 
