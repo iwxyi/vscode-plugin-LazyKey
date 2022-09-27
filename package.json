@@ -241,85 +241,85 @@
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c"
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==c && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp"
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cpp && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java"
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==java && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js"
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==js && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript"
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==javascript && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php"
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==php && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_tab",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs"
+                "when": "editorTextFocus && !suggestWidgetVisible && editorLangId==cs && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==c"
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==c && !(tabnine.in-inline-suggestions && tabnine.inline-suggestion:enabled || tabnine.in-inline-suggestions && tabnine.snippet-suggestion:enabled)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cpp"
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cpp && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==java"
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==java && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==js"
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==js && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==javascript"
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==javascript && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==php"
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==php && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_complete_function",
                 "key": "tab",
                 "mac": "tab",
-                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cs"
+                "when": "editorTextFocus && suggestWidgetVisible && editorLangId==cs && !(tabnine.tab-override && textInputFocus)"
             },
             {
                 "command": "extension.keybindings_nine",

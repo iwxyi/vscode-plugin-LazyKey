@@ -17,8 +17,11 @@ function processTab() {
         return;
     }
 
+    // 有选中文本了
     const editor = vscode.window.activeTextEditor;
-    if (editor.selection.text != undefined) return; // 有选中文本了
+    if (editor.selection.text != undefined) return;
+    
+    // 判断 tabnine
 
     const document = editor.document;
     const selection = editor.selection;
