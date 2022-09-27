@@ -92,12 +92,9 @@ You can decide the switch for each function.
 
 This extension contributes the following settings:
 
-
-
 ## Known Issues
 
 - It may not work properly under certain circumstances, such as mixed indentation of tab and space.
-
 - If there is a misjudgment, you can undo it (ctrl+z). Some may need to undo it twice
 
 LazyKey may not work correctly in some cases, such as mixing tab and space.
@@ -105,6 +102,12 @@ LazyKey may not work correctly in some cases, such as mixing tab and space.
 And it may change your button habits and make you lazy.
 
 ## Release Notes
+
+### 0.2.7
+
+1. support extension `tabnine`
+2. convert `-` to `_` after `(` / `[` / `{` / `->`
+3. cancel `;` auto add new line in same case
 
 ### 0.2.6
 
@@ -116,12 +119,11 @@ And it may change your button habits and make you lazy.
 
 add convert Chinese symbols to English symbols, such as （）【】《》，。、；‘’“”
 
------------------------------------------------------------------------------------------------------------
+---
 
 ### For more information
 
 * [GitHub](https://github.com/MRXY001/vscode-plugin-LazyKey/)
-
 * [Market](https://marketplace.visualstudio.com/items?itemName=mrxy001.lazykey)
 
 **Enjoy!**
