@@ -186,7 +186,7 @@ function provideCompletionItems(document, position, token, context) {
         vscode.commands.executeCommand('deleteLeft');
         var ins = "{";
         if (!left.endsWith(' ')) ins = " " + ins;
-        if (!right.startsWith(' ') && !right.startsWith('\t')) ins += " ";
+        // if (!right.startsWith(' ') && !right.startsWith('\t')) ins += " ";
         vscode.commands.executeCommand('editor.action.insertSnippet', { 'snippet': ins });
 
         // 判断下面需要包括几行
