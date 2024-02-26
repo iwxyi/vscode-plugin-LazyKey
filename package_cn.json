@@ -76,7 +76,7 @@
                 },
                 "LazyKey.SemicolonNewLine": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "description": "声明变量添加分号时是否立即换行，只在一个代码块结束位置或空行前面生效"
                 },
                 "LazyKey.AutoSuggestion": {

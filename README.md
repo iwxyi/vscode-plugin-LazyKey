@@ -103,6 +103,14 @@ And it may change your button habits and make you lazy.
 
 ## Release Notes
 
+### 0.2.9
+
+1. set `SemicolonNewLine` to `false` by default
+
+### 0.2.8
+
+1. support extension `Github Copilot`
+
 ### 0.2.7
 
 1. support extension `tabnine`
